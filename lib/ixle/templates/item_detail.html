@@ -1,0 +1,36 @@
+{%extends "layout.html"%}
+{% block body %}
+<h2>{{item.fname}}<a href="/detail?_={{item.id}}">**</a></h2>
+&nbsp;&nbsp;&nbsp;
+<small><a href="file://{{item.abspath}}">{{item.abspath}}</a></small>
+<hr>
+<table style="width:100%">
+  <tr>
+    <td><b>file extension</b></td>
+    <td><b>mime-type</b></td>
+    <td><b>file type</b></td>
+    <td><b>file magic</b></td>
+  </tr>
+  <tr>
+    <td><a href=/fext?_={{item.fext}}>{{item.fext}}</a></td>
+    <td><small>{{item.mime_type}}</small></td>
+    <td><small>{{item.file_type}}</small></td>
+    <td><small>{{' '.join(item.file_magic)}}</small></td>
+  </tr>
+</table>
+<hr/>
+<table style="width:100%">
+  <tr>
+    <td><b>t_mod</b></td>
+    <td><b>t_last_mod</b></td>
+    <td><b>t_seen</b></td>
+    <td><b>t_last_seen</b></td>
+  </tr>
+  <tr>
+    <td>{{item.t_mod}}</td>
+    <td>{{item.t_last_mod}}</td>
+    <td>{{item.t_seen}}</td>
+    <td>{{item.t_last_seen}}</td>
+  </tr>
+</table>
+{% endblock %}
