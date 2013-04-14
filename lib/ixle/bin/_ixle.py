@@ -1,4 +1,7 @@
 """ ixle.bin._ixle
+
+    for help, use "ixle --help"
+
 """
 import shutil
 import base64
@@ -7,7 +10,8 @@ from glob import glob
 from report import report
 from ixle.settings import Settings
 from ixle.python import opj, ope, dirname, abspath
-from ixle.agents import Md5er, Indexer, StaleChecker, Janitor, Sizer, Typer, Filer
+from ixle.agents import (Stamper, Md5er, Indexer,
+                         StaleChecker, Janitor, Sizer, Typer, Filer)
 
 class IxleMetadata:
     ixle_home = dirname(dirname(__file__))
@@ -99,10 +103,6 @@ class CouchDB(object):
         add_admin = add_admin.format(host=host, password=password, user=user)
         doit(add_admin)
 
-def run_index(path=None, settings=None, **kargs):
-    indexer = Indexer(path=path, settings=settings)
-    indexer.index()
-
 def entry():
     """ entry point from commandline """
     settings = Settings()
@@ -110,7 +110,7 @@ def entry():
     action, args, kargs = None, tuple(), dict()
     if clargs:
         assert len(clargs)==1, 'only know how to parse one clarg'
-        path = clargs.pop()
+        path = abspath(clargs.pop())
     else:
         path = None
     if opts.daemon: sys.exit(CouchDB.start_daemon())
@@ -120,7 +120,8 @@ def entry():
         action = opts.action
         kargs = dict(path=path, settings=settings)
         kargs.update(**opts.__dict__)
-        _map = dict(md5=Md5er, typer=Typer,
+        _map = dict(stamper=Stamper,
+                    md5=Md5er, typer=Typer,
                     filer=Filer,
                     sizer=Sizer, janitor=Janitor,
                     index=Indexer, stale=StaleChecker)
@@ -130,5 +131,5 @@ def entry():
         sys.exit(agent())
     else:
         # do whatever corkscrew would have done
-        # this makes sure that --shell still works
+        # (this makes sure that --shell still works)
        settings.run()

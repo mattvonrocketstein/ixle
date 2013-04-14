@@ -11,6 +11,9 @@ class Settings(CorkscrewSettings):
     def ignore_globs(self):
         return [ x for x in self['ixle.ignore'].split(',') if x ]
 
+    def shell_namespace(self):
+        return dict(database=self.database)
+
     @property
     def server(self):
         server = getattr(self, '_server', None)

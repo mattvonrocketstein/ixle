@@ -2,7 +2,7 @@
 """
 from datetime import datetime
 from couchdb.mapping import Document
-from couchdb.mapping import TextField, IntegerField, DateField, ListField
+from couchdb.mapping import TextField, IntegerField, DateTimeField, ListField
 
 class Item(Document):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
@@ -21,15 +21,16 @@ class Item(Document):
     md5 = TextField()         # via md5sum(1)
     size = IntegerField()     # via du(1)
     file_magic = ListField(TextField(), default=[])  # via file(1)
+    mime_type = TextField()  # via mimetypes module
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle
     # t_mod:       the last-modified date the first time this was seen
     # t_last_mod:  the last-modified date the last time this was seen
-    t_seen = DateField(default=datetime.now)
-    t_last_seen = DateField(default=datetime.now)
-    t_mod = DateField(default=datetime.now)
-    t_last_mod = DateField(default=datetime.now)
+    t_seen = DateTimeField(default=datetime.now)
+    t_last_seen = DateTimeField(default=datetime.now)
+    t_mod = DateTimeField(default=datetime.now)
+    t_last_mod = DateTimeField(default=datetime.now)
 
     @property
     def abspath(self):

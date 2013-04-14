@@ -1,0 +1,17 @@
+{%extends "layout.html"%}
+{% block body %}
+<table>
+  <tr>
+    <td><b>fname</b></td>
+    <td><b>fextension</b></td>
+    <td><b>file magic</b></td>
+  </tr>
+  {%for item in items%}
+  <tr>
+    <td><small><a href="/detail?_={{item.id}}">{{item.fname}}</a></small></td>
+    <td><a href=/fext?_={{item.fext}}>{{item.fext}}</a></td>
+    <td><small>{{' '.join(item.file_magic)}}</small></td>
+  </tr>
+  {%endfor%}
+</table>
+{% endblock %}
