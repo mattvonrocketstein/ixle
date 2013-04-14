@@ -1,0 +1,4 @@
+*.pyc
+node/*
+ixle.log
+cdb/*.couch
