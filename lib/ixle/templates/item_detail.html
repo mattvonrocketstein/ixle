@@ -28,10 +28,11 @@
     <td><b>file magic</b></td>
   </tr>
   <tr>
-    <td><a href=/fext?_={{item.fext}}>{{item.fext}}</a></td>
-    <td><small>{{item.mime_type}}</small></td>
-    <td><small>{{item.file_type}}</small></td>
-    <td><small>{{' '.join(item.file_magic)}}</small></td>
+    <td style="padding-left:10px">
+      <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
+    <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>
+    <td style="padding-left:10px"><small>{{item.file_type}}</small></td>
+    <td style="padding-left:10px"><small>{{' '.join(item.file_magic)}}</small></td>
   </tr>
 </table>
 <hr/>

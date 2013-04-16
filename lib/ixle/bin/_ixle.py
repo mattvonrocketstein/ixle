@@ -7,7 +7,10 @@ import shutil
 import base64
 import os, sys
 from glob import glob
+
+import requests, demjson
 from report import report
+
 from ixle.settings import Settings
 from ixle.python import opj, ope, dirname, abspath
 from ixle.agents import (Stamper, Md5er, Indexer,
@@ -84,10 +87,21 @@ class CouchDB(object):
         """ run this after cleaning, and at the same time as --daemon
             (daemon has to be running or you can't add the users, duh)
         """
-        def doit(string):
-            print ' -> ',string
-            os.system(string)
-            print
+        def doit(earl, auth=None, data=None):
+            print ' putting ', earl, ('with-auth' if auth else 'no-auth')
+            r = requests.put(earl, data=data, auth=auth)
+            hdrs=r.headers['content-type']
+            stuff = r.status_code, demjson.decode(r.content)
+            print ' -->', stuff
+            return stuff
+
+        def add_admin(data):
+            earl = '{host}/_config/admins/{user}'.format(host=host, user=user)
+            return doit(earl, data=data)
+
+        def add_db(db_name, auth=[]):
+            earl = '{host}/{db_name}'.format(host=host, db_name=db_name)
+            return doit(earl, auth=auth)
 
         host, db_name, user, password, port = [
             settings['couch.server'],
@@ -96,13 +110,21 @@ class CouchDB(object):
             base64.b64decode(settings['couch.password']),
             settings['couch.port'],]
         host = host[:-1] if host.endswith('/') else host
-        add_database = 'curl -X PUT {host}/{db_name}'.format(
-            host=host, db_name=db_name)
-        add_database = add_database
-        doit(add_database)
-        add_admin = "curl -X PUT {host}/_config/admins/{user} -d '\"{password}\"'"
-        add_admin = add_admin.format(host=host, password=password, user=user)
-        doit(add_admin)
+
+        code, content = add_admin(password)
+        if content.get('error', None) == 'unauthorized':
+            print ' ----> already have an admin.. adjusting auth creds\n'
+            auth = (user, password)
+        else:
+            auth = None
+
+        for db_postfix in ['','_dupes']:
+            this_db_name = db_name + db_postfix
+            code, content = add_db(this_db_name, auth=auth)
+            if content.get('error', None)=='file_exists':
+                print ' ----> already have database@'+this_db_name
+                print
+        print ' finished setting up couch.'
 
 def entry():
     """ entry point from commandline """
