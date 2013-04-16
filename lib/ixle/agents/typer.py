@@ -59,6 +59,7 @@ class Typer(ItemIterator):
                     typ = 'text'
             elif is_video(item): typ = 'video'
             elif is_audio(item): typ = 'audio'
+            elif is_image(item): typ = 'image'
             else:
                 changed = False
                 print '-'*80
@@ -71,3 +72,5 @@ class Typer(ItemIterator):
             print typ, item.id
             if changed:
                 self.save(item)
+        else:
+            print item.id, item.file_type
