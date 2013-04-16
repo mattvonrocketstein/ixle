@@ -1,2 +1,6 @@
+#python 2.7 for pymdeco?
 sphinx
 pymdeco
+flask
+imdbpy==4.9
+# reporting, corkscrew, hammock

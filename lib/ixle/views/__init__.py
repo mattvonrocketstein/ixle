@@ -1,7 +1,6 @@
 """ ixle.views
 """
 
-from corkscrew import View as CorkscrewView
 from corkscrew.auth import Login, Logout
 from corkscrew.views import Favicon, View,BluePrint
 from corkscrew.util import use_local_template
@@ -11,10 +10,8 @@ from hammock.views.administration import CouchView
 from ixle.schema import Item
 from ixle.util import find_equal, rows2items
 
-class View(CorkscrewView):
-    @property
-    def db(self):
-        return self.settings.database
+from .base import View
+from .search import Search
 
 class Nav(View):
     url = '/_nav'
@@ -26,7 +23,7 @@ class Nav(View):
 class Detail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
-    blueprint = BluePrint('detail',__name__)
+    blueprint = BluePrint('detail', __name__)
     template = 'item_detail.html'
 
     def main(self):
@@ -37,7 +34,7 @@ class Detail(View):
 class Fext(View):
     url = '/fext'
     blueprint = BluePrint('fext_list', __name__)
-    template = 'item_list.html'
+    template = 'filter_by_fext.html'
 
     def filter(self):
         # something like "avi"
@@ -46,7 +43,7 @@ class Fext(View):
         items = find_equal(self.db, 'fext', fext_query)
         # get back a list of items
         items = rows2items(self.db, items)
-        return self.render( items=items)
+        return self.render(items=items, query=fext_query)
 
     @use_local_template
     def index(self):
@@ -77,7 +74,9 @@ class X(View):
 __views__= [
     # corkscrew standard views
     ListViews, SettingsView, Favicon, Login, Logout,
-    X, Nav, Fext,Detail,
+    #
+    Search, X, Nav, Fext,Detail,
+
     # couch views
     CouchView,
     ]

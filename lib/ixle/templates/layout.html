@@ -7,7 +7,7 @@
 <div class="page container" style="background:white">
   <h1 class="remove-bottom" style="margin-top:10px">&nbsp; Ixle indexes files
   </h1>
-  <div id=main_navigation style="width:100%"></div>
+  <div id=main_navigation style="margin-bottom:50px;width:100%"></div>
     {% with flashes = get_flashed_messages() %}
     <ul class=flashes>
       {% if flashes %}
@@ -17,9 +17,23 @@
       {% endif %}
     </ul>
     {% endwith %}
-    <div style="margin-left:30px">{% block body %}{% endblock %}</div>
+    <div style="margin-left:30px">
+      {%block main_menu %}{%endblock%}
+      {%block body %}{%endblock%}
+    </div>
     <div class=footer>
-      <small> this is the site footer</small></div>
+      <table style="margin-top:50px;" width=100%>
+        <tr>
+          <td width=100% align=left>
+            <small>
+              {%block footer%}
+              this is the site footer
+              {%endblock%}
+            </small>
+          </td>
+        </tr>
+      </table>
+    </div>
 
 </div>
 
