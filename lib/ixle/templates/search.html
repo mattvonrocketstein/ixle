@@ -1,0 +1,33 @@
+{%extends "item_list.html"%}
+{%block main_menu %}
+<table style="border:1px dotted blue;" width=100%>
+  <tr>
+    <td>
+      <strong>
+        {%if query%}
+        Querying for terms like: "<i>{{query}}</i>"
+        {%else%}
+        Search!
+        {%endif%}
+      </strong>
+      {%if query%}
+      <br/>&nbsp;&nbsp;&nbsp;&nbsp;
+        <small>
+        <a href=#>ignore this extension</a> (not implemented) <b>|</b>
+        <a href=#>things you can do</a> (not implemented) <b>|</b>
+        <a href=#>stuff you can also do</a> (not implemented)
+      </small>
+        {%endif%}
+    </td>
+
+
+    <td align=right style="margin-top:15px;">
+      <br/><form method=GET action="/search">
+          <input name="_" value="enter query here" type=text>
+          <input type=submit>
+      </form>
+      &nbsp;&nbsp;&nbsp;
+    </td>
+    </tr>
+</table><hr/>
+{%endblock%}

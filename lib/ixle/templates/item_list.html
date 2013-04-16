@@ -1,6 +1,7 @@
 {%extends "layout.html"%}
 {% block body %}
-<table>
+{%if items%}
+<table style="width:100%">
   <tr>
     <td><b>fname</b></td>
     <td><b>fextension</b></td>
@@ -13,5 +14,12 @@
     <td><small>{{' '.join(item.file_magic)}}</small></td>
   </tr>
   {%endfor%}
+
 </table>
+{%else%}
+<center>
+  <div style="margin-top:100px;margin-bottom:100px;">
+    <strong>( nothing to show )</strong></div></center>
+{%endif%}
+
 {% endblock %}

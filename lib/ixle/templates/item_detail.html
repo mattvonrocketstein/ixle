@@ -1,9 +1,25 @@
 {%extends "layout.html"%}
+{%block main_menu %}
+<table width=100%>
+  <tr>
+    <td>
+      <strong>
+        {{item.fname}}<a href="/detail?_={{item.id}}">**</a>
+      </strong><br/>
+      <div style="margin-left:10px">
+        <small>
+          <a href="file://{{item.abspath}}">{{item.abspath}}</a>
+        </small>
+      </div>
+    </td>
+    <td align=right>
+      stuff and things
+    </td>
+    </tr>
+</table><hr/>
+{%endblock%}
+
 {% block body %}
-<h2>{{item.fname}}<a href="/detail?_={{item.id}}">**</a></h2>
-&nbsp;&nbsp;&nbsp;
-<small><a href="file://{{item.abspath}}">{{item.abspath}}</a></small>
-<hr>
 <table style="width:100%">
   <tr>
     <td><b>file extension</b></td>
@@ -33,4 +49,13 @@
     <td>{{item.t_last_seen}}</td>
   </tr>
 </table>
+<script>
+  //$(document).ready(function(){alert('yo')});
+</script>
 {% endblock %}
+{%block footer%}
+        <a href=#>delete entry (from database)</a> (NIY) <b>|</b>
+        <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
+        <a href=#>show file</a> (NIY)<b>|</b>
+        <a href="/suggest?_={{item.abspath}}">suggest name</a> (NIY)
+{%endblock%}

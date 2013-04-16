@@ -52,7 +52,8 @@ class CouchDB(object):
 
         def reset_local_dot_ini():
             # changing the user database actually changes this file in-place.  if
-            # "ixle --install" expects to add that the user back, we have to redact any
+            # "ixle --install" expects to add that the user back,
+            #   we have to redact any
             # changes that were made there.
             print 'copying "{0}" -> "{1}"'.format(
                 IxleMetadata.virgin_local_ini,

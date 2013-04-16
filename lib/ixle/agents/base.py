@@ -12,13 +12,14 @@ from ixle.python import ope, abspath
 
 class IxleAgent(object):
 
-    def __init__(self, path=None, settings=None, **kargs):
+    def __init__(self, path=None, settings=None, force=False,**kargs):
         if self.requires_path:
            if not path or not ope(path):
                assert ope(path), 'path does not exist'
            path = abspath(path)
         self.path = path
         self.conf = settings
+        self.force = force
 
     def run_and_collect(self, cmd):
         return os.popen(cmd).read().strip()

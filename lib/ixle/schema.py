@@ -22,6 +22,7 @@ class Item(Document):
     size = IntegerField()     # via du(1)
     file_magic = ListField(TextField(), default=[])  # via file(1)
     mime_type = TextField()  # via mimetypes module
+    file_type = TextField()
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle
