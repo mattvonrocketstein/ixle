@@ -25,16 +25,25 @@ def rows2items(db, rows):
        yield Item(**tmp)
        #yield Item.load(db, row.id)
 
+class javascript:
+    @staticmethod
+    def key_search(substring):
+        return LOADER.load(Environment(),'key_search.js').render(substring=substring)
+
 def key_contains(db, substring):
-    T = LOADER.load(Environment(),'key_search.js').render(substring=substring)
+    T = js.key_search(substring)
     return iter(db.query(T))
 key_search = key_contains
+
+
+def find_equal_js():
+    return LOADER.load(Environment(),
+                       "find_equal.js")
 
 def find_equal(db, fieldname, value):
     """ gives back an iterator over <Rows> where
         doc[fieldname] == value
     """
-    T = LOADER.load(Environment(),
-                    "find_equal.js").render(fieldname=fieldname,
-                                            value=value)
-    return iter(db.query(T))
+    return iter(db.query(
+        find_equal_js().render(fieldname=fieldname,
+                               value=value)))

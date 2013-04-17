@@ -1,4 +1,5 @@
 {%extends "item_list.html"%}
+
 {%block main_menu %}
 <table style="border:1px dotted blue;" width=100%>
   <tr>
@@ -12,22 +13,32 @@
       </strong>
       {%if query%}
       <br/>&nbsp;&nbsp;&nbsp;&nbsp;
-        <small>
+      <small>
         <a href=#>ignore this extension</a> (not implemented) <b>|</b>
         <a href=#>things you can do</a> (not implemented) <b>|</b>
         <a href=#>stuff you can also do</a> (not implemented)
       </small>
-        {%endif%}
+      {%endif%}
     </td>
-
-
     <td align=right style="margin-top:15px;">
       <br/><form method=GET action="/search">
-          <input name="_" value="enter query here" type=text>
-          <input type=submit>
+        <input name="_" value="enter query here" type="text">
+        <input type=submit>
       </form>
       &nbsp;&nbsp;&nbsp;
     </td>
-    </tr>
+  </tr>
 </table><hr/>
+{%endblock%}
+
+{%block footer%}
+{%if num_results%}
+<font color=red>
+  showing {{num_results}} result(s).
+</font>
+<strong>|</strong>
+{%endif%}
+<font color=red>
+  slice=({{start}}-{{end}})
+</font>
 {%endblock%}
