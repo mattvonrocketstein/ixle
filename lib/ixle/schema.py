@@ -4,6 +4,13 @@ from datetime import datetime
 from couchdb.mapping import Document
 from couchdb.mapping import TextField, IntegerField, DateTimeField, ListField
 
+class DupeRecord(Document):
+    """ recorded event for an alleged duplicate """
+    reason = TextField()
+    item_ids = ListField(TextField(), default=[])
+    resolution = TextField()
+    stamp = DateTimeField(default=datetime.now)
+
 class Item(Document):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
     # _id:   absolute path to file (also the primary key)

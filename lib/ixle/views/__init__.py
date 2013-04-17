@@ -7,11 +7,30 @@ from corkscrew.util import use_local_template
 from corkscrew.views import ListViews, SettingsView
 
 from hammock.views.administration import CouchView
-from ixle.schema import Item
+from ixle.schema import Item, DupeRecord
 from ixle.util import find_equal, rows2items
 
 from .base import View
 from .search import Search
+
+class Suggest(View):
+    url = '/suggest'
+    blueprint = BluePrint('suggest', __name__)
+    template = 'suggest_name.html'
+
+    def main(self):
+        splits = '- .'
+        suggestions = []
+        return self.render(suggestions=suggestions)
+
+class Dupes(View):
+    url = '/dupes'
+    blueprint = BluePrint('duples',__name__)
+    template = 'dupes.html'
+    def main(self):
+        records = [ DupeRecord.load(self.dupes_db, k) \
+                    for k in self.dupes_db.keys() ]
+        return self.render(items=records)
 
 class Nav(View):
     url = '/_nav'
@@ -52,7 +71,8 @@ class Fext(View):
         <a href=?_={{fext}}>{{fext}}</a> |
         {%endfor%}
         """
-        return dict(fext_list=self.db._all_unique_attr('fext'))
+        fext_list = self.db._unique_values_for_fieldname('fext')
+        return dict(fext_list=fext_list)
 
     def main(self):
         if not self['_']: return self.index()
@@ -74,9 +94,5 @@ class X(View):
 __views__= [
     # corkscrew standard views
     ListViews, SettingsView, Favicon, Login, Logout,
-    #
-    Search, X, Nav, Fext,Detail,
-
-    # couch views
-    CouchView,
-    ]
+    Search, X, Nav, Fext, Detail, Dupes,
+    CouchView, ]

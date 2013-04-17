@@ -1,4 +1,5 @@
 {%extends "layout.html"%}
+
 {%block main_menu %}
 <table width=100%>
   <tr>
@@ -19,7 +20,8 @@
 </table><hr/>
 {%endblock%}
 
-{% block body %}
+
+{%block body%}
 <table style="width:100%">
   <tr>
     <td><b>file extension</b></td>
@@ -54,6 +56,8 @@
   //$(document).ready(function(){alert('yo')});
 </script>
 {% endblock %}
+
+
 {%block footer%}
         <a href=#>delete entry (from database)</a> (NIY) <b>|</b>
         <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
