@@ -13,8 +13,9 @@ from report import report
 
 from ixle.settings import Settings
 from ixle.python import opj, ope, dirname, abspath
-from ixle.agents import (Stamper, Md5er, Indexer,
+from ixle.agents import (Stamper, Md5er, Indexer, Dupes,
                          StaleChecker, Janitor, Sizer, Typer, Filer)
+dupes_postfix = '_dupes'
 
 class IxleMetadata:
     ixle_home = dirname(dirname(__file__))
@@ -118,7 +119,7 @@ class CouchDB(object):
         else:
             auth = None
 
-        for db_postfix in ['','_dupes']:
+        for db_postfix in ['', dupes_postfix]:
             this_db_name = db_name + db_postfix
             code, content = add_db(this_db_name, auth=auth)
             if content.get('error', None)=='file_exists':
@@ -140,17 +141,18 @@ def entry():
     elif opts.clean: sys.exit(CouchDB.clean_data())
     elif opts.install: sys.exit(CouchDB.install_ixle(settings))
     elif opts.action:
+        assert settings.app # implicit creation
         action = opts.action
         kargs = dict(path=path, settings=settings)
         kargs.update(**opts.__dict__)
-        _map = dict(stamper=Stamper,
+        _map = dict(dupes=Dupes, stamper=Stamper,
                     md5=Md5er, typer=Typer,
                     filer=Filer,
                     sizer=Sizer, janitor=Janitor,
                     index=Indexer, stale=StaleChecker)
         kls = _map[action]
         agent = kls(*args, **kargs)
-        report('action/agent', action, agent)
+        report('action/agent = '+str([action, agent])+'\n')
         sys.exit(agent())
     else:
         # do whatever corkscrew would have done

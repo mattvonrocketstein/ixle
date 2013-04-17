@@ -12,7 +12,7 @@ from ixle.python import ope, abspath
 
 class IxleAgent(object):
 
-    def __init__(self, path=None, settings=None, force=False,**kargs):
+    def __init__(self, path=None, settings=None, force=False, **kargs):
         if self.requires_path:
            if not path or not ope(path):
                assert ope(path), 'path does not exist'
@@ -22,6 +22,7 @@ class IxleAgent(object):
         self.force = force
 
     def run_and_collect(self, cmd):
+        """ for gathering the output from file(1) and md5(1) etc """
         return os.popen(cmd).read().strip()
 
     def is_ignored(self, fname):
@@ -32,6 +33,7 @@ class IxleAgent(object):
                     for x in ignored ])
 
     def save(self, item):
+        """ """
         try:
             item.store(self.database)
         except ResourceConflict as err:

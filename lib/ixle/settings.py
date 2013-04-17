@@ -9,6 +9,7 @@ class Settings(CorkscrewSettings):
 
     @property
     def ignore_globs(self):
+        """ pulls the 'ignore' setting out of ixle.ini """
         return [ x for x in self['ixle.ignore'].split(',') if x ]
 
     def shell_namespace(self):
@@ -27,16 +28,25 @@ class Settings(CorkscrewSettings):
 
     @property
     def database(self):
-        db = getattr(self,'_database',None)
+        db = getattr(self, '_database', None)
         if db is None:
             db = self.server[ self['ixle.db_name'] ]
             self._db = db
         return db
 
+    @property
+    def dupes_db(self):
+        from ixle.bin._ixle import dupes_postfix
+        db = getattr(self, '_dupes_database', None)
+        if db is None:
+            db = self.server[ self['ixle.db_name'] + dupes_postfix ]
+            self._dupes_database = db
+        return db
+
     @classmethod
     def get_parser(kls):
         parser = CorkscrewSettings.get_parser()
-        parser.add_option('--force',dest='force',default=False,
+        parser.add_option('--force', dest='force', default=False,
                           action='store_true', help='force overwrite')
         parser.add_option('--install', dest='install',
                           default=False, action='store_true',

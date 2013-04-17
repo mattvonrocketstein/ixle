@@ -1,0 +1,16 @@
+{%extends "layout.html"%}
+{% block body %}
+{% if items %}
+  {%for record in items%}
+<strong>event@{{record.stamp}}</strong>
+<small><b>reason: </b>{{record.reason}}</small>
+<div style="margin-left:50px;">
+  <small>{%for absf in record.item_ids%}{{absf}}<br/>{%endfor%}</small>
+</div>
+<hr/>  {%endfor%}
+
+{%else%}
+{%include"empty_results.html"%}
+{%endif%}
+
+{% endblock %}
