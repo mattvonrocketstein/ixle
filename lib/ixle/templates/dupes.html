@@ -4,8 +4,12 @@
   {%for record in items%}
 <strong>event@{{record.stamp}}</strong>
 <small><b>reason: </b>{{record.reason}}</small>
-<div style="margin-left:50px;">
-  <small>{%for absf in record.item_ids%}{{absf}}<br/>{%endfor%}</small>
+<div style="margin-left:15px;">
+  <small>
+    {%for absf in record.item_ids%}
+    <a href="/detail?_={{absf}}">{{absf}}</a>
+    <br/>{%endfor%}
+  </small>
 </div>
 <hr/>  {%endfor%}
 

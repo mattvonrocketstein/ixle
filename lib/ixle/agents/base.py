@@ -52,7 +52,7 @@ class IxleDBAgent(IxleAgent):
         if self.path:
             return """
             function(doc){
-            if(doc['_id'].match('""" + self.path + """')){emit(doc['_id'], null)}
+            if(doc['_id'].match('""" + self.path + """')){emit(doc['_id'], doc)}
             }
             """
         else:

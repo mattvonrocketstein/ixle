@@ -21,7 +21,7 @@ def find_empties(db, field, items=False):
     query = """
     function(doc){
     if(doc.""" + field + """){}
-    else{emit(doc._id, null)}}
+    else{emit(doc._id, doc)}}
     """
     tmp_view = db.query(query)
     for r in tmp_view:
