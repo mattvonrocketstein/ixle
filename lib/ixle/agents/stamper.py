@@ -2,10 +2,13 @@
 """
 
 from datetime import datetime
-from .base import IxleDBAgent,  KeyIterator, ItemIterator
+from .base import ItemIterator
 from ixle.util import modification_date
 
 class Stamper(ItemIterator):
+
+    nickname = 'stamper'
+
     def callback(self, item=None, **kargs):
         # t_seen:      the date this was first seen by ixle
         # t_last_seen: the date this was last seen by ixle

@@ -2,24 +2,29 @@
 
 from .base import View
 from corkscrew.views import BluePrint
-from ixle.util import javascript, key_contains, rows2items, key_search
+from report import report
+from ixle.util import javascript
 from ixle.schema import Item
-page_size = 100
+
+page_size = 15
 
 class Search(View):
 
     blueprint = BluePrint('search', __name__)
     template = 'search.html'
     url = '/search'
+    def get_couch_query(self,search_query):
+        return javascript.key_search(search_query)
 
-    def main(self):
+    def get_ctx(self):
         search_query = self['_']
+        report('query is: ' + search_query)
         page = int(self['p'] or 1)
         start = 0
         end = page_size
         num_results = 0
         if search_query:
-            couch_query = javascript.key_search(search_query)
+            couch_query = self.get_couch_query(search_query)
             start = page_size*(page-1)
             end   = page_size * page
             keys = (self.db%couch_query)[ start : end ]
@@ -27,6 +32,24 @@ class Search(View):
             items = [Item.load(self.db,k) for k in keys]
         else:
             items = []
-        return self.render(num_results=num_results,
-                           query=search_query, items=items,
-                           start=start, end=end)
+        return dict(p=page,
+                    num_results=num_results,
+                    query=search_query, items=items,
+                    start=start, end=end)
+
+    def main(self):
+        return self.render(**self.get_ctx())
+
+class Browser(Search):
+
+    blueprint = BluePrint(__name__, __name__)
+    url = '/browser'
+    template = 'browser.html'
+
+    def get_ctx(self):
+        from ixle.agents import registry
+        ctx = super(Browser,self).get_ctx()
+        ctx.update(agent_types = registry.keys())
+        return ctx
+    def get_couch_query(self, search_query):
+        return javascript.key_startswith(search_query)

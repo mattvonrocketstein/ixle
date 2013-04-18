@@ -31,12 +31,14 @@ def is_image(item): return _generic(item, r_image)
 
 class Typer(ItemIterator):
 
+    nickname = 'typer'
+
     def set_mime(self, item):
         typ, encoding = guess_type(item.id)
         if typ:
             print 'set_mime: ', typ, item.id
         else:
-            MIME_MAP = dict(srt='text')
+            MIME_MAP = dict(aa='audio', srt='text')
             typ = MIME_MAP.get(item.fext, None)
             print 'set_consult: ', typ, item.id
         item.mime_type = typ
@@ -50,17 +52,16 @@ class Typer(ItemIterator):
         if any([self.force, not item.file_type]):
             typ = None
             changed = True
-            if is_text(item):
-                FEXT_MAP = dict(srt='subtitles')
-                more_specific = FEXT_MAP.get(item.fext,None)
-                if more_specific:
-                    typ = more_specific
-                else:
-                    typ = 'text'
+            if is_text(item): typ = 'text'
             elif is_video(item): typ = 'video'
             elif is_audio(item): typ = 'audio'
             elif is_image(item): typ = 'image'
-            else:
+
+            FEXT_MAP = dict(aa='audible-audio',
+                            srt='subtitles')
+            more_specific = FEXT_MAP.get(item.fext, None)
+            typ = more_specific or typ
+            if typ is None:
                 changed = False
                 print '-'*80
                 print 'unknown file-type:', item.id

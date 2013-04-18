@@ -1,14 +1,13 @@
 """ ixle.agents.dupes
 """
-from collections import defaultdict
+
 from .base import ItemIterator
-from ixle.util import find_equal
 from ixle.schema import DupeRecord
 from report import report
 
 class Dupes(ItemIterator):
     """ saves size info """
-
+    nickname = 'dupes'
     requires_path = False
 
     @property
@@ -27,6 +26,7 @@ class Dupes(ItemIterator):
         results = self.find_matches(item, 'fname')
         if not len(results): report(' - no dupes for this fname'); return
         item_ids = [row._id for row in results]
+        reason='fname'
         self.record_collision(reason, item_ids)
 
     def seek_md5_collision(self, item):
