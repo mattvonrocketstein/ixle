@@ -26,9 +26,20 @@ def rows2items(db, rows):
        #yield Item.load(db, row.id)
 
 class javascript:
+
+    @staticmethod
+    def get_template(name):
+        return LOADER.load(Environment(), name)
+
+    @staticmethod
+    def key_startswith(substring):
+        return javascript.get_template('key_startswith.js').render(
+            substring=substring)
+
     @staticmethod
     def key_search(substring):
-        return LOADER.load(Environment(),'key_search.js').render(substring=substring)
+        return javascript.get_template('key_search.js').render(
+            substring=substring)
 
 def key_contains(db, substring):
     T = js.key_search(substring)

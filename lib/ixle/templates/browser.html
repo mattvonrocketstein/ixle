@@ -1,0 +1,24 @@
+ {%extends "search.html"%}
+
+{%block footer_left%}
+
+<table>
+  <tr>
+    <td><strong>run:</strong></td>
+    <td>
+      {%for agent in agent_types%}
+      <a href="/spawn?agent={{agent}}&path={{query}}">{{agent}}</a>
+      <strong>|</strong>
+      {%endfor%}
+    </td>
+  <tr>
+  <tr>
+    <td><strong>force-run:</strong></td>
+    <td>
+      {%for agent in agent_types%}
+      <a href="/spawn?force=1&agent={{agent}}&path={{query}}">{{agent}}</a>
+      <strong>|</strong>{%endfor%}
+    </td>
+  <tr>
+</table>
+{%endblock%}

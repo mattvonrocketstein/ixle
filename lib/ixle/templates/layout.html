@@ -24,12 +24,17 @@
     <div class=footer>
       <table style="margin-top:50px;" width=100%>
         <tr>
-          <td width=100% align=left>
+          <td align=left>
             <small>
-              {%block footer%}
-              this is the site footer
+              {%block footer_left%}
+              this is the site footer, left
               {%endblock%}
             </small>
+          </td>
+          <td align=right>
+            {%block footer_right%}
+            this is the site footer, right
+            {%endblock%}
           </td>
         </tr>
       </table>

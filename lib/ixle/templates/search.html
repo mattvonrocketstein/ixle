@@ -14,16 +14,18 @@
       {%if query%}
       <br/>&nbsp;&nbsp;&nbsp;&nbsp;
       <small>
-        <a href=#>ignore this extension</a> (not implemented) <b>|</b>
-        <a href=#>things you can do</a> (not implemented) <b>|</b>
-        <a href=#>stuff you can also do</a> (not implemented)
+        {%if num_results%}
+        <a href="{{this_url}}?p={{p-1}}&_={{query}}">previous page</a>
+        <strong>|</strong>
+        <a href="{{this_url}}?p={{p+1}}&_={{query}}">next page</a>
+        {%endif%}
       </small>
       {%endif%}
     </td>
     <td align=right style="margin-top:15px;">
       <br/><form method=GET action="/search">
         <input name="_" value="enter query here" type="text">
-        <input type=submit>
+        <input type=submit value="search">
       </form>
       &nbsp;&nbsp;&nbsp;
     </td>
@@ -31,7 +33,7 @@
 </table><hr/>
 {%endblock%}
 
-{%block footer%}
+{%block footer_right%}
 {%if num_results%}
 <font color=red>
   showing {{num_results}} result(s).
@@ -39,6 +41,7 @@
 <strong>|</strong>
 {%endif%}
 <font color=red>
-  slice=({{start}}-{{end}})
+  page={{p}}, slice=({{start}}-{{end}})
 </font>
+<b>|</b>
 {%endblock%}

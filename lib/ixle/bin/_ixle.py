@@ -145,11 +145,7 @@ def entry():
         action = opts.action
         kargs = dict(path=path, settings=settings)
         kargs.update(**opts.__dict__)
-        _map = dict(dupes=Dupes, stamper=Stamper,
-                    md5=Md5er, typer=Typer,
-                    filer=Filer,
-                    sizer=Sizer, janitor=Janitor,
-                    index=Indexer, stale=StaleChecker)
+        from ixle.agents import registry as _map
         kls = _map[action]
         agent = kls(*args, **kargs)
         report('action/agent = '+str([action, agent])+'\n')

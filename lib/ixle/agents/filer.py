@@ -1,8 +1,11 @@
 """ ixle.agents.filer """
 
+from report import report
 from .base import ItemIterator
 
 class Filer(ItemIterator):
+
+    nickname = 'filer'
 
     def callback(self, item=None, **kargs):
         if any([self.force, not item.file_magic]):

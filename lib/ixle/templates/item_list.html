@@ -1,16 +1,21 @@
 {%extends "layout.html"%}
 {% block body %}
 {%if items%}
+
 <table style="width:100%">
   <tr>
     <td><b>fname</b></td>
     <td><b>fextension</b></td>
+    <td><b>ftype</b></td>
+    <td><b>mime-type</b></td>
     <td><b>file magic</b></td>
   </tr>
   {%for item in items%}
   <tr>
     <td><small><a href="/detail?_={{item.id}}">{{item.fname}}</a></small></td>
     <td><a href=/fext?_={{item.fext}}>{{item.fext}}</a></td>
+    <td><small>{{item.file_type}}</small></td>
+    <td><small>{{item.mime_type}}</small></td>
     <td><small>{{' '.join(item.file_magic)}}</small></td>
   </tr>
   {%endfor%}

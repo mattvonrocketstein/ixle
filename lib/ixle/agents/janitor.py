@@ -14,6 +14,7 @@ class Janitor(KeyIterator):
               folders, temporary mounts, etc
 
     """
+    nickname='janitor'
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
             print fname
@@ -25,6 +26,7 @@ class StaleChecker(IxleDBAgent):
         things only flags them.. we wont
         remove them
     """
+    nickname = 'stale'
     def __call__(self):
         self.check()
 

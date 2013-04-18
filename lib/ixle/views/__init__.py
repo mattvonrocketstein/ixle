@@ -1,17 +1,53 @@
 """ ixle.views
 """
+import threading
+from flask import flash, redirect
 
+from report import report
+
+from corkscrew.views import Favicon
 from corkscrew.auth import Login, Logout
-from corkscrew.views import Favicon, View,BluePrint
 from corkscrew.util import use_local_template
 from corkscrew.views import ListViews, SettingsView
 
 from hammock.views.administration import CouchView
+
 from ixle.schema import Item, DupeRecord
 from ixle.util import find_equal, rows2items
+from ixle.agents import registry
 
-from .base import View
-from .search import Search
+from .base import View, BluePrint
+from .search import Search, Browser
+from .widgets import DirViewWidget
+
+class Spawn(View):
+    """ spawn agent on a given sandwich """
+    url = '/spawn'
+    blueprint = BluePrint(__name__, __name__)
+    template = 'spawn.html'
+    methods = "GET POST".split()
+    def main(self):
+        force = True if self['force'] else False
+        agent = self['agent']
+        path = self['path']
+        if agent and path:
+            try:
+                kls = registry[agent]
+            except KeyError:
+                flash("Unknown agent")
+                return self.render(path=path, agent='')
+            kargs = dict(settings=self.settings,
+                         path=path, force=force)
+            agent = kls(**kargs)
+            report('created agent type {0} with kargs={1}'.format(
+                agent.__class__.__name__,
+                str(kargs)))
+            t = threading.Thread(target=agent)
+            t.start()
+            flash("started agent in thread; redirecting to browser")
+            return redirect('/browser?_='+path)
+        return self.render(path=path,
+                           agent=agent)
 
 class Suggest(View):
     url = '/suggest'
@@ -94,5 +130,9 @@ class X(View):
 __views__= [
     # corkscrew standard views
     ListViews, SettingsView, Favicon, Login, Logout,
-    Search, X, Nav, Fext, Detail, Dupes,
+
+    #main ixle views
+    Spawn, Browser, Search, X, Fext, Detail, Dupes,
+    # ajax slaves
+    Nav, DirViewWidget,
     CouchView, ]

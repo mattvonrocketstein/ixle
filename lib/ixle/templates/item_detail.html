@@ -4,63 +4,74 @@
 <table width=100%>
   <tr>
     <td>
-      <strong>
-        {{item.fname}}<a href="/detail?_={{item.id}}">**</a>
-      </strong><br/>
-      <div style="margin-left:10px">
+      <span id=dir_view_widget>
         <small>
-          <a href="file://{{item.abspath}}">{{item.abspath}}</a>
+          (dir_view_widget not loaded)
         </small>
-      </div>
+      </span>
+      <strong>
+        {{item.fname}}
+      </strong><br/>
+      <!--div style="margin-left:10px">
+          stuff stuff stuff
+          </div-->
     </td>
     <td align=right>
-      stuff and things
+      <a href=#>reindex</a> <strong> | </strong>
+      <a href=#>retype</a> <strong> | </strong>
+      <a href=#>rehash</a> <strong> | </strong>
+      <a href="file://{{item.abspath}}">link for file://</a><strong> | </strong>
+      <a href="{{this_url}}?_={{item.id}}">this url</a><strong> | </strong>
     </td>
-    </tr>
+  </tr>
 </table><hr/>
 {%endblock%}
 
 
 {%block body%}
-<table style="width:100%">
-  <tr>
-    <td><b>file extension</b></td>
-    <td><b>mime-type</b></td>
-    <td><b>file type</b></td>
-    <td><b>file magic</b></td>
-  </tr>
-  <tr>
-    <td style="padding-left:10px">
-      <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
-    <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>
-    <td style="padding-left:10px"><small>{{item.file_type}}</small></td>
-    <td style="padding-left:10px"><small>{{' '.join(item.file_magic)}}</small></td>
-  </tr>
-</table>
-<hr/>
-<table style="width:100%">
-  <tr>
-    <td><b>t_mod</b></td>
-    <td><b>t_last_mod</b></td>
-    <td><b>t_seen</b></td>
-    <td><b>t_last_seen</b></td>
-  </tr>
-  <tr>
-    <td>{{item.t_mod}}</td>
-    <td>{{item.t_last_mod}}</td>
-    <td>{{item.t_seen}}</td>
-    <td>{{item.t_last_seen}}</td>
-  </tr>
-</table>
+<div style="margin-left:10px;">
+  <table style="width:100%">
+    <tr>
+      <td><b>file extension</b></td>
+      <td><b>mime-type</b></td>
+      <td><b>file type</b></td>
+      <td><b>file magic</b></td>
+    </tr>
+    <tr>
+      <td style="padding-left:10px">
+        <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
+      <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>
+      <td style="padding-left:10px"><small>{{item.file_type}}</small></td>
+      <td style="padding-left:10px"><small>{{' '.join(item.file_magic)}}</small></td>
+    </tr>
+  </table>
+  <hr/>
+  <table style="width:100%">
+    <tr>
+      <td><b>t_mod</b></td>
+      <td><b>t_last_mod</b></td>
+      <td><b>t_seen</b></td>
+      <td><b>t_last_seen</b></td>
+    </tr>
+    <tr>
+      <td>{{item.t_mod}}</td>
+      <td>{{item.t_last_mod}}</td>
+      <td>{{item.t_seen}}</td>
+      <td>{{item.t_last_seen}}</td>
+    </tr>
+  </table>
+</div>
 <script>
-  //$(document).ready(function(){alert('yo')});
+  $(document).ready(function(){
+  $('#dir_view_widget').load('/dir_view_widget', {'_':'{{item.abspath}}'});
+  });
 </script>
 {% endblock %}
 
 
-{%block footer%}
-        <a href=#>delete entry (from database)</a> (NIY) <b>|</b>
-        <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
-        <a href=#>show file</a> (NIY)<b>|</b>
-        <a href="/suggest?_={{item.abspath}}">suggest name</a> (NIY)
+{%block footer_right%}
+<a href=#>delete entry (from database)</a> (NIY) <b>|</b>
+<a href=#>delete file (from disk)</a> (NIY) <b>|</b>
+<a href=#>show file</a> (NIY)<b>|</b>
+<a href="/suggest?_={{item.abspath}}">suggest name</a> (NIY)
 {%endblock%}

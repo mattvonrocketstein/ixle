@@ -4,9 +4,9 @@
 from .base import ItemIterator
 
 class Sizer(ItemIterator):
-
     """ saves size info """
 
+    nickname = 'sizer'
     requires_path = False
 
     def get_size(self, item):
