@@ -13,7 +13,7 @@ from corkscrew.views import ListViews, SettingsView
 from hammock.views.administration import CouchView
 
 from ixle.schema import Item, DupeRecord
-from ixle.util import find_equal, rows2items
+from ixle.util import find_equal, find_empty, rows2items
 from ixle.agents import registry
 
 from .base import View, BluePrint
@@ -49,6 +49,7 @@ class Spawn(View):
         return self.render(path=path,
                            agent=agent)
 
+#NIY
 class Suggest(View):
     url = '/suggest'
     blueprint = BluePrint('suggest', __name__)
@@ -86,35 +87,55 @@ class Detail(View):
         item = Item.load(self.db, k)
         return self.render(item = item)
 
-class Fext(View):
-    url = '/fext'
-    blueprint = BluePrint('fext_list', __name__)
-    template = 'filter_by_fext.html'
+def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
+    """ """
+    class GenericFiltrationView(View):
+        #FIXME: inefficient, not paged..
+        def filter(self):
+            # something like "avi"
+            fext_query = self['_']
+            # both cases return a <Row>-iterator
+            if fext_query=='None':
+                fext_query = '(NULL)'
+                items = find_empty(self.db, self.ATTR_NAME)
+            else:
+                items = find_equal(self.db, self.ATTR_NAME, fext_query)
+                # get back a list of items
+            items = [x for x in rows2items(self.db, items,
+                                           approx=True)]
+            return self.render(label=self.label,
+                               items=items,
+                               query=fext_query)
 
-    def filter(self):
-        # something like "avi"
-        fext_query = self['_']
-        # returns a <Row>-iterator
-        items = find_equal(self.db, 'fext', fext_query)
-        # get back a list of items
-        items = rows2items(self.db, items)
-        return self.render(items=items, query=fext_query)
+        @use_local_template
+        def index(self):
+            """
+            {%for fext in fext_list%}
+            <a href=?_={{fext}}>{{fext}}</a> |
+            {%endfor%}
+            """
+            fext_list = self.db._unique_values_for_fieldname(self.ATTR_NAME)
+            return dict(label=self.label,
+                        fext_list=fext_list)
 
-    @use_local_template
-    def index(self):
-        """
-        {%for fext in fext_list%}
-        <a href=?_={{fext}}>{{fext}}</a> |
-        {%endfor%}
-        """
-        fext_list = self.db._unique_values_for_fieldname('fext')
-        return dict(fext_list=fext_list)
+        def main(self):
+            if not self['_']: return self.index()
+            else:
+                fext = self['_']
+                return self.filter()
 
-    def main(self):
-        if not self['_']: return self.index()
-        else:
-            fext = self['_']
-            return self.filter()
+    return type('DynamicFilterView' + str(id(GenericFiltrationView)),
+                (GenericFiltrationView,),
+                dict(ATTR_NAME=ATTR_NAME,
+                     label = label,
+                     url = '/' + ATTR_NAME,
+                     blueprint = BluePrint(ATTR_NAME + '_list',
+                                           ATTR_NAME + '_list'),
+                     template = 'filter_by_fext.html'))
+
+Fext = generate_attribute_filter_view('fext', label='extensions')
+FileTypeView  = generate_attribute_filter_view('file_type',label='types')
+
 class X(View):
     url = '/'
     blueprint = BluePrint('home', __name__)
@@ -129,10 +150,11 @@ class X(View):
 
 __views__= [
     # corkscrew standard views
-    ListViews, SettingsView, Favicon, Login, Logout,
+    CouchView, ListViews, SettingsView, Favicon, Login, Logout,
 
     #main ixle views
-    Spawn, Browser, Search, X, Fext, Detail, Dupes,
+    Spawn, Browser, Search, X, FileTypeView, Fext, Detail, Dupes,
+
     # ajax slaves
     Nav, DirViewWidget,
-    CouchView, ]
+    ]

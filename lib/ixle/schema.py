@@ -4,6 +4,8 @@ from datetime import datetime
 from couchdb.mapping import Document
 from couchdb.mapping import TextField, IntegerField, DateTimeField, ListField
 
+from ixle.python import sep
+
 class DupeRecord(Document):
     """ recorded event for an alleged duplicate """
     reason = TextField()
@@ -43,3 +45,7 @@ class Item(Document):
     @property
     def abspath(self):
         return self.id
+
+    @property
+    def dirname(self):
+        return self.abspath.split(sep)

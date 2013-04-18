@@ -3,10 +3,12 @@
 
 import os
 
+from report import report
+
 from ixle.python import sep, opj, splitext
 from ixle.schema import Item
 from .base import IxleAgent
-from report import report
+
 
 class Indexer(IxleAgent):
     """ only gets new content, and
@@ -30,7 +32,11 @@ class Indexer(IxleAgent):
                     fext=extension,
                     _id=abs_path.decode('utf-8'))
         print item.fname
-        self.save(item)
+        success = self.save(item)
+        if not success and self.force:
+            report('force-saving.. might be nasty')
+            del self.database[item.id]
+            self.save(item)
 
     def index(self):
         report('running index for', self.path)
