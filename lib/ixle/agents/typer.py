@@ -2,6 +2,9 @@
 """
 import re
 from mimetypes import guess_type
+
+from report import report
+
 from .base import ItemIterator
 
 r_text = [re.compile(_) for _ in
@@ -13,7 +16,8 @@ r_audio = [re.compile(_) for _ in
            ['Audio file.*',
             'MPEG ADTS']]
 r_image = [re.compile(_) for _ in
-           ['JPEG .*']]
+           ['JPEG .*',
+            'PNG .*']]
 
 def _generic(item, r_list):
     # NOTE: assumes file_magic already ready
@@ -46,7 +50,8 @@ class Typer(ItemIterator):
 
     def callback(self, item=None, **kargs):
         changed = False
-        if any([self.force,not item.mime_type]):
+        report(item)
+        if any([self.force, not item.mime_type]):
             self.set_mime(item)
 
         if any([self.force, not item.file_type]):
@@ -62,12 +67,15 @@ class Typer(ItemIterator):
             more_specific = FEXT_MAP.get(item.fext, None)
             typ = more_specific or typ
             if typ is None:
-                changed = False
-                print '-'*80
-                print 'unknown file-type:', item.id
-                print item.file_magic
-                print '-'*80
-                return
+                advice = item.mime_type
+                if advice and 'video' in advice:
+                    typ = 'video'
+                else:
+                    changed = False
+                    print '-'*80,'\n'+'unknown file-type:', item.id
+                    print item.mime_type, '::', item.file_magic
+                    print '-'*80
+                    return
 
             item.file_type = typ
             print typ, item.id

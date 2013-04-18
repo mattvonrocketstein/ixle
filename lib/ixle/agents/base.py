@@ -15,7 +15,7 @@ class IxleAgent(object):
     def __init__(self, path=None, settings=None, force=False, **kargs):
         if self.requires_path:
            if not path or not ope(path):
-               assert ope(path), 'path does not exist'
+               assert ope(path), 'path does not exist: '+str(path)
            path = abspath(path)
         self.path = path
         self.conf = settings
@@ -63,10 +63,12 @@ class IxleDBAgent(IxleAgent):
             you only get back keys from underneath that path.
         """
         q = self.query
+        report('starting query')
         if q is not None:
             result = [x.key for x in self.database.query(q) ]
         else:
             result = self.database
+        report('finished query')
         return iter(result)
 
 class KeyIterator(IxleDBAgent):
@@ -77,5 +79,7 @@ class KeyIterator(IxleDBAgent):
 class ItemIterator(IxleDBAgent):
 
     def __call__(self):
-        for key in self:
+        keys = [key for key in self]
+        report('working on {0} keys'.format(len(keys)))
+        for key in keys:
             self.callback(item=Item.load(self.database, key), fname=key)

@@ -6,7 +6,9 @@
     <td>
       <strong>
         {%if query%}
+        {%block query_helo%}
         Querying for terms like: "<i>{{query}}</i>"
+        {%endblock%}
         {%else%}
         Search!
         {%endif%}

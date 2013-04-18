@@ -1,5 +1,9 @@
  {%extends "search.html"%}
 
+{%block query_helo%}
+Querying for terms like: "<i><span id=dir_view_widget>{{query}}</span></i>"
+{%endblock%}
+
 {%block footer_left%}
 
 <table>
@@ -20,5 +24,18 @@
       <strong>|</strong>{%endfor%}
     </td>
   <tr>
+  <tr>
+    <td><strong>force-run empty-under:</strong></td>
+    <td>
+      {%for agent in agent_types%}
+      <a href="/spawn?force=1&agent={{agent}}&path={{query}}">{{agent}}</a>
+      <strong>|</strong>{%endfor%}
+    </td>
+  <tr>
+
 </table>
+
+<script>
+  {%with abspath=query%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
+</script>
 {%endblock%}
