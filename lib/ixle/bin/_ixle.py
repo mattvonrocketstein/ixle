@@ -143,7 +143,7 @@ def entry():
     elif opts.action:
         assert settings.app # implicit creation
         action = opts.action
-        kargs = dict(path=path, settings=settings)
+        kargs = dict(path=path, settings=settings, fill=opts.fill)
         kargs.update(**opts.__dict__)
         from ixle.agents import registry as _map
         kls = _map[action]

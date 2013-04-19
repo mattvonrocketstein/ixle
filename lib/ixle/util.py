@@ -57,6 +57,7 @@ class javascript:
     def key_search(substring):
         return javascript.get_template('key_search.js').render(
             substring=substring)
+
     @staticmethod
     def find_empty(fieldname):
         return javascript.get_template('find_empty.js').render(

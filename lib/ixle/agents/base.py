@@ -1,6 +1,5 @@
 """ ixle.agents.base
 """
-
 import os
 import fnmatch
 
@@ -12,14 +11,27 @@ from ixle.python import ope, abspath
 
 class IxleAgent(object):
 
-    def __init__(self, path=None, settings=None, force=False, **kargs):
+    def complain_missing(self, apath=None):
+        report('file missing. gone? not mounted?')
+
+    def __init__(self, path=None, settings=None,
+                 fill=None,
+                 force=False, **kargs):
         if self.requires_path:
            if not path or not ope(path):
                assert ope(path), 'path does not exist: '+str(path)
-           path = abspath(path)
-        self.path = path
+        self.path = path and abspath(path)
         self.conf = settings
         self.force = force
+        if fill:
+            if path is not None:
+                from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+                raise SystemExit('if you use --fill you cant '
+                                 'use a path (and vice versa)')
+        self.fill = fill
+
+    def subagent(self,kls):
+        return kls(path=self.path, settings=self.conf, force=self.force)
 
     def run_and_collect(self, cmd):
         """ for gathering the output from file(1) and md5(1) etc """
@@ -49,15 +61,19 @@ class IxleDBAgent(IxleAgent):
 
     @property
     def query(self):
+
         if self.path:
-            return """
+            q = """
             function(doc){
             if(doc['_id'].match('""" + self.path + """')){emit(doc['_id'], doc)}
             }
             """
+        elif self.fill:
+            from ixle.util import javascript
+            q = javascript.find_empty(self.fill)
         else:
-            return None
-
+            q = None
+        report("chose query: ")
     def __iter__(self):
         """ dbagents dont require path, but when one is given then
             you only get back keys from underneath that path.

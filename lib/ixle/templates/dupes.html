@@ -1,4 +1,8 @@
 {%extends "layout.html"%}
+{%block main_menu %}
+<a href="{{this_url}}?clear_all=1">wipe all records</a>
+<strong>|</strong>
+{%endblock%}
 {% block body %}
 {% if items %}
   {%for record in items%}

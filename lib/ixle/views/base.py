@@ -5,6 +5,11 @@ from corkscrew.views import BluePrint
 from corkscrew import View as CorkscrewView
 
 class View(CorkscrewView):
+    def __init__(self, *args, **kargs):
+        if self.__class__.blueprint is None:
+            self.__class__.blueprint = BluePrint(self.__class__.__name__,
+                                                 self.__class__.__name__)
+        super(View, self).__init__(*args, **kargs)
 
     def render(self, *args, **kargs):
         if 'this_url' not in kargs:
