@@ -1,6 +1,6 @@
 """ ixle.agents.sizer
 """
-
+from report import report
 from .base import ItemIterator
 
 class Sizer(ItemIterator):
@@ -10,11 +10,19 @@ class Sizer(ItemIterator):
     requires_path = False
 
     def get_size(self, item):
-        return int(self.run_and_collect('du "'+item.abspath+'"').split()[0])
+        # FIXME: use python
+        tmp = self.run_and_collect(
+            'du "' + item.abspath + '" 2>/dev/null').strip().split()
+        if tmp:
+            return int(tmp[0])
 
     def callback(self, item=None, **kargs):
-        if not item.size:
+        if any([self.force, not item.size]):
+            report(item.abspath)
             size = self.get_size(item)
-            item.size = size
-            print size, item.fname
-            self.save(item)
+            if size:
+                item.size = size
+                report(str([size, item.fname]))
+                self.save(item)
+            else:
+                self.complain_missing()

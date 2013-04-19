@@ -48,6 +48,9 @@ class Settings(CorkscrewSettings):
         parser = CorkscrewSettings.get_parser()
         parser.add_option('--force', dest='force', default=False,
                           action='store_true', help='force overwrite')
+        parser.add_option('--fill', dest='fill', default='',
+                          help=('query for entries '
+                                'where FIELDNAME is not set'))
         parser.add_option('--install', dest='install',
                           default=False, action='store_true',
                           help='boostrap ixle into running couchdb')

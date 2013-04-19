@@ -1,8 +1,5 @@
 """ ixle.views
 """
-import threading
-from flask import flash, redirect
-
 from report import report
 
 from corkscrew.views import Favicon
@@ -14,45 +11,16 @@ from hammock.views.administration import CouchView
 
 from ixle.schema import Item, DupeRecord
 from ixle.util import find_equal, find_empty, rows2items
-from ixle.agents import registry
 
-from .base import View, BluePrint
+from .base import View
 from .search import Search, Browser
 from .widgets import DirViewWidget
-
-class Spawn(View):
-    """ spawn agent on a given sandwich """
-    url = '/spawn'
-    blueprint = BluePrint(__name__, __name__)
-    template = 'spawn.html'
-    methods = "GET POST".split()
-    def main(self):
-        force = True if self['force'] else False
-        agent = self['agent']
-        path = self['path']
-        if agent and path:
-            try:
-                kls = registry[agent]
-            except KeyError:
-                flash("Unknown agent")
-                return self.render(path=path, agent='')
-            kargs = dict(settings=self.settings,
-                         path=path, force=force)
-            agent = kls(**kargs)
-            report('created agent type {0} with kargs={1}'.format(
-                agent.__class__.__name__,
-                str(kargs)))
-            t = threading.Thread(target=agent)
-            t.start()
-            flash("started agent in thread; redirecting to browser")
-            return redirect('/browser?_='+path)
-        return self.render(path=path,
-                           agent=agent)
+from .agents import AgentView
+from .spawn import Spawn
 
 #NIY
 class Suggest(View):
     url = '/suggest'
-    blueprint = BluePrint('suggest', __name__)
     template = 'suggest_name.html'
 
     def main(self):
@@ -62,16 +30,18 @@ class Suggest(View):
 
 class Dupes(View):
     url = '/dupes'
-    blueprint = BluePrint('duples',__name__)
     template = 'dupes.html'
     def main(self):
+        if self['clear_all']:
+            for x in self.dupes_db:
+                report('wiping dupe-record: {0}'.format(x))
+                del self.dupes_db[x]
         records = [ DupeRecord.load(self.dupes_db, k) \
                     for k in self.dupes_db.keys() ]
         return self.render(items=records)
 
 class Nav(View):
     url = '/_nav'
-    blueprint = BluePrint('nav', __name__)
     template = 'navigation.html'
     def main(self):
         return self.render()
@@ -79,7 +49,6 @@ class Nav(View):
 class Detail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
-    blueprint = BluePrint('detail', __name__)
     template = 'item_detail.html'
 
     def main(self):
@@ -129,16 +98,13 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
                 dict(ATTR_NAME=ATTR_NAME,
                      label = label,
                      url = '/' + ATTR_NAME,
-                     blueprint = BluePrint(ATTR_NAME + '_list',
-                                           ATTR_NAME + '_list'),
                      template = 'filter_by_fext.html'))
 
 Fext = generate_attribute_filter_view('fext', label='extensions')
 FileTypeView  = generate_attribute_filter_view('file_type',label='types')
 
-class X(View):
+class HomePage(View):
     url = '/'
-    blueprint = BluePrint('home', __name__)
     template = 'item_list.html'
 
     def main(self):
@@ -153,7 +119,8 @@ __views__= [
     CouchView, ListViews, SettingsView, Favicon, Login, Logout,
 
     #main ixle views
-    Spawn, Browser, Search, X, FileTypeView, Fext, Detail, Dupes,
+    AgentView, Spawn, Browser, Search, HomePage,
+    FileTypeView, Fext, Detail, Dupes,
 
     # ajax slaves
     Nav, DirViewWidget,
