@@ -1,9 +1,12 @@
 """ ixle.agents.stamper
 """
-
 from datetime import datetime
-from .base import ItemIterator
+
+from humanize import naturaltime
+from report import report
+
 from ixle.util import modification_date
+from .base import ItemIterator
 
 class Stamper(ItemIterator):
 
@@ -16,9 +19,11 @@ class Stamper(ItemIterator):
         # t_last_mod:  the last-modified date the last time this was seen
         now = datetime.now()
         mod_date = modification_date(item.id)
-        print mod_date, item.id
+        report('\n'.join([item.id,
+                          naturaltime(mod_date)]))
         item.t_last_seen = now
-        item._t_last_mod = mod_date
+        if mod_date:
+            item._t_last_mod = mod_date
         if not item.t_seen:
             item.t_seen=now
         if not item.t_mod:

@@ -17,7 +17,7 @@ class DestructionMixin(object):
 
     def delete_record(self, key):
         self.count_deletion += 1
-        del self.database[fname]
+        del self.database[key]
 
 
 class Janitor(KeyIterator, DestructionMixin):

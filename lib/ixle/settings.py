@@ -14,7 +14,9 @@ class Settings(CorkscrewSettings):
 
     def shell_namespace(self):
         from ixle.schema import Item
-        return dict(item=Item, Item=Item, database=self.database)
+        return dict(item=Item, Item=Item,
+                    dupes_db=self.dupes_db,
+                    database=self.database)
 
     @property
     def server(self):
