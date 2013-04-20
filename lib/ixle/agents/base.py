@@ -25,16 +25,19 @@ class IxleAgent(object):
         self.force = force
         if fill:
             if path is not None:
-                from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
                 raise SystemExit('if you use --fill you cant '
                                  'use a path (and vice versa)')
         self.fill = fill
 
     def subagent(self,kls):
-        return kls(path=self.path, settings=self.conf, force=self.force)
+        # KISS with _ixle FORBIDDEN
+        return kls(path=self.path,
+                   settings=self.conf,
+                   force=self.force)
 
     def run_and_collect(self, cmd):
         """ for gathering the output from file(1) and md5(1) etc """
+        cmd = cmd.replace('`','\`')
         return os.popen(cmd).read().strip()
 
     def is_ignored(self, fname):
@@ -46,6 +49,7 @@ class IxleAgent(object):
 
     def save(self, item):
         """ """
+        # TODO: count saves
         try:
             item.store(self.database)
         except ResourceConflict as err:
@@ -61,19 +65,25 @@ class IxleDBAgent(IxleAgent):
 
     @property
     def query(self):
-
         if self.path:
-            q = """
-            function(doc){
-            if(doc['_id'].match('""" + self.path + """')){emit(doc['_id'], doc)}
-            }
-            """
+            # TODO: use template
+            q = ("function(doc){"
+                 "if(doc['_id'].match('""" + self.path + """'))"""
+                 "{emit(doc['_id'], doc)}}")
         elif self.fill:
             from ixle.util import javascript
-            q = javascript.find_empty(self.fill)
+            assert self.covers_fields
+            assert len(self.covers_fields)==1
+            q = javascript.find_empty(self.covers_fields[0])
         else:
             q = None
-        report("chose query: ")
+        if q is not None:
+            report.console.draw_line()
+            report("chose query: ")
+            report(report.highlight.javascript(q), plain=True)
+            report.console.draw_line()
+        return q
+
     def __iter__(self):
         """ dbagents dont require path, but when one is given then
             you only get back keys from underneath that path.
@@ -81,7 +91,7 @@ class IxleDBAgent(IxleAgent):
         q = self.query
         report('starting query')
         if q is not None:
-            result = [x.key for x in self.database.query(q) ]
+            result = [x.key for x in self.database.query(q) if x.key ]
         else:
             result = self.database
         report('finished query')
@@ -95,7 +105,9 @@ class KeyIterator(IxleDBAgent):
 class ItemIterator(IxleDBAgent):
 
     def __call__(self):
-        keys = [key for key in self]
+        keys = [ key for key in self ]
         report('working on {0} keys'.format(len(keys)))
         for key in keys:
-            self.callback(item=Item.load(self.database, key), fname=key)
+            self.callback(fname=key,
+                          item=Item.load(self.database, key))
+        report('finished.')

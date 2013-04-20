@@ -10,15 +10,15 @@ page_size = 15
 
 class Search(View):
 
-    blueprint = BluePrint('search', __name__)
     template = 'search.html'
     url = '/search'
+
     def get_couch_query(self,search_query):
         return javascript.key_search(search_query)
 
     def get_ctx(self):
         search_query = self['_']
-        report('query is: ' + search_query)
+        report('query is: ',search_query)
         page = int(self['p'] or 1)
         start = 0
         end = page_size

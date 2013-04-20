@@ -6,6 +6,7 @@ from .base import ItemIterator
 class Filer(ItemIterator):
 
     nickname = 'filer'
+    covers_fields = ['file_magic']
 
     def callback(self, item=None, **kargs):
         if any([self.force, not item.file_magic]):

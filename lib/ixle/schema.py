@@ -44,7 +44,11 @@ class Item(Document):
 
     @property
     def abspath(self):
-        return self.id
+        try:
+            return self.id.encode('utf-8')
+        except UnicodeEncodeError,e:
+            print self.id
+            raise
 
     @property
     def dirname(self):
