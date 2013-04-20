@@ -6,6 +6,8 @@ import datetime
 from jinja2 import FileSystemLoader, Environment
 from flask import render_template
 
+from report import report
+
 from ixle.python import ope
 from ixle.schema import Item
 
@@ -19,7 +21,8 @@ def modification_date(filename):
     if ope(filename):
         t = os.path.getmtime(filename)
         return datetime.datetime.fromtimestamp(t)
-
+    else:
+        report('cant get mod_date: '+filename)
 def rows2items(db, rows, approx=False):
     """ """
     for row in rows:

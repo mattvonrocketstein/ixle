@@ -47,9 +47,19 @@ class Browser(Search):
     template = 'browser.html'
 
     def get_ctx(self):
+        import os
+        from ixle.python import ope, opj
         from ixle.agents import registry
-        ctx = super(Browser,self).get_ctx()
-        ctx.update(agent_types = registry.keys())
+        ctx = super(Browser, self).get_ctx()
+        qstring = self['_']
+        if ope(qstring): # should be a dir already..
+            subddirs=[ [x,opj(qstring,x)] for x in os.listdir(qstring)]
+            subddirs = filter(lambda x: os.path.isdir(x[1]), subddirs)
+        else:
+            subddirs=[]
+        ctx.update(subddirs=subddirs,
+                   agent_types = registry.keys())
         return ctx
+
     def get_couch_query(self, search_query):
         return javascript.key_startswith(search_query)

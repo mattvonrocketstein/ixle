@@ -2,7 +2,7 @@
 """
 from report import report
 
-from corkscrew.views import Favicon
+from corkscrew.views import Favicon, BluePrint
 from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
 from corkscrew.views import ListViews, SettingsView
@@ -19,6 +19,8 @@ from .agents import AgentView
 from .spawn import Spawn
 
 #NIY
+from flask import flash, redirect
+
 class Suggest(View):
     url = '/suggest'
     template = 'suggest_name.html'
@@ -44,6 +46,25 @@ class Nav(View):
     def main(self):
         return self.render()
 
+class Delete(View):
+    blueprint = BluePrint('asdasdas','asdasdasd')
+    url = '/delete'
+
+    def main(self):
+        key = self['_']
+        _from = self['from']
+        assert key and _from, 'need both key and where to delete from'
+        if _from=='db':
+            try:
+                del self.db[key]
+            except Exception,e:
+                flash("Error: "+str(e))
+            else:
+                flash('successfully deleted key from database.')
+        else:
+            flash("did nothing; i dont know what you mean.")
+        return redirect('/detail?_'+key)
+
 class Detail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
@@ -51,7 +72,11 @@ class Detail(View):
 
     def main(self):
         k = self['_']
+        if not k:
+            return self.flask.render_template('not_found.html')
         item = Item.load(self.db, k)
+        if item is None:
+            return self.flask.render_template('not_found.html')
         return self.render(item = item)
 
 def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
@@ -120,6 +145,6 @@ __views__= [
     AgentView, Spawn, Browser, Search, HomePage,
     FileTypeView, Fext, Detail, Dupes,
 
-    # ajax slaves
-    Nav, DirViewWidget,
+    # ajax slaves or simple redirection views
+    Delete, Nav, DirViewWidget,
     ]
