@@ -1,5 +1,6 @@
 """ ixle.schema
 """
+import math
 from datetime import datetime
 from couchdb.mapping import Document
 from couchdb.mapping import TextField, IntegerField, DateTimeField, ListField
@@ -51,6 +52,11 @@ class Item(Document):
         except UnicodeEncodeError,e:
             print self.id
             raise
+
+    @property
+    def size_mb(self):
+        """ get approx size in megabytes """
+        return self.size and math.ceil(self.size*1.0/1024)
 
     @property
     def dirname(self):
