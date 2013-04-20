@@ -1,9 +1,25 @@
  {%extends "search.html"%}
 
 {%block query_helo%}
-Querying for terms like: "<i><span id=dir_view_widget>{{query}}</span></i>"
+Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
 {%endblock%}
 
+{% block body %}
+{%if subddirs%}
+
+  <div style="width:100%">
+    <strong>subdirs:</strong>
+  {%for name,fullpath in subddirs%}
+    <small>
+      <a href="/browser?_={{fullpath}}">{{name}}</a>
+    </small>
+    <strong>|</strong>
+  {%endfor%}
+</div>
+<hr/>
+{%endif%}
+{{super()}}
+{%endblock%}
 {%block footer_left%}
 
 <table>

@@ -39,10 +39,10 @@ class Item(Document):
     # t_last_seen: the date this was last seen by ixle
     # t_mod:       the last-modified date the first time this was seen
     # t_last_mod:  the last-modified date the last time this was seen
-    t_seen = DateTimeField(default=datetime.now)
-    t_last_seen = DateTimeField(default=datetime.now)
-    t_mod = DateTimeField(default=datetime.now)
-    t_last_mod = DateTimeField(default=datetime.now)
+    t_seen = DateTimeField()
+    t_last_seen = DateTimeField()
+    t_mod = DateTimeField()
+    t_last_mod = DateTimeField()
 
     @property
     def abspath(self):

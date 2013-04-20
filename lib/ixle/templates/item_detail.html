@@ -1,5 +1,4 @@
 {%extends "layout.html"%}
-
 {%block main_menu %}
 <table width=100%>
   <tr>
@@ -54,10 +53,10 @@
       <td><b>t_last_seen</b></td>
     </tr>
     <tr>
-      <td>{{item.t_mod}}</td>
-      <td>{{item.t_last_mod}}</td>
-      <td>{{item.t_seen}}</td>
-      <td>{{item.t_last_seen}}</td>
+      <td>{{item.t_mod|naturaltime}}</td>
+      <td>{{item.t_last_mod|naturaltime}}</td>
+      <td>{{item.t_seen|naturaltime}}</td>
+      <td>{{item.t_last_seen|naturaltime}}</td>
     </tr>
   </table>
 </div>
@@ -68,7 +67,8 @@
 
 
 {%block footer_right%}
-<a href=#>delete entry (from database)</a> (NIY) <b>|</b>
+<a href="/delete?from=db&_={{item.id}}">
+  delete entry (from database)</a> <b>|</b>
 <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
 <a href=#>show file</a> (NIY)<b>|</b>
 <a href="/suggest?_={{item.abspath}}">suggest name</a> (NIY)

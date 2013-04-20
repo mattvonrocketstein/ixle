@@ -2,10 +2,17 @@
 """
 
 from corkscrew.settings import Settings as CorkscrewSettings
+import humanize
+
 
 class Settings(CorkscrewSettings):
 
     default_file = 'ixle.ini'
+
+    def _get_app(self):
+        app = super(Settings,self)._get_app()
+        app.jinja_env.filters["naturaltime"] = humanize.naturaltime
+        return app
 
     @property
     def ignore_globs(self):
