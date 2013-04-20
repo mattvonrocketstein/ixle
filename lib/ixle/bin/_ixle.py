@@ -145,11 +145,19 @@ def entry():
         action = opts.action
         kargs = dict(path=path, settings=settings, fill=opts.fill)
         kargs.update(**opts.__dict__)
+        FORBIDDEN='encode clean runner install shell port'.split()
+        [ kargs.pop(x) for x in FORBIDDEN]
         from ixle.agents import registry as _map
-        kls = _map[action]
-        agent = kls(*args, **kargs)
-        report('action/agent = '+str([action, agent])+'\n')
-        sys.exit(agent())
+        try:
+            kls = _map[action]
+        except KeyError:
+            report('no such action "{0}"'.format(action))
+            report('available agents are: '+str(_map.keys()))
+        else:
+            agent = kls(*args, **kargs)
+            report('action/agent = '+str([action, agent])+'\n')
+            report('  w/ kargs='+str(kargs))
+            sys.exit(agent())
     else:
         # do whatever corkscrew would have done
         # (this makes sure that --shell still works)

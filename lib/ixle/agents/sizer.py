@@ -8,6 +8,7 @@ class Sizer(ItemIterator):
 
     nickname = 'sizer'
     requires_path = False
+    covers_fields = ['size']
 
     def get_size(self, item):
         # FIXME: use python

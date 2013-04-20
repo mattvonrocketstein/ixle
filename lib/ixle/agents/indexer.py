@@ -1,4 +1,4 @@
-"""
+""" ixle.agents.indexer
 """
 
 import os
@@ -18,6 +18,7 @@ class Indexer(IxleAgent):
     requires_path = True
     provides = 'fname fext _id'.split()
     nickname = 'index'
+
     def __call__(self):
         self.index()
 
@@ -31,7 +32,7 @@ class Indexer(IxleAgent):
         item = Item(fname=rel_name.decode('utf-8'),
                     fext=extension,
                     _id=abs_path.decode('utf-8'))
-        print item.fname
+        report(item.fname)
         success = self.save(item)
         if not success and self.force:
             report('force-saving.. might be nasty')

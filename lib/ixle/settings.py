@@ -13,7 +13,8 @@ class Settings(CorkscrewSettings):
         return [ x for x in self['ixle.ignore'].split(',') if x ]
 
     def shell_namespace(self):
-        return dict(database=self.database)
+        from ixle.schema import Item
+        return dict(item=Item, Item=Item, database=self.database)
 
     @property
     def server(self):
@@ -48,7 +49,8 @@ class Settings(CorkscrewSettings):
         parser = CorkscrewSettings.get_parser()
         parser.add_option('--force', dest='force', default=False,
                           action='store_true', help='force overwrite')
-        parser.add_option('--fill', dest='fill', default='',
+        parser.add_option('--fill', dest='fill', default=False,
+                          action='store_true',
                           help=('query for entries '
                                 'where FIELDNAME is not set'))
         parser.add_option('--install', dest='install',
