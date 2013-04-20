@@ -27,11 +27,13 @@ class Item(Document):
     # huge, but the output is small so pipes should be inexpensive.  doing it
     # this way are probably better than anything in python's stdlib..
 
-    md5 = TextField()         # via md5sum(1)
-    size = IntegerField()     # via du(1)
-    file_magic = ListField(TextField(), default=[])  # via file(1)
-    mime_type = TextField()  # via mimetypes module
-    file_type = TextField()
+    md5        = TextField()            # via md5sum(1)
+    size       = IntegerField()         # via du(1)
+    file_magic = ListField(TextField(),
+                           default=[])  # via file(1)
+    mime_type  = TextField()            # via mimetypes module
+    file_type  = TextField()
+    body       = TextField()
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle

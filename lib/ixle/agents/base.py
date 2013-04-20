@@ -9,14 +9,24 @@ from report import report
 from ixle.schema import Item
 from ixle.python import ope, abspath
 
+def wrap_kbi(fxn):
+    def newf(*args, **kargs):
+        try:
+            fxn(*args, **kargs)
+        except KeyboardInterrupt:
+            report("Exiting.")
+    return newf
+
 class IxleAgent(object):
+
+    is_subagent = False
 
     def complain_missing(self, apath=None):
         report('file missing. gone? not mounted?')
 
-    def __init__(self, path=None, settings=None,
-                 fill=None,
+    def __init__(self, path=None, settings=None, fill=None,
                  force=False, **kargs):
+        """ fill+path determine self.query """
         if self.requires_path:
            if not path or not ope(path):
                assert ope(path), 'path does not exist: '+str(path)
@@ -29,11 +39,18 @@ class IxleAgent(object):
                                  'use a path (and vice versa)')
         self.fill = fill
 
-    def subagent(self,kls):
-        # KISS with _ixle FORBIDDEN
-        return kls(path=self.path,
-                   settings=self.conf,
-                   force=self.force)
+    # KISS with _ixle FORBIDDEN
+    def subagent(self, kls):
+        """ get another agent with the same settings
+            as this agent.  useful when an agent like
+            `Typer` requires as data some information
+            that would normally be set by the `Mimer`
+        """
+        agent = kls(path=self.path,
+                    settings=self.conf,
+                    force=self.force)
+        agent.is_subagent = True
+        return agent
 
     def run_and_collect(self, cmd):
         """ for gathering the output from file(1) and md5(1) etc """
@@ -41,6 +58,7 @@ class IxleAgent(object):
         return os.popen(cmd).read().strip()
 
     def is_ignored(self, fname):
+        """ """
         ignored = self.conf.ignore_globs
         return any([ fnmatch.fnmatch(fname, x) \
                      for x in ignored ]) or \
@@ -98,12 +116,13 @@ class IxleDBAgent(IxleAgent):
         return iter(result)
 
 class KeyIterator(IxleDBAgent):
+    @wrap_kbi
     def __call__(self):
         for key in self:
             self.callback(item=None, fname=key)
 
 class ItemIterator(IxleDBAgent):
-
+    @wrap_kbi
     def __call__(self):
         keys = [ key for key in self ]
         report('working on {0} keys'.format(len(keys)))

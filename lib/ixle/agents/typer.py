@@ -33,26 +33,45 @@ def is_video(item): return _generic(item, r_video)
 def is_audio(item): return _generic(item, r_audio)
 def is_image(item): return _generic(item, r_image)
 
-class Typer(ItemIterator):
+MIME_MAP = dict(aa='audio', view='data', srt='text')
+# used for determining file type
+FEXT_MAP = dict(aa='audible-audio',
+                view='couchdb-data',
+                srt='subtitles',
+                idx='subtitles',
+                db='database-unknown')
 
-    nickname = 'typer'
+class Mimer(ItemIterator):
+    nickname = 'mimer'
+    covers_fields = ['mime_type']
 
     def set_mime(self, item):
         typ, encoding = guess_type(item.id)
         if typ:
-            print 'set_mime: ', typ, item.id
+            report('set_mime: '+typ)
         else:
-            MIME_MAP = dict(aa='audio', srt='text')
             typ = MIME_MAP.get(item.fext, None)
-            print 'set_consult: ', typ, item.id
+            report('set_consult: ' + str(typ))
         item.mime_type = typ
         self.save(item)
 
     def callback(self, item=None, **kargs):
-        changed = False
-        report(item)
+        if not self.is_subagent:
+            report(item.fname)
         if any([self.force, not item.mime_type]):
             self.set_mime(item)
+
+class Typer(ItemIterator):
+    nickname = 'typer'
+    covers_fields = ['file_type']
+    def __init__(self, *args, **kargs):
+        super(Typer,self).__init__(*args, **kargs)
+        self.mimer = self.subagent(Mimer)
+
+    def callback(self, item=None, **kargs):
+        changed = False
+        report(item)
+        self.mimer.callback(item=item, **kargs)
 
         if any([self.force, not item.file_type]):
             typ = None
@@ -62,8 +81,6 @@ class Typer(ItemIterator):
             elif is_audio(item): typ = 'audio'
             elif is_image(item): typ = 'image'
 
-            FEXT_MAP = dict(aa='audible-audio',
-                            srt='subtitles')
             more_specific = FEXT_MAP.get(item.fext, None)
             typ = more_specific or typ
             if typ is None:

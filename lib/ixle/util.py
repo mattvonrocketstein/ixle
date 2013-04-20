@@ -6,7 +6,9 @@ import datetime
 from jinja2 import FileSystemLoader, Environment
 from flask import render_template
 
+from ixle.python import ope
 from ixle.schema import Item
+
 couch_js_dir = os.path.join(os.path.dirname(__file__),
                             'templates','couch_js')
 assert os.path.exists(couch_js_dir)
@@ -14,8 +16,9 @@ LOADER = FileSystemLoader(couch_js_dir)
 
 def modification_date(filename):
     """ """
-    t = os.path.getmtime(filename)
-    return datetime.datetime.fromtimestamp(t)
+    if ope(filename):
+        t = os.path.getmtime(filename)
+        return datetime.datetime.fromtimestamp(t)
 
 def rows2items(db, rows, approx=False):
     """ """

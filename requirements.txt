@@ -1,6 +1,15 @@
+importlib
+pygments # required by reporting
+humanize
 requests
-sphinx
-pymdeco
+demjson==1.6
 flask
 imdbpy==4.9
+couchdb==0.8
+Importing==1.10
+tornado
+flask
 # reporting, corkscrew, hammock
+#git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
+#git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
+#git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew

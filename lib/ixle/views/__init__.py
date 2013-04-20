@@ -33,9 +33,7 @@ class Dupes(View):
     template = 'dupes.html'
     def main(self):
         if self['clear_all']:
-            for x in self.dupes_db:
-                report('wiping dupe-record: {0}'.format(x))
-                del self.dupes_db[x]
+            self.dupes_db.delete_all()
         records = [ DupeRecord.load(self.dupes_db, k) \
                     for k in self.dupes_db.keys() ]
         return self.render(items=records)
