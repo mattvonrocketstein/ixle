@@ -1,33 +1,24 @@
 {%extends "layout.html"%}
-{% block body %}
-{%if items%}
-<table style="width:100%">
-  <tr>
-    <td><b>fname</b></td>
-    <td><strong>first seen</strong></td>
-    <td><strong>earliest mod-date</strong></td>
-    <td><strong>last mod-date</strong></td>
-    <td><b>fextension</b></td>
-    <td><b>ftype</b></td>
-    <td><b>mime-type</b></td>
-    <td><b>file magic</b></td>
-  </tr>
-  {%for item in items%}
-  <tr>
-    <td><small><a href="/detail?_={{item.id}}">{{item.fname}}</a></small></td>
-    <td> <small>{{item.t_seen|naturaltime}}</small></td>
-    <td> <small>{{item.t_mod|naturaltime}}</small></td>
-    <td> <small>{{item.t_last_mod|naturaltime}}</small></td>
-    <td><a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
-    <td><small><a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a></small></td>
-    <td><small>{{item.mime_type}}</small></td>
-    <td><small>{{' '.join(item.file_magic)}}</small></td>
-  </tr>
-  {%endfor%}
-</table>
-<hr/>
-{%else%}
-{%include"empty_results.html"%}
-{%endif%}
 
+{% block body %}
+<strong>Results:</strong>
+<div style="margin-left:15px;" id=item_list>
+{%if items%}
+{%include "item_list_raw.html"%}
+{%elif items==[]%}
+{%include"empty_results.html"%}
+{%elif items==None%}
+<small>loading.. {{this_url}}?p={{p}}&ajax=1&_={{query}}</small>
+
+<script>
+  $(document).ready(function(){
+    $('#item_list').load('{{this_url}}?ajax=1&p={{p}}&_={{query}}')
+  });
+</script>
+
+
+{%else%}
+wtf is items
+{%endif%}
+</div>
 {% endblock %}

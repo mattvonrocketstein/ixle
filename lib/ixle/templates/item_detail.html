@@ -31,12 +31,22 @@
 <div style="margin-left:10px;">
   <table style="width:100%">
     <tr>
+      <td><b>size</b></td>
       <td><b>file extension</b></td>
       <td><b>mime-type</b></td>
       <td><b>file type</b></td>
       <td><b>file magic</b></td>
     </tr>
     <tr>
+      <td style="padding-left:10px">
+        <a href="/fext?_={{item.fext}}">
+          {%if item.size_mb > 1%}
+          {{item.size_mb}} MB
+          {%else%}
+          {{item.size}}
+          {%endif%}
+        </a>
+      </td>
       <td style="padding-left:10px">
         <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
       <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>

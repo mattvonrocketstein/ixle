@@ -1,9 +1,6 @@
 {%extends "item_list.html"%}
 
 {%block main_menu %}
-<table style="border:1px dotted blue;" width=100%>
-  <tr>
-    <td>
       <strong>
         {%if query%}
         {%block query_helo%}
@@ -13,37 +10,9 @@
         Search!
         {%endif%}
       </strong>
-      {%if query%}
-      <br/>&nbsp;&nbsp;&nbsp;&nbsp;
-      <small>
-        {%if num_results%}
-        <a href="{{this_url}}?p={{p-1}}&_={{query}}">previous page</a>
-        <strong>|</strong>
-        <a href="{{this_url}}?p={{p+1}}&_={{query}}">next page</a>
-        {%endif%}
-      </small>
-      {%endif%}
-    </td>
-    <td align=right style="margin-top:15px;">
-      <br/><form method=GET action="/search">
+      <form method=GET action="/search">
         <input name="_" value="enter query here" type="text">
         <input type=submit value="search">
       </form>
       &nbsp;&nbsp;&nbsp;
-    </td>
-  </tr>
-</table><hr/>
-{%endblock%}
-
-{%block footer_right%}
-{%if num_results%}
-<font color=red>
-  showing {{num_results}} result(s).
-</font>
-<strong>|</strong>
-{%endif%}
-<font color=red>
-  page={{p}}, slice=({{start}}-{{end}})
-</font>
-<b>|</b>
 {%endblock%}

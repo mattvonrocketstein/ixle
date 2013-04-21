@@ -15,15 +15,16 @@ class Search(View):
 
     def get_couch_query(self,search_query):
         return javascript.key_search(search_query)
-
+    @property
+    def ajax(self):
+        return self['ajax']
     def get_ctx(self):
         search_query = self['_']
-        report('query is: ',search_query)
         page = int(self['p'] or 1)
         start = 0
         end = page_size
         num_results = 0
-        if search_query:
+        if self.ajax and search_query:
             couch_query = self.get_couch_query(search_query)
             start = page_size*(page-1)
             end   = page_size * page
@@ -31,14 +32,18 @@ class Search(View):
             num_results = len(keys)
             items = [Item.load(self.db,k) for k in keys]
         else:
-            items = []
+            items = None
         return dict(p=page,
                     num_results=num_results,
                     query=search_query, items=items,
                     start=start, end=end)
 
     def main(self):
-        return self.render(**self.get_ctx())
+        ctx = self.get_ctx()
+        if not self.ajax:
+            return self.render(**ctx)
+        else:
+            return self.flask.render_template('item_list_raw.html', **ctx)
 
 class Browser(Search):
 

@@ -67,6 +67,8 @@ class Typer(ItemIterator):
     def __init__(self, *args, **kargs):
         super(Typer,self).__init__(*args, **kargs)
         self.mimer = self.subagent(Mimer)
+        from ixle.agents.filer import Filer
+        self.filer = self.subagent(Filer)
 
     def callback(self, item=None, **kargs):
         changed = False
@@ -76,6 +78,9 @@ class Typer(ItemIterator):
         if any([self.force, not item.file_type]):
             typ = None
             changed = True
+            if not item.file_magic:
+                self.filer.callback(item=item)
+
             if is_text(item): typ = 'text'
             elif is_video(item): typ = 'video'
             elif is_audio(item): typ = 'audio'
