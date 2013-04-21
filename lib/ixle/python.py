@@ -10,6 +10,9 @@ dirname = os.path.dirname
 abspath = os.path.abspath
 corkscrew_views = []
 
+from datetime import datetime
+now = datetime.now
+
 def splitext(fname):
     _, ext = os.path.splitext(fname)
     if ext and ext!='.':

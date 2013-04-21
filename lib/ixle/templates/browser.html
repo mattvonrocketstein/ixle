@@ -42,15 +42,6 @@ Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
       <strong>|</strong>{%endfor%}
     </td>
   <tr>
-  <tr>
-    <td><strong>force-run empty-under:</strong></td>
-    <td>
-      {%for agent in agent_types%}
-      <a href="/spawn?force=1&agent={{agent}}&path={{query}}">{{agent}}</a>
-      <strong>|</strong>{%endfor%}
-    </td>
-  <tr>
-
 </table>
 
 <script>

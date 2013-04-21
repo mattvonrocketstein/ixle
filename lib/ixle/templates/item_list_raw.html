@@ -1,0 +1,55 @@
+{% block body %}
+
+<table style="margin-left:10px;width:100%">
+  <tr>
+    <td><b>fname</b></td>
+    <td><strong>first seen</strong></td>
+    <td><strong>earliest mod-date</strong></td>
+    <td><strong>last mod-date</strong></td>
+    <td><b>fextension</b></td>
+    <td><b>ftype</b></td>
+    <td><b>mime-type</b></td>
+    <td><b>file magic</b></td>
+  </tr>
+  {%for item in items%}
+  <tr>
+    <td><small><a href="/detail?_={{item.id}}">{{item.fname}}</a></small></td>
+    <td> <small>{{item.t_seen|naturaltime}}</small></td>
+    <td> <small>{{item.t_mod|naturaltime}}</small></td>
+    <td> <small>{{item.t_last_mod|naturaltime}}</small></td>
+    <td><a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
+    <td><small><a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a></small></td>
+    <td><small>{{item.mime_type}}</small></td>
+    <td><small><small>{{' '.join(item.file_magic)}}</small></small></td>
+  </tr>
+  {%endfor%}
+</table>
+<hr/>
+<table style="" width=100%>
+  <tr>
+    <td align=left>
+      {%if query%}
+      <small>
+        {%if num_results%}
+        <a href="{{this_url}}?p={{p-1}}&_={{query}}">previous page</a>
+        <strong>|</strong>
+        <a href="{{this_url}}?p={{p+1}}&_={{query}}">next page</a>
+        {%endif%}
+      </small>
+      {%endif%}
+    </td>
+    <td colspan=0 align=right>
+      {%if num_results%}
+      <font color=red>
+        showing {{num_results}} result(s).
+      </font>
+      <strong>|</strong>
+      {%endif%}
+      <font color=red>
+        page={{p}}, slice=({{start}}-{{end}})
+      </font>
+      <b>|</b>
+    </td>
+  </tr>
+</table>
+{% endblock %}
