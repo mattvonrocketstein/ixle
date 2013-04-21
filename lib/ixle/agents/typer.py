@@ -7,39 +7,8 @@ from report import report
 
 from .base import ItemIterator
 
-r_text = [re.compile(_) for _ in
-          ['.* text']]
-r_video = [re.compile(_) for _ in
-           ['AVI',
-            'video: .*']]
-r_audio = [re.compile(_) for _ in
-           ['Audio file.*',
-            'MPEG ADTS']]
-r_image = [re.compile(_) for _ in
-           ['JPEG .*',
-            'PNG .*']]
-
-def _generic(item, r_list):
-    # NOTE: assumes file_magic already ready
-    if item.file_magic:
-        for x in item.file_magic:
-            for y in r_list:
-                if y.match(x):
-                    return True
-    # else: use mimetype
-
-def is_text(item): return _generic(item, r_text)
-def is_video(item): return _generic(item, r_video)
-def is_audio(item): return _generic(item, r_audio)
-def is_image(item): return _generic(item, r_image)
-
-MIME_MAP = dict(aa='audio', view='data', srt='text')
-# used for determining file type
-FEXT_MAP = dict(aa='audible-audio',
-                view='couchdb-data',
-                srt='subtitles',
-                idx='subtitles',
-                db='database-unknown')
+from ixle.heuristics import (FEXT_MAP, guess_mime, is_video,
+                             is_crypto, is_text, is_audio, is_image)
 
 class Mimer(ItemIterator):
     nickname = 'mimer'
@@ -50,7 +19,7 @@ class Mimer(ItemIterator):
         if typ:
             report('set_mime: '+typ)
         else:
-            typ = MIME_MAP.get(item.fext, None)
+            typ = guess_mime(item)
             report('set_consult: ' + str(typ))
         item.mime_type = typ
         self.save(item)
@@ -64,6 +33,7 @@ class Mimer(ItemIterator):
 class Typer(ItemIterator):
     nickname = 'typer'
     covers_fields = ['file_type']
+
     def __init__(self, *args, **kargs):
         super(Typer,self).__init__(*args, **kargs)
         self.mimer = self.subagent(Mimer)
@@ -72,7 +42,7 @@ class Typer(ItemIterator):
 
     def callback(self, item=None, **kargs):
         changed = False
-        report(item)
+        report(item.fname)
         self.mimer.callback(item=item, **kargs)
 
         if any([self.force, not item.file_type]):
@@ -81,17 +51,20 @@ class Typer(ItemIterator):
             if not item.file_magic:
                 self.filer.callback(item=item)
 
-            if is_text(item): typ = 'text'
-            elif is_video(item): typ = 'video'
-            elif is_audio(item): typ = 'audio'
-            elif is_image(item): typ = 'image'
+            if is_text(item):     typ = 'text'
+            elif is_crypto(item): typ = 'crypto'
+            elif is_video(item):  typ = 'video'
+            elif is_audio(item):  typ = 'audio'
+            elif is_image(item):  typ = 'image'
 
             more_specific = FEXT_MAP.get(item.fext, None)
             typ = more_specific or typ
             if typ is None:
-                advice = item.mime_type
-                if advice and 'video' in advice:
-                    typ = 'video'
+                advice = item.mime_type or ''
+                if item.file_magic and item.file_magic[0]=='empty':
+                    typ = 'empty'
+                elif 'video' in advice: typ = 'video'
+                elif 'image' in advice: typ = 'image'
                 else:
                     changed = False
                     print '-'*80,'\n'+'unknown file-type:', item.id

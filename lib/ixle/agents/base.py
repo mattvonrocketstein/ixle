@@ -1,13 +1,14 @@
 """ ixle.agents.base
 """
 import os
+
 import fnmatch
 
 from couchdb.http import ResourceConflict
 
 from report import report
 from ixle.schema import Item
-from ixle.python import ope, abspath
+from ixle.python import ope, abspath, now
 
 def wrap_kbi(fxn):
     def newf(*args, **kargs):
@@ -68,6 +69,8 @@ class IxleAgent(object):
     def save(self, item):
         """ """
         # TODO: count saves
+        now = datetime.now()
+        item.t_last_seen = now
         try:
             item.store(self.database)
         except ResourceConflict as err:
@@ -81,25 +84,31 @@ class IxleAgent(object):
 class IxleDBAgent(IxleAgent):
     requires_path = False
 
+    # TODO: use template
+    def _query_from_path(self):
+        return ("function(doc){"
+                "if(doc['_id'].match('""" + self.path + """'))"""
+                "{emit(doc['_id'], doc)}}")
+
+    def _query_from_fill(self):
+        from ixle.util import javascript
+        assert self.covers_fields
+        assert len(self.covers_fields)==1
+        return javascript.find_empty(self.covers_fields[0])
+
+    def _query_override(self):
+        return None
+
     @property
     def query(self):
-        if self.path:
-            # TODO: use template
-            q = ("function(doc){"
-                 "if(doc['_id'].match('""" + self.path + """'))"""
-                 "{emit(doc['_id'], doc)}}")
+        if self._query_override() is not None:
+            q = self._query_override()
+        elif self.path:
+            q = self._query_from_path()
         elif self.fill:
-            from ixle.util import javascript
-            assert self.covers_fields
-            assert len(self.covers_fields)==1
-            q = javascript.find_empty(self.covers_fields[0])
+            q = self._query_from_fill()
         else:
             q = None
-        if q is not None:
-            report.console.draw_line()
-            report("chose query: ")
-            report(report.highlight.javascript(q), plain=True)
-            report.console.draw_line()
         return q
 
     def __iter__(self):
@@ -107,6 +116,12 @@ class IxleDBAgent(IxleAgent):
             you only get back keys from underneath that path.
         """
         q = self.query
+        report.console.draw_line()
+        report("chose query: ")
+        report(
+            report.highlight.javascript(
+                q or '(everything)'), plain=True)
+        report.console.draw_line()
         report('starting query')
         if q is not None:
             result = [x.key for x in self.database.query(q) if x.key ]

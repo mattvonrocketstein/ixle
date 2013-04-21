@@ -3,7 +3,9 @@
 import math
 from datetime import datetime
 from couchdb.mapping import Document
-from couchdb.mapping import TextField, IntegerField, DateTimeField, ListField
+from couchdb.mapping import (TextField, IntegerField,
+                             DateTimeField, ListField,
+                             DictField)
 
 from ixle.python import sep
 
@@ -19,9 +21,10 @@ class Item(Document):
     # _id:   absolute path to file (also the primary key)
     # fname: just the filename.  includes extensions
     # fext:  just the extension.  (for "foo.py", this is simply "py")
-    _id = TextField()
+    _id   = TextField()
+    tags  = DictField()
     fname = TextField()
-    fext = TextField()
+    fext  = TextField()
 
     # output for these fields is retrieved from posix command line utilities.
     # new processes are cheap.  the files these commands run on are potentially
@@ -56,7 +59,7 @@ class Item(Document):
     @property
     def size_mb(self):
         """ get approx size in megabytes """
-        return self.size and math.ceil(self.size*1.0/1024)
+        return self.size and self.size*1.0/1024
 
     @property
     def dirname(self):

@@ -2,23 +2,27 @@
 {%block main_menu %}
 <a href="{{this_url}}?clear_all=1">wipe all records</a>
 <strong>|</strong>
+<hr/>
 {%endblock%}
-{% block body %}
-{% if items %}
-  {%for record in items%}
-<strong>event@{{record.stamp}}</strong>
-<small><b>reason: </b>{{record.reason}}</small>
-<div style="margin-left:15px;">
-  <small>
-    {%for absf in record.item_ids%}
-    <a href="/detail?_={{absf}}">{{absf}}</a>
-    <br/>{%endfor%}
-  </small>
+
+{%block body%}
+<div style="margin-left:15px;"
+     {% if items %}
+     {%for record in items%}
+     <strong>event@{{record.stamp}}</strong>
+     <small><b>reason: </b>{{record.reason}}</small>
+     <div style="margin-left:15px;">
+       <small>
+         {%for absf in record.item_ids%}
+         <a href="/detail?_={{absf}}">{{absf}}</a>
+         <br/>
+         {%endfor%}
+       </small>
+     </div>
+     <hr/>
+     {%endfor%}
+     {%else%}
+     {%include"empty_results.html"%}
+     {%endif%}
 </div>
-<hr/>  {%endfor%}
-
-{%else%}
-{%include"empty_results.html"%}
-{%endif%}
-
 {% endblock %}

@@ -85,19 +85,19 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
         #FIXME: inefficient, not paged..
         def filter(self):
             # something like "avi"
-            fext_query = self['_']
+            field_query = self['_']
             # both cases return a <Row>-iterator
-            if fext_query=='None':
-                fext_query = '(NULL)'
+            if field_query=='None':
+                field_query = '(NULL)'
                 items = find_empty(self.db, self.ATTR_NAME)
             else:
-                items = find_equal(self.db, self.ATTR_NAME, fext_query)
+                items = find_equal(self.db, self.ATTR_NAME, field_query)
                 # get back a list of items
             items = [x for x in rows2items(self.db, items,
                                            approx=True)]
             return self.render(label=self.label,
                                items=items,
-                               query=fext_query)
+                               query=field_query)
 
         @use_local_template
         def index(self):

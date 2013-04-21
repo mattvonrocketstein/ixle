@@ -1,3 +1,4 @@
+mutagen
 importlib
 pygments # required by reporting
 humanize

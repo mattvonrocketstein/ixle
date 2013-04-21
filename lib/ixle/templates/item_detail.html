@@ -69,6 +69,9 @@
       <td>{{item.t_last_seen|naturaltime}}</td>
     </tr>
   </table>
+  <hr/>
+  <strong>Tags:</strong>
+  <div style="margin-top:5px;margin-left:15px;">{{item.tags}}</div>
 </div>
 <script>
   {%with abspath=item.abspath%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
