@@ -28,13 +28,14 @@ class Spawn(View):
                 return self.render(path=path, agent='')
             kargs = dict(settings=self.settings,
                          path=path, force=force)
-            agent = kls(**kargs)
+            agent_obj = kls(**kargs)
             report('created agent type {0} with kargs={1}'.format(
-                agent.__class__.__name__,
+                agent_obj.__class__.__name__,
                 str(kargs)))
-            t = threading.Thread(target=agent)
+            t = threading.Thread(target=agent_obj)
             t.start()
-            flash("started agent in thread; redirecting to browser")
+            flash(('started agent "{0}"in thread; '
+                   'redirecting to browser').format(agent))
             return redirect('/browser?_='+path)
         return self.render(path=path,
                            agent=agent)

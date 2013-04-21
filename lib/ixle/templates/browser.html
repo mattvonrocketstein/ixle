@@ -6,20 +6,22 @@ Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
 
 {% block body %}
 {%if subddirs%}
-
   <div style="width:100%">
-    <strong>subdirs:</strong>
+    <strong>Directories under this one:</strong>
+    <div style="margin-left:15px;"
   {%for name,fullpath in subddirs%}
     <small>
       <a href="/browser?_={{fullpath}}">{{name}}</a>
     </small>
     <strong>|</strong>
   {%endfor%}
+  </div>
 </div>
 <hr/>
 {%endif%}
 {{super()}}
 {%endblock%}
+
 {%block footer_left%}
 
 <table>

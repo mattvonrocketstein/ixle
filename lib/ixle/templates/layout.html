@@ -1,49 +1,51 @@
-<!doctype html>
-<title>ixle{% block page_title %}{% endblock %}</title>
-<link rel=stylesheet type="text/css"
-      href="{{ url_for('static', filename='style.css') }}">
-{%include "base_style_and_js.html" %}
-
-<div class="page container" style="background:white">
-  <h1 class="remove-bottom" style="margin-top:10px">&nbsp; Ixle indexes files
-  </h1>
-  <div id=main_navigation style="margin-bottom:50px;width:100%"></div>
-    {% with flashes = get_flashed_messages() %}
-    <ul class=flashes>
-      {% if flashes %}
-      {% for message in flashes %}
-      <li>{{ message }}</li>
-      {% endfor %}
-      {% endif %}
-    </ul>
-    {% endwith %}
-    <div style="margin-right:10px;margin-left:10px">
-      {%block main_menu %}{%endblock%}
-      {%block body %}{%endblock%}
-    </div>
-    <div class=footer>
-      <table style="margin-top:50px;" width=100%>
-        <tr>
-          <td align=left>
-            <small>
-              {%block footer_left%}
-              this is the site footer, left
+<html>
+  <title>ixle{% block page_title %}{% endblock %}</title>
+  <link rel=stylesheet type="text/css"
+        href="{{ url_for('static', filename='style.css') }}">
+  {%include "base_style_and_js.html" %}
+  <body>
+    <div class="page container" style="background:white">
+      <h1 class="remove-bottom" style="margin-top:10px">&nbsp; Ixle indexes files
+      </h1>
+      <div id=main_navigation style="margin-bottom:50px;width:100%"></div>
+      {% with flashes = get_flashed_messages() %}
+      <ul class=flashes>
+        {% if flashes %}
+        {% for message in flashes %}
+        <li>{{ message }}</li>
+        {% endfor %}
+        {% endif %}
+      </ul>
+      {% endwith %}
+      <div style="margin-right:10px;margin-left:10px">
+        {%block main_menu %}{%endblock%}
+        {%block body %}{%endblock%}
+      </div>
+      <div class=footer>
+        <table style="margin-top:50px;" width=100%>
+          <tr>
+            <td align=left>
+              <small>
+                {%block footer_left%}
+                this is the site footer, left
+                {%endblock%}
+              </small>
+            </td>
+            <td align=right>
+              {%block footer_right%}
+              this is the site footer, right
               {%endblock%}
-            </small>
-          </td>
-          <td align=right>
-            {%block footer_right%}
-            this is the site footer, right
-            {%endblock%}
-          </td>
-        </tr>
-      </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+
     </div>
 
-</div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-  $('#main_navigation').load('/_nav?next='+window.location.pathname);
-  });
-</script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+      $('#main_navigation').load('/_nav?next=' + window.location.pathname);
+      });
+    </script>
+  </body>
+</html>
