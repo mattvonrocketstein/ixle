@@ -1,12 +1,9 @@
 """ ixle.agents.typer
 """
-import re
 from mimetypes import guess_type
 
 from report import report
-
-from .base import ItemIterator
-
+from ixle.agents.base import ItemIterator
 from ixle.heuristics import (FEXT_MAP, guess_mime, is_video,
                              is_crypto, is_text, is_audio, is_image)
 

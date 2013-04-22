@@ -1,7 +1,6 @@
 """ ixle.schema
 """
 import os
-import math
 from datetime import datetime
 from couchdb.mapping import Document
 from couchdb.mapping import (TextField, IntegerField,

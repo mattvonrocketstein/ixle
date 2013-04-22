@@ -3,8 +3,7 @@
 from report import report
 
 from ixle.python import ope
-from ixle.schema import Item
-from .base import IxleDBAgent,  KeyIterator
+from ixle.agents.base import KeyIterator
 
 class DestructionMixin(object):
     def get_count_deletion(self):

@@ -10,7 +10,7 @@ from corkscrew.views import ListViews, SettingsView
 from hammock.views.administration import CouchView
 
 from ixle.schema import Item, DupeRecord
-from ixle.util import find_equal, find_empty
+from ixle.query import find_equal, find_empty
 
 from .base import View
 from .search import Search, Browser

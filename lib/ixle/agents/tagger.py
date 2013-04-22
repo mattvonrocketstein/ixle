@@ -4,8 +4,7 @@
 import mutagen
 from report import report
 
-from ixle.util import javascript
-from ixle.heuristics import guess_mime, is_video, is_text, is_audio, is_image
+from ixle.query import javascript
 from .base import ItemIterator
 
 class Tagger(ItemIterator):
