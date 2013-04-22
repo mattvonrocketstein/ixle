@@ -1,20 +1,27 @@
 """ ixle.util
 """
-
 import os
 import datetime
 from jinja2 import FileSystemLoader, Environment
+from couchdb.client import ViewResults
 from flask import render_template
 
 from report import report
 
-from ixle.python import ope
+from ixle.python import dirname, ope, opj
 from ixle.schema import Item
 
-couch_js_dir = os.path.join(os.path.dirname(__file__),
-                            'templates','couch_js')
-assert os.path.exists(couch_js_dir)
+couch_js_dir = opj(dirname(__file__), 'templates', 'couch_js')
+assert ope(couch_js_dir)
 LOADER = FileSystemLoader(couch_js_dir)
+
+def yield_items_from_rows(fxn):
+    def new_fxn(*args, **kargs):
+        view = fxn(*args,**kargs)
+        assert isinstance(view, ViewResults)
+        return imap( lambda row: Item.wrap(row.doc),
+                     iter(view))
+    return new_fxn
 
 def modification_date(filename):
     """ """
@@ -23,15 +30,6 @@ def modification_date(filename):
         return datetime.datetime.fromtimestamp(t)
     else:
         report('cant get mod_date: '+filename)
-def rows2items(db, rows, approx=False):
-    """ """
-    for row in rows:
-       if not approx:
-           tmp=row.value.copy()
-           tmp.pop('_rev')
-           yield Item(**tmp)
-       else:
-           yield Item.load(db, row.id)
 
 class javascript:
 
@@ -69,23 +67,37 @@ class javascript:
         return javascript.get_template('find_empty.js').render(
             fieldname=fieldname)
 
+@yield_items_from_rows
 def equal_under(db, **kargs):
+    """ gives back an iterator of <Items>
+        for which doc[fieldname] == null
+    """
     T = javascript.equal_under(**kargs)
-    return iter(db.query(T))
+    return db.query(T, include_docs=True)
 
+@yield_items_from_rows
 def key_contains(db, substring):
+    """ gives back an iterator of <Items>
+        for which doc[fieldname] == null
+    """
     T = javascript.key_search(substring)
-    return iter(db.query(T))
+    return db.query(T, include_docs=True)
 key_search = key_contains
 
+@yield_items_from_rows
 def find_empty(db, fieldname):
+    """ gives back an iterator of <Items>
+        for which doc[fieldname] == null
+    """
     query = javascript.find_empty(fieldname)
-    return iter(db.query(query))
+    return db.query(query, include_docs=True)
+from itertools import imap
 
 # only strings
+@yield_items_from_rows
 def find_equal(db, fieldname, value):
-    """ gives back an iterator over <Rows> where
-        doc[fieldname] == value """
+    """ gives back an iterator over <Items>
+        for which doc[fieldname] == value """
     query = javascript.find_equal(
         value=value, fieldname=fieldname)
-    return iter(db.query(query))
+    return db.query(query, include_docs=True)

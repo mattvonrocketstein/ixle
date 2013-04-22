@@ -15,9 +15,11 @@ class Search(View):
 
     def get_couch_query(self,search_query):
         return javascript.key_search(search_query)
+
     @property
     def ajax(self):
         return self['ajax']
+
     def get_ctx(self):
         search_query = self['_']
         page = int(self['p'] or 1)

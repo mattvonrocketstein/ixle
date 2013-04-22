@@ -10,7 +10,7 @@ from corkscrew.views import ListViews, SettingsView
 from hammock.views.administration import CouchView
 
 from ixle.schema import Item, DupeRecord
-from ixle.util import find_equal, find_empty, rows2items
+from ixle.util import find_equal, find_empty
 
 from .base import View
 from .search import Search, Browser
@@ -93,8 +93,7 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
             else:
                 items = find_equal(self.db, self.ATTR_NAME, field_query)
                 # get back a list of items
-            items = [x for x in rows2items(self.db, items,
-                                           approx=True)]
+            #items = [Item.wrap(r.doc) for r in items]
             return self.render(label=self.label,
                                items=items,
                                query=field_query)

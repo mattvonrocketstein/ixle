@@ -1,7 +1,12 @@
 """ ixle.heuristics
 """
 import re
+from couchdb.client import Row
 from report import report
+from ixle.schema import Item
+from ixle.python import now
+
+MOVIE_CUT_OFF_SIZE_IN_MB = 400
 
 # used in guessing mime-type
 MIME_MAP = dict(aa='audio', couch='data',
@@ -75,17 +80,64 @@ def is_tagged(item):
         for entry in item.file_magic:
             if 'ID3' in entry:
                 return True
-from couchdb.client import Row
+
+
+R_SPLIT_DELIM = re.compile('[\W_]+')
+def smart_split(x):
+    """ splits on most delims """
+    return R_SPLIT_DELIM.split(x)
+
+def no_alphabet(x):
+    """ argh FIXME """
+    no_delim = ''.join(smart_split(x))
+    return len(no_delim)==re.compile('\d*').match(no_delim).end()
+
+def if_movie(fxn):
+    def new_fxn(item):
+        assert isinstance(item, Item)
+        if not is_movie(item):
+            report('not even a movie')
+            return
+        return fxn(item)
+    return new_fxn
+
+@if_movie
+def guess_movie_year(item):
+    numbers = []
+    digits = re.compile('\d+')
+    for x in smart_split(item.just_name):
+        tmp = digits.match(x)
+        if tmp and tmp.group()==x: numbers.append(x)
+    numbers = [x for x in numbers if 1910 < int(x) < now().year ]
+    if numbers:
+        return numbers[0]
+
+
+@if_movie
+def guess_movie_name(item):
+    year = guess_movie_year(item)
+    if not year:
+        # FIXME: not sure what to do yet.
+        report('no movie year to split around')
+        return
+    bits = smart_split(item.just_name)
+    before_year, after_year = (bits[:bits.index(year)],
+                               bits[bits.index(year):])
+    return ' '.join(before_year)
+
+r_season_1_episode_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
 def is_movie(item):
     """ answer whether this is perhaps a movie.
         "movie" is distinct from "video".. we want
         to guess whether this is a full length motion
         picture.
     """
-    if isinstance(item,Row):
-        item = Item.wrap(item)
-    MOVIE_CUT_OFF_SIZE_IN_MB = 400
     report(item.abspath)
+    # clue: item is new in the database.. don't guess yet
+    # clue: should be a video if it's going to be a movie..
+    # clue: item is new in the database.. don't guess yet
+    # clue: torrented tv shows that contain stuff S1E3 in the filename
+    # clue: movies are pretty big
     if not item.file_type:
         report('file_type not set: ')
         return False
@@ -96,5 +148,12 @@ def is_movie(item):
         report('size not set: ')
         return False
     if item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
-            return False
+        report('too small')
+        return False
+    if r_season_1_episode_1.match(item.fname):
+        report('looks like a tv show.')
+        return False
+    if no_alphabet(item.just_name):
+        report('probably from your digital camera')
+        return False
     return True
