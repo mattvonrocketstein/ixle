@@ -2,7 +2,6 @@
 
 from report import report
 
-from .base import IxleAgent, IxleDBAgent,  KeyIterator, ItemIterator
 from .janitor import Janitor, StaleChecker
 from .sizer import Sizer
 from .filer import Filer

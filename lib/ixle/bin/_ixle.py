@@ -13,8 +13,6 @@ from report import report
 
 from ixle.settings import Settings
 from ixle.python import opj, ope, dirname, abspath
-from ixle.agents import (Stamper, Md5er, Indexer, Dupes,
-                         StaleChecker, Janitor, Sizer, Typer, Filer)
 dupes_postfix = '_dupes'
 
 class IxleMetadata:

@@ -3,7 +3,6 @@
 import sys
 from unittest2 import TestCase
 
-from ixle.schema import Item
 from ixle.tests.common import make_mp3, make_subtitles, make_movie, make_tv
 from ixle.heuristics import is_tagged, is_movie, guess_movie_year, guess_movie_name
 from report import report
@@ -30,13 +29,14 @@ class TestMovie(TestCase):
         assert guess_movie_name(movie)=='Argo'
         movie = make_movie(id='Cloud.Atlas.2012.R5.CAM.AUDiO.READNFO.XviD-RESiSTANCE.avi')
         assert guess_movie_name(movie)=='Cloud Atlas'
-        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
 
     def test_guess_movie_year(self):
         assert guess_movie_year(self.movie)=='1976'
         assert guess_movie_year(self.subtitles)==None
         assert guess_movie_year(self.tv1)==None
         assert guess_movie_year(self.tv2)==None
+        movie = make_movie(id='Cloud.Atlas.2012.R5.CAM.AUDiO.READNFO.XviD-RESiSTANCE.avi')
+        assert guess_movie_year(movie)=='2012'
 
     def test_movie(self):
         assert is_movie(self.movie)

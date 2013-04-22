@@ -3,7 +3,7 @@
 from .base import View
 from corkscrew.views import BluePrint
 from report import report
-from ixle.util import javascript
+from ixle.query import javascript
 from ixle.schema import Item
 
 page_size = 15

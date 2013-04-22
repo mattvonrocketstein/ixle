@@ -1,10 +1,10 @@
 """ ixle.heuristics
 """
 import re
-from couchdb.client import Row
 from report import report
 from ixle.schema import Item
 from ixle.python import now
+from ixle.util import smart_split
 
 MOVIE_CUT_OFF_SIZE_IN_MB = 400
 
@@ -12,53 +12,35 @@ MOVIE_CUT_OFF_SIZE_IN_MB = 400
 MIME_MAP = dict(aa='audio', couch='data',
                 view='data', sqlite='data',
                 srt='text')
+def guess_mime(item):
+    return MIME_MAP.get(item.fext, None)
 
 # used for determining file_type, layer 2 specificity
-FEXT_MAP = dict(aa='audio',
-                py='code',
-                pub='crypto',
-                rar='archive',
-                zip='archive',
-                gz='archive',
-                exe='windows-executable',
-                wma='windows-media',
-                ogg='audio',
-                m4a='audio',
-                old='obsolete',
-                bak='obsolete',
-                flac='audio',
-                pdf='document',
-                txt='document',
-                doc='document',
-                view='database',
-                couch='database',
-                sqlite='database',
-                srt='subtitles',
-                idx='subtitles',
-                m4v='video',
-                sub='subtitles',
-                db='database')
+FEXT_MAP = dict(
+    old='obsolete', bak='obsolete',
+    gz='archive', zip='archive', rar='archive',
+    txt='document', doc='document', pdf='document',
+    m4a='audio', ogg='audio', flac='audio', aa='audio',
+    idx='subtitles', sub='subtitles', srt='subtitles',
+    db='database' sqlite='database', view='database', couch='database',
+    js='code', py='code',
+    pub='crypto',
+    exe='windows-executable',
+    m4v='video', wma='windows-media',)
+
 # used for determining file_type, layer 1 specificity
 r_crypto = [re.compile(_) for _ in
             ['.* private key.*',
-             '.* public key.*',
-             ]]
-r_text = [re.compile(_) for _ in
-          ['.* text']]
-r_video = [re.compile(_) for _ in
-           ['AVI',
-            'video: .*']]
-r_audio = [re.compile(_) for _ in
-           ['Audio file.*',
-            'Microsoft ASF',
-            'MPEG ADTS']]
-r_image = [re.compile(_) for _ in
-           ['JPEG .*',
-            'GIF .*',
-            'PNG .*']]
+             '.* public key.*',]]
+r_text  = [ re.compile(_) for _ in
+            ['.* text'] ]
+r_video = [ re.compile(_) for _ in
+            ['AVI', 'video: .*'] ]
+r_audio = [ re.compile(_) for _ in
+            ['Audio file.*','Microsoft ASF','MPEG ADTS'] ]
+r_image = [ re.compile(_) for _ in
+            ['JPEG .*', 'GIF .*','PNG .*'] ]
 
-def guess_mime(item):
-    return MIME_MAP.get(item.fext, None)
 
 def _generic(item, r_list):
     # NOTE: assumes file_magic already ready
@@ -80,17 +62,6 @@ def is_tagged(item):
         for entry in item.file_magic:
             if 'ID3' in entry:
                 return True
-
-
-R_SPLIT_DELIM = re.compile('[\W_]+')
-def smart_split(x):
-    """ splits on most delims """
-    return R_SPLIT_DELIM.split(x)
-
-def no_alphabet(x):
-    """ argh FIXME """
-    no_delim = ''.join(smart_split(x))
-    return len(no_delim)==re.compile('\d*').match(no_delim).end()
 
 def if_movie(fxn):
     def new_fxn(item):
