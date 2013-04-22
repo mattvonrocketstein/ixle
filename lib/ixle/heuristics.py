@@ -22,7 +22,7 @@ FEXT_MAP = dict(
     txt='document', doc='document', pdf='document',
     m4a='audio', ogg='audio', flac='audio', aa='audio',
     idx='subtitles', sub='subtitles', srt='subtitles',
-    db='database' sqlite='database', view='database', couch='database',
+    db='database', sqlite='database', view='database', couch='database',
     js='code', py='code',
     pub='crypto',
     exe='windows-executable',
