@@ -69,8 +69,7 @@ class IxleAgent(object):
     def save(self, item):
         """ """
         # TODO: count saves
-        now = datetime.now()
-        item.t_last_seen = now
+        item.t_last_seen = now()
         try:
             item.store(self.database)
         except ResourceConflict as err:

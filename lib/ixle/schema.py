@@ -1,5 +1,6 @@
 """ ixle.schema
 """
+import os
 import math
 from datetime import datetime
 from couchdb.mapping import Document
@@ -47,6 +48,10 @@ class Item(Document):
     t_last_seen = DateTimeField()
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
+
+    @property
+    def just_name(self):
+        return os.path.splitext(self.fname)[0]
 
     @property
     def abspath(self):
