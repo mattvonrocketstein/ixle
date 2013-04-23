@@ -2,6 +2,7 @@
 """
 import re
 from report import report
+from ixle.heuristics.movies import *
 
 # used in guessing mime-type
 MIME_MAP = dict(aa='audio', couch='data',

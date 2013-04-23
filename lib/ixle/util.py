@@ -3,12 +3,35 @@
 
 import re, os
 import datetime
+import inspect
 from itertools import imap
+
+import pep362
 from couchdb.client import ViewResults
 
 from report import report
 from ixle.python import ope
 from ixle.schema import Item
+
+def get_heuristics():
+    """ mines heuristic functions out of ixle.heuristics.
+        that means: any simple function that takes one
+        argument where that argument is named "item".
+
+        returns a dictionary of { fxn_name : fxn }
+    """
+    from ixle import heuristics
+    names = set(dir(heuristics))-set(dir(__builtins__))
+    matches = []
+    for name in names:
+        obj = getattr(heuristics, name)
+        if callable(obj) and inspect.isfunction(obj):
+            func_sig = pep362.Signature(obj)
+            parameter_dict = func_sig._parameters
+            if len(parameter_dict)==1 and \
+               'item' in parameter_dict:
+                matches.append(obj)
+    return dict([m.__name__,m] for m in matches)
 
 def yield_items_from_rows(fxn):
     """ """
