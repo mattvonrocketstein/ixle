@@ -70,8 +70,29 @@
     </tr>
   </table>
   <hr/>
-  <strong>Heristics:</strong>
-  <div style="margin-top:5px;margin-left:15px;">{{item.is_movie}}</div>
+  <strong>Heuristics:</strong>
+  <div style="margin-top:5px;margin-left:15px;">
+    <table>
+      {% for fxn_name,result in heuristics.items() %}
+      {%if result!=None%}
+      <tr>
+        <td>{{fxn_name}}</td>
+        <td>{{result}}</td>
+      </tr>
+      {%endif%}
+    {%endfor%}
+      <tr>
+        <td>negative answers for:</td>
+        <td>
+          {% for fxn_name,result in heuristics.items() %}
+          {%if result==None%}
+          {{fxn_name}} <strong>|</strong>
+          {%endif%}
+          {%endfor%}
+        </td>
+      </tr>
+    </table>
+  </div>
   <hr/>
   <strong>Tags:</strong>
   <div style="margin-top:5px;margin-left:15px;">{{item.tags}}</div>

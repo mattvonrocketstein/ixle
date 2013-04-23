@@ -29,6 +29,8 @@ class TestMovie(TestCase):
         assert guess_movie_name(movie)=='Argo'
         movie = make_movie(id='Cloud.Atlas.2012.R5.CAM.AUDiO.READNFO.XviD-RESiSTANCE.avi')
         assert guess_movie_name(movie)=='Cloud Atlas'
+        movie = make_movie(id='2006 - Jet.Li.Fearless.cd1-Eng.avi')
+        assert guess_movie_name(movie)=='Jet Li Fearless'
 
     def test_guess_movie_year(self):
         assert guess_movie_year(self.movie)=='1976'
@@ -37,6 +39,8 @@ class TestMovie(TestCase):
         assert guess_movie_year(self.tv2)==None
         movie = make_movie(id='Cloud.Atlas.2012.R5.CAM.AUDiO.READNFO.XviD-RESiSTANCE.avi')
         assert guess_movie_year(movie)=='2012'
+        movie = make_movie(id='2006 - Jet.Li.Fearless.cd1-Eng.avi')
+        assert guess_movie_year(movie)=='2006'
 
     def test_movie(self):
         assert is_movie(self.movie)

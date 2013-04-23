@@ -77,7 +77,12 @@ class Detail(View):
         item = Item.load(self.db, k)
         if item is None:
             return self.flask.render_template('not_found.html')
-        return self.render(item = item)
+        from ixle.util import get_heuristics
+        heuristics = {}
+        for fxn_name, fxn in get_heuristics().items():
+            heuristics[fxn_name] = fxn(item)
+        return self.render(item = item,
+                           heuristics = heuristics)
 
 def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
     """ """
