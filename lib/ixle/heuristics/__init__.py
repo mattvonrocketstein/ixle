@@ -5,14 +5,25 @@ from report import report
 from ixle.heuristics.movies import *
 
 # used in guessing mime-type
-MIME_MAP = dict(aa='audio', couch='data',
+MIME_MAP = dict(part='data',
+                aa='audio', couch='data',
                 view='data', sqlite='data',
                 srt='text')
 def guess_mime(item):
     return MIME_MAP.get(item.fext, None)
 
+r_xx_min = re.compile('\d+ min')
+
+def guess_duration(item):
+    # should work on movies and songs
+    if item.tags:
+        runtime = item.tags.get('runtime', None) # imdb tags
+        if runtime is not None:
+            runtime = runtime[0]
+
 # used for determining file_type, layer 2 specificity
 FEXT_MAP = dict(
+    part='partial-file',
     old='obsolete', bak='obsolete',
     gz='archive', zip='archive', rar='archive',
     txt='document', doc='document', pdf='document',
