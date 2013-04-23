@@ -5,7 +5,7 @@ from datetime import datetime
 from couchdb.mapping import Document
 from couchdb.mapping import (TextField, IntegerField,
                              DateTimeField, ListField,
-                             DictField)
+                             DictField, BooleanField)
 
 from ixle.python import sep
 
@@ -37,6 +37,7 @@ class Item(Document):
                            default=[])  # via file(1)
     mime_type  = TextField()            # via mimetypes module
     file_type  = TextField()
+    is_movie      = BooleanField()
     body       = TextField()
 
     # t_seen:      the date this was first seen by ixle
