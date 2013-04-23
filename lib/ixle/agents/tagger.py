@@ -21,12 +21,17 @@ class Tagger(ItemIterator):
             report(item.fname)
             try:
                 f = mutagen.File(item.abspath, easy=True)
-            except (EOFError, mutagen.mp3.HeaderNotFoundError), e:
-                report("error decoding")
+            except (EOFError, mutagen.flac.FLACNoHeaderError,
+                    mutagen.mp3.HeaderNotFoundError), e:
+                report("error decoding: "+str(e))
                 return
             if f is not None:
-                data=f.info.__dict__.copy() # bitrate, etc
-                data.update(f)
+                data = f.info.__dict__.copy() # bitrate, etc
+                try:
+                    data.update(f)
+                except mutagen.easyid3.EasyID3KeyError:
+                    report('error in __getitem__ for EasyID3')
+                    return
                 for k, v in data.items():
                     if isinstance(v, list):
                         if len(v)==1:

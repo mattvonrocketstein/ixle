@@ -1,13 +1,14 @@
 """ ixle.agents.base
 """
 import os
-
 import fnmatch
 
 from couchdb.http import ResourceConflict
 
 from report import report
+
 from ixle.schema import Item
+from ixle.query import javascript
 from ixle.python import ope, abspath, now
 
 def wrap_kbi(fxn):
@@ -90,7 +91,6 @@ class IxleDBAgent(IxleAgent):
                 "{emit(doc['_id'], doc)}}")
 
     def _query_from_fill(self):
-        from ixle.util import javascript
         assert self.covers_fields
         assert len(self.covers_fields)==1
         return javascript.find_empty(self.covers_fields[0])
@@ -100,6 +100,7 @@ class IxleDBAgent(IxleAgent):
 
     @property
     def query(self):
+        report.console.draw_line()
         if self._query_override() is not None:
             q = self._query_override()
         elif self.path:
@@ -108,6 +109,16 @@ class IxleDBAgent(IxleAgent):
             q = self._query_from_fill()
         else:
             q = None
+            report("chose query: (everything)")
+        if q is not None:
+            q = [x for x in q.split('\n') if x.strip()]
+            q = '\n'.join(q)
+            report("chose query: ")
+            report(
+                report.highlight.javascript(q),
+                plain=True)
+
+            report.console.draw_line()
         return q
 
     def __iter__(self):
@@ -115,12 +126,6 @@ class IxleDBAgent(IxleAgent):
             you only get back keys from underneath that path.
         """
         q = self.query
-        report.console.draw_line()
-        report("chose query: ")
-        report(
-            report.highlight.javascript(
-                q or '(everything)'), plain=True)
-        report.console.draw_line()
         report('starting query')
         if q is not None:
             result = [x.key for x in self.database.query(q) if x.key ]

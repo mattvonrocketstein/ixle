@@ -11,7 +11,7 @@ from .dupes import Dupes
 from .md5 import Md5er
 from .indexer import Indexer
 from .tagger import Tagger
-from ._imdb import IMDBer
+from ._imdb import IMDBer, MovieFinder
 
 class AgentRegistry(dict):
     def register(self,name,kls):
@@ -20,5 +20,6 @@ class AgentRegistry(dict):
 
 registry = AgentRegistry()
 [ registry.register(x.nickname, x) for x in
-  IMDBer, Janitor, StaleChecker, Sizer, Filer, Mimer,
+  MovieFinder, IMDBer, Janitor,
+  StaleChecker, Sizer, Filer, Mimer,
   Stamper, Typer,Dupes, Md5er, Indexer, Tagger ]
