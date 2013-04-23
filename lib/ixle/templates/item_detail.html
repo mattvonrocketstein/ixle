@@ -29,43 +29,51 @@
 
 {%block body%}
 <div style="margin-left:10px;">
-  <table style="width:100%">
+  <strong>File Information:</strong>
+  <table style="margin-left:15px;width:100%">
     <tr>
-      <td><b>size</b></td>
-      <td><b>file extension</b></td>
-      <td><b>mime-type</b></td>
-      <td><b>file type</b></td>
-      <td><b>file magic</b></td>
-    </tr>
-    <tr>
+      <td><strong><small>size</small></strong></td>
       <td style="padding-left:10px">
-        <a href="/fext?_={{item.fext}}">
+        <small><a href="/fext?_={{item.fext}}">
           {%if item.size_mb > 1%}
           {{item.size_mb}} MB
           {%else%}
           {{item.size}}
           {%endif%}
-        </a>
+        </a><small>
       </td>
-      <td style="padding-left:10px">
+    </tr>
+    <tr>
+      <td><b>file extension</b></td>
+            <td style="padding-left:10px">
         <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
-      <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>
+    </tr>
+    <tr>
+      <td><b>mime-type</b></td>
+       <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>
+    </tr>
+    <tr>
+      <td><b>file type</b></td>
       <td style="padding-left:10px"><small>{{item.file_type}}</small></td>
+    </tr>
+    <tr>
+      <td><b>file magic</b></td>
       <td style="padding-left:10px"><small>{{' '.join(item.file_magic)}}</small></td>
     </tr>
-  </table>
-  <hr/>
-  <table style="width:100%">
     <tr>
       <td><b>t_mod</b></td>
-      <td><b>t_last_mod</b></td>
-      <td><b>t_seen</b></td>
-      <td><b>t_last_seen</b></td>
+       <td>{{item.t_mod|naturaltime}}</td>
     </tr>
     <tr>
-      <td>{{item.t_mod|naturaltime}}</td>
+      <td><b>t_last_mod</b></td>
       <td>{{item.t_last_mod|naturaltime}}</td>
+    </tr>
+    <tr>
+      <td><b>t_seen</b></td>
       <td>{{item.t_seen|naturaltime}}</td>
+    </tr>
+    <tr>
+      <td><b>t_last_seen</b></td>
       <td>{{item.t_last_seen|naturaltime}}</td>
     </tr>
   </table>
@@ -76,17 +84,18 @@
       {% for fxn_name,result in heuristics.items() %}
       {%if result!=None%}
       <tr>
-        <td>{{fxn_name}}</td>
-        <td>{{result}}</td>
+        <td><strong><small>{{fxn_name}}</small></strong></td>
+        <td><small><small>{{result}}</small></small></td>
       </tr>
       {%endif%}
     {%endfor%}
       <tr>
-        <td>negative answers for:</td>
+        <td><strong>
+            <small>negative answers for:</small></strong></td>
         <td>
           {% for fxn_name,result in heuristics.items() %}
           {%if result==None%}
-          {{fxn_name}} <strong>|</strong>
+          <small>{{fxn_name}}</small> <strong>|</strong>
           {%endif%}
           {%endfor%}
         </td>
@@ -95,7 +104,19 @@
   </div>
   <hr/>
   <strong>Tags:</strong>
-  <div style="margin-top:5px;margin-left:15px;">{{item.tags}}</div>
+  <div style="margin-top:5px;margin-left:15px;">
+    <table>
+      {% for k,v in item.tags.items()%}
+    <tr>
+      <td>
+        <strong><small>{{k}}</small></strong>
+      </td>
+      <td>
+        <small><small>{{v}}</small></small>
+      </td>
+    </tr>
+    {%endfor%}</table>
+  </div>
 </div>
 <script>
   {%with abspath=item.abspath%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
