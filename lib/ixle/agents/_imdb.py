@@ -39,21 +39,32 @@ class IMDBApi(object):
         matches = api_result
         return matches
 
+class MovieFinder(ItemIterator):
+    nickname = 'moviefinder'
+    covers_fields = ['is_movie']
+    def callback(self, item=None, **kargs):
+        item.is_movie = heuristics.is_movie(item) or False
+        if item.is_movie:
+            report('found movie: '+item.fname)
+        self.save(item)
+
 class IMDBer(ItemIterator):
     nickname = 'imdb'
-
+    covers_fields = ['tags']
     def __init__(self, *args, **kargs):
         super(IMDBer,self).__init__(*args, **kargs)
-        assert not self.path, 'i cant use a path'
+        #assert not self.path, 'i cant use a path'
 
-    @property
-    def query(self):
-        return javascript.find_equal(fieldname='file_type',
-                                     value='video')
+    def _query_override(self):
+        # 2 versions:
+        #  could rely on is_movie=True or just file_type='video'
+        return javascript.get_template('imdb.js').render(
+            path=self.path)
 
     def callback(self, item=None, **kargs):
-        if not heuristics.is_movie(item):
+        if not item.is_movie:
             return
+        report(item.fname)
         if any([self.force, not item.tags]):
             report(item.fname)
             name,year = [heuristics.guess_movie_name(item),

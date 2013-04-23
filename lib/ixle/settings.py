@@ -9,6 +9,9 @@ class Settings(CorkscrewSettings):
 
     default_file = 'ixle.ini'
 
+    def __repr__(self):
+        return '<ixle.settings.Settings>'
+
     def _get_app(self):
         app = super(Settings,self)._get_app()
         app.jinja_env.filters["naturaltime"] = humanize.naturaltime
