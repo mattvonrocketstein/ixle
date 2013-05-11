@@ -7,7 +7,7 @@ from couchdb.mapping import (TextField, IntegerField,
                              DateTimeField, ListField,
                              DictField, BooleanField)
 
-from ixle.python import sep
+from ixle.python import sep, ope
 
 class DupeRecord(Document):
     """ recorded event for an alleged duplicate """
@@ -38,6 +38,7 @@ class Item(Document):
     mime_type  = TextField()            # via mimetypes module
     file_type  = TextField()
     is_movie   = BooleanField()
+    has_body   = BooleanField()
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle
@@ -47,6 +48,13 @@ class Item(Document):
     t_last_seen = DateTimeField()
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
+
+    def database(self):
+        from ixle import settings
+        return settings.Settings().database
+
+    def raw_contents(self):
+        return self.database().get_attachment(self, 'body.txt').read()
 
     def exists(self):
         """ NOTE: False here does not mean the file is gone..

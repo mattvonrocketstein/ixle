@@ -27,8 +27,11 @@ class Settings(CorkscrewSettings):
         from ixle import util
         from ixle import heuristics
         from ixle.fs import dbfs
+        from ixle import agents
+        from couchdb.mapping import Document
         import re
         return dict(re=re,
+                    agents=agents,
                     util=util,
                     dbfs=dbfs,
                     heuristics=heuristics,

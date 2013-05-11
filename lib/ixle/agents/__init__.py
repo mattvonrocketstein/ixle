@@ -11,6 +11,7 @@ from .dupes import Dupes
 from .md5 import Md5er
 from .indexer import Indexer
 from .tagger import Tagger
+from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .space_killer import SpaceKiller
 class AgentRegistry(dict):
