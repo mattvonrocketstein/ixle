@@ -19,7 +19,21 @@ def wrap_kbi(fxn):
             report("Exiting.")
     return newf
 
-class IxleAgent(object):
+class SaveMixin(object):
+    def save(self, item, quiet=False):
+        """ """
+        # TODO: count saves
+        item.t_last_seen = now()
+        try:
+            item.store(self.database)
+            return True
+        except ResourceConflict as err:
+            failure_type, failure_msg = err.args[0]
+            if not quiet:
+                report(' {0}: {1}'.format(failure_type, failure_msg))
+            return False
+
+class IxleAgent(SaveMixin):
 
     is_subagent = False
 
@@ -66,16 +80,6 @@ class IxleAgent(object):
                      for x in ignored ]) or \
                any([fnmatch.fnmatch(os.path.split(fname)[-1], x) \
                     for x in ignored ])
-
-    def save(self, item):
-        """ """
-        # TODO: count saves
-        item.t_last_seen = now()
-        try:
-            item.store(self.database)
-        except ResourceConflict as err:
-            failure_type, failure_msg = err.args[0]
-            report(' {0}: {1}'.format(failure_type, failure_msg))
 
     @property
     def database(self):
@@ -126,26 +130,31 @@ class IxleDBAgent(IxleAgent):
             you only get back keys from underneath that path.
         """
         q = self.query
+        t1 = now()
         report('starting query')
+        db = self.database
         if q is not None:
-            result = [x.key for x in self.database.query(q) if x.key ]
+            result = [[x.key, Item.wrap(x.doc)] \
+                      for x in db.query(q,include_docs=True) if x.key ]
         else:
-            result = self.database
-        report('finished query')
+            result = [ [ x,Item.load(db, x)] \
+                       for x in db ]
+        t2=now()
+        report('finished query ({0})'.format(t2-t1))
         return iter(result)
 
 class KeyIterator(IxleDBAgent):
     @wrap_kbi
     def __call__(self):
-        for key in self:
+        for key,item in self:
             self.callback(item=None, fname=key)
 
 class ItemIterator(IxleDBAgent):
     @wrap_kbi
     def __call__(self):
-        keys = [ key for key in self ]
-        report('working on {0} keys'.format(len(keys)))
-        for key in keys:
-            self.callback(fname=key,
-                          item=Item.load(self.database, key))
+        stuff=[x for x in self]
+        report('working on {0} keys'.format(len(stuff)))
+        for thing in stuff:
+            key,item = thing
+            self.callback(fname=key, item=item)
         report('finished.')

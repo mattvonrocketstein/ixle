@@ -7,8 +7,7 @@ from report import report
 
 from ixle.python import sep, opj, splitext
 from ixle.schema import Item
-from .base import IxleAgent
-
+from .base import IxleAgent, wrap_kbi
 
 class Indexer(IxleAgent):
     """ only gets new content, and
@@ -19,6 +18,7 @@ class Indexer(IxleAgent):
     provides = 'fname fext _id'.split()
     nickname = 'index'
 
+    @wrap_kbi
     def __call__(self):
         self.index()
 
@@ -32,12 +32,14 @@ class Indexer(IxleAgent):
         item = Item(fname=rel_name.decode('utf-8'),
                     fext=extension,
                     _id=abs_path.decode('utf-8'))
-        report(item.fname)
-        success = self.save(item)
+        success = self.save(item, quiet=True)
         if not success and self.force:
             report('force-saving.. might be nasty')
             del self.database[item.id]
+            report("overwriting data: "+item.fname)
             self.save(item)
+        elif success:
+            report("fresh data: "+item.fname)
 
     def index(self):
         report('running index for', self.path)

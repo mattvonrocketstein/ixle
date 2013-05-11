@@ -37,7 +37,7 @@ class Item(Document):
                            default=[])  # via file(1)
     mime_type  = TextField()            # via mimetypes module
     file_type  = TextField()
-    is_movie      = BooleanField()
+    is_movie   = BooleanField()
     body       = TextField()
 
     # t_seen:      the date this was first seen by ixle

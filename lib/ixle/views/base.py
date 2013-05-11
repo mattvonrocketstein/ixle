@@ -3,8 +3,9 @@
 
 from corkscrew.views import BluePrint
 from corkscrew import View as CorkscrewView
+from ixle.agents.base import SaveMixin
 
-class View(CorkscrewView):
+class View(CorkscrewView, SaveMixin):
     def __init__(self, *args, **kargs):
         if self.__class__.blueprint is None:
             self.__class__.blueprint = BluePrint(self.__class__.__name__,
@@ -19,6 +20,7 @@ class View(CorkscrewView):
     @property
     def db(self):
         return self.settings.database
+    database=db
 
     @property
     def dupes_db(self):

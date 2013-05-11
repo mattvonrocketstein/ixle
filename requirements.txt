@@ -1,3 +1,5 @@
+pep362
+unipath
 mutagen
 importlib
 pygments # required by reporting
