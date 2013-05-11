@@ -1,6 +1,7 @@
 """ ixle.heuristics
 """
 import re
+import datetime
 from report import report
 from ixle.heuristics.movies import *
 
@@ -9,8 +10,14 @@ MIME_MAP = dict(part='data',
                 aa='audio', couch='data',
                 view='data', sqlite='data',
                 srt='text')
+
 def guess_mime(item):
-    return MIME_MAP.get(item.fext, None)
+    tmp = MIME_MAP.get(item.fext, None) or \
+          item.mime_type
+    if tmp and '/' in tmp:
+        tmp = tmp[:tmp.find('/')]
+    return tmp
+
 
 r_xx_min = re.compile('\d+ min')
 
@@ -20,6 +27,10 @@ def guess_duration(item):
         runtime = item.tags.get('runtime', None) # imdb tags
         if runtime is not None:
             runtime = runtime[0]
+            match = r_xx_min.match(runtime)
+            if match:
+                result = int(match.group().split()[0])
+                return datetime.timedelta(minutes=result)
 
 # used for determining file_type, layer 2 specificity
 FEXT_MAP = dict(
@@ -65,6 +76,7 @@ def is_image(item): return _generic(item, r_image)
 
 def is_tagged(item):
     """ """
+    if item.tags: return True
     if item.file_magic:
         for entry in item.file_magic:
             if 'ID3' in entry:

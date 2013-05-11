@@ -17,7 +17,7 @@ from .search import Search, Browser
 from .widgets import DirViewWidget
 from .agents import AgentView
 from .spawn import Spawn
-
+#from .detail import Detail
 #NIY
 from flask import flash, redirect
 
@@ -63,20 +63,35 @@ class Delete(View):
                 flash('successfully deleted key from database.')
         else:
             flash("did nothing; i dont know what you mean.")
-        return redirect('/detail?_'+key)
+        return redirect('/detail?_' + key)
 
 class Detail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
     template = 'item_detail.html'
 
-    def main(self):
+    def get_current_item(self):
         k = self['_']
         if not k:
             return self.flask.render_template('not_found.html')
         item = Item.load(self.db, k)
         if item is None:
             return self.flask.render_template('not_found.html')
+        return item
+
+    def main(self):
+        item = self.get_current_item()
+        if not isinstance(item, Item): # not_found
+            return item
+        reset_requests = [ x[len('reset_'):] \
+                           for x in self.request.values.keys() \
+                           if x.startswith('reset_') ]
+        if reset_requests:
+            for field in reset_requests:
+                setattr(item, field, None)
+            self.save(item)
+            self.flash('saved item: '+self['_'])
+
         from ixle.util import get_heuristics
         heuristics = {}
         for fxn_name, fxn in get_heuristics().items():
@@ -129,6 +144,7 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
 
 Fext = generate_attribute_filter_view('fext', label='extensions')
 FileTypeView  = generate_attribute_filter_view('file_type',label='types')
+MovieView  = generate_attribute_filter_view('is_movie',label='is_movie')
 
 class HomePage(View):
     url = '/'
@@ -147,7 +163,7 @@ __views__= [
 
     #main ixle views
     AgentView, Spawn, Browser, Search, HomePage,
-    FileTypeView, Fext, Detail, Dupes,
+    FileTypeView, Fext, Detail, Dupes, MovieView,
 
     # ajax slaves or simple redirection views
     Delete, Nav, DirViewWidget,

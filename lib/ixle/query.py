@@ -43,6 +43,13 @@ class javascript:
     def find_empty(fieldname):
         return javascript.get_template('find_empty.js').render(
             fieldname=fieldname)
+
+@yield_items_from_rows
+def key_startswith(db, substring):
+    return db.query(
+        javascript.key_startswith(substring),
+        include_docs=True)
+
 @yield_items_from_rows
 def equal_under(db, **kargs):
     """ gives back an iterator of <Items>

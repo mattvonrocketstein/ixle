@@ -143,7 +143,7 @@ def entry():
         action = opts.action
         kargs = dict(path=path, settings=settings, fill=opts.fill)
         kargs.update(**opts.__dict__)
-        FORBIDDEN='encode clean runner install shell port'.split()
+        FORBIDDEN='daemon encode clean runner install shell port'.split()
         [ kargs.pop(x) for x in FORBIDDEN]
         from ixle.agents import registry as _map
         try:
@@ -151,6 +151,10 @@ def entry():
         except KeyError:
             report('no such action "{0}"'.format(action))
             report('available agents are: '+str(_map.keys()))
+            suggestions = [k for k in _map if k.startswith(action)]
+            if suggestions:
+                report('')
+                report(' maybe try these: '+str(suggestions))
         else:
             agent = kls(*args, **kargs)
             report('action/agent = '+str([action, agent])+'\n')

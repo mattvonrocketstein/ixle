@@ -76,6 +76,9 @@
       <td><b>t_last_seen</b></td>
       <td>{{item.t_last_seen|naturaltime}}</td>
     </tr>
+    <tr>
+      <td><strong><small>is_movie</small></strong></td>
+      <td>{{item.is_movie}}</td></tr>
   </table>
   <hr/>
   <strong>Heuristics:</strong>
@@ -103,7 +106,7 @@
     </table>
   </div>
   <hr/>
-  <strong>Tags:</strong>
+  <strong>Tags:</strong> <small><a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a></small>
   <div style="margin-top:5px;margin-left:15px;">
     <table>
       {% for k,v in item.tags.items()%}

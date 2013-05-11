@@ -33,7 +33,6 @@ class Janitor(KeyIterator, DestructionMixin):
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
             print fname
-            #del self.database[fname]
             self.delete_record(fname)
 
 class StaleChecker(KeyIterator, DestructionMixin):

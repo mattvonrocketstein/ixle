@@ -31,7 +31,7 @@ def get_heuristics():
             if len(parameter_dict)==1 and \
                'item' in parameter_dict:
                 matches.append(obj)
-    return dict([m.__name__,m] for m in matches)
+    return dict([m.__name__, m] for m in matches)
 
 def yield_items_from_rows(fxn):
     """ """

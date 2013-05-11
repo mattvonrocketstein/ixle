@@ -26,9 +26,11 @@ class Settings(CorkscrewSettings):
         from ixle.schema import Item
         from ixle import util
         from ixle import heuristics
+        from ixle.fs import dbfs
         import re
         return dict(re=re,
                     util=util,
+                    dbfs=dbfs,
                     heuristics=heuristics,
                     item=Item, Item=Item,
                     dupes_db=self.dupes_db,
