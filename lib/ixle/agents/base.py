@@ -20,6 +20,7 @@ def wrap_kbi(fxn):
     return newf
 
 class SaveMixin(object):
+    # TODO: abstract
     def save(self, item, quiet=False):
         """ """
         # TODO: count saves
@@ -134,12 +135,12 @@ class IxleDBAgent(IxleAgent):
         report('starting query')
         db = self.database
         if q is not None:
-            result = [[x.key, Item.wrap(x.doc)] \
-                      for x in db.query(q,include_docs=True) if x.key ]
+            result = [[x.key, Item.wrap(x.doc, db)] \
+                      for x in db.query(q, include_docs=True) if x.key ]
         else:
-            result = [ [ x,Item.load(db, x)] \
+            result = [ [ x, Item.load(db, x)] \
                        for x in db ]
-        t2=now()
+        t2 = now()
         report('finished query ({0})'.format(t2-t1))
         return iter(result)
 
@@ -155,6 +156,6 @@ class ItemIterator(IxleDBAgent):
         stuff=[x for x in self]
         report('working on {0} keys'.format(len(stuff)))
         for thing in stuff:
-            key,item = thing
+            key, item = thing
             self.callback(fname=key, item=item)
         report('finished.')
