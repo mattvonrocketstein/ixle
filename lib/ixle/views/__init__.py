@@ -112,7 +112,7 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
                 items = find_empty(self.db, self.ATTR_NAME)
             else:
                 items = find_equal(self.db, self.ATTR_NAME, field_query)
-                # get back a list of items
+            # get back a list of items
             #items = [Item.wrap(r.doc) for r in items]
             return self.render(label=self.label,
                                items=items,

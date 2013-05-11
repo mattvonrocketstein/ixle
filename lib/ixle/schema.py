@@ -38,7 +38,6 @@ class Item(Document):
     mime_type  = TextField()            # via mimetypes module
     file_type  = TextField()
     is_movie   = BooleanField()
-    body       = TextField()
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle
@@ -48,6 +47,12 @@ class Item(Document):
     t_last_seen = DateTimeField()
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
+
+    def exists(self):
+        """ NOTE: False here does not mean the file is gone..
+                  it could be that it's simply not mounted
+        """
+        return ope(self.abspath)
 
     @property
     def just_name(self):
