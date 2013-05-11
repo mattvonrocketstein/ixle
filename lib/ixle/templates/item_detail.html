@@ -80,6 +80,8 @@
       <td><strong><small>is_movie</small></strong></td>
       <td>{{item.is_movie}}</td></tr>
   </table>
+
+  {# begin heuristics #}
   <hr/>
   <strong>Heuristics:</strong>
   <div style="margin-top:5px;margin-left:15px;">
@@ -105,7 +107,28 @@
       </tr>
     </table>
   </div>
+
+  {% if item.is_movie %}
   <hr/>
+  <strong>Movie Details:</strong> <small><a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a></small>
+  <div style="margin-top:5px;margin-left:15px;">
+    <table>
+      {% for k,v in item.tags.items()%}
+    <tr>
+      <td>
+        <strong><small>{{k}}</small></strong>
+      </td>
+      <td>
+        <small><small>{{v}}</small></small>
+      </td>
+    </tr>
+    {%endfor%}</table>
+  </div>
+</div>
+  {% endif  %}
+
+
+<hr/>
   <strong>Tags:</strong> <small><a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a></small>
   <div style="margin-top:5px;margin-left:15px;">
     <table>

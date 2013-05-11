@@ -11,7 +11,7 @@ class Md5er(ItemIterator):
     def callback(self, item, fname=None, **kargs):
         report(item.fname)
         if not item.md5:
-            if not ope(item.abspath):
+            if not item.exists():
                 self.complain_missing(item.abspath)
                 return
             result = self.run_and_collect(

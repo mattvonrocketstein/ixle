@@ -4,18 +4,28 @@ import re
 import datetime
 from report import report
 from ixle.heuristics.movies import *
-
+from ixle.util import smart_split
 # used in guessing mime-type
 MIME_MAP = dict(part='data',
                 aa='audio', couch='data',
                 view='data', sqlite='data',
                 srt='text')
 
+def more_clean(item):
+    bits = smart_split(item.just_name.lower())
+    for x in 'xvid'.split():
+        if x in bits: bits.remove(x)
+    result = '.'.join(['_'.join(bits),
+                       item.fext])
+    #for x in 'xvid'result = result.
+    return result
+
+
 def guess_mime(item):
     tmp = MIME_MAP.get(item.fext, None) or \
           item.mime_type
     if tmp and '/' in tmp:
-        tmp = tmp[:tmp.find('/')]
+        tmp = tmp[ : tmp.find('/')]
     return tmp
 
 
@@ -30,7 +40,7 @@ def guess_duration(item):
             match = r_xx_min.match(runtime)
             if match:
                 result = int(match.group().split()[0])
-                return datetime.timedelta(minutes=result)
+                return datetime.timedelta( minutes=result )
 
 # used for determining file_type, layer 2 specificity
 FEXT_MAP = dict(
