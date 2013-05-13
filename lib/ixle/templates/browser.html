@@ -1,21 +1,29 @@
- {%extends "search.html"%}
+{%extends "search.html"%}
 
 {%block query_helo%}
-Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
+<table width=100%>
+  <tr><td>
+      Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
+    </td>
+    <td align=right>
+      <small>sandwich | taco | <a href=#>kill directory</a></small>
+    </td>
+  </tr>
+</table>
 {%endblock%}
 
 {% block body %}
 {%if subddirs%}
-  <div style="width:100%">
-    <strong>Directories under this one:</strong>
-    <div style="margin-left:15px;"
-  {%for name,fullpath in subddirs%}
-    <small>
-      <a href="/browser?_={{fullpath}}">{{name}}</a>
-    </small>
-    <strong>|</strong>
-  {%endfor%}
-  </div>
+<div style="width:100%">
+  <strong>Directories under this one:</strong>
+  <div style="margin-left:15px;"
+       {%for name,fullpath in subddirs%}
+       <small>
+         <a href="/browser?_={{fullpath}}">{{name}}</a>
+       </small>
+       <strong>|</strong>
+       {%endfor%}
+</div>
 </div>
 <hr/>
 {%endif%}

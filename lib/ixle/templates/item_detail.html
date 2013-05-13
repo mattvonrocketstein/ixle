@@ -16,11 +16,9 @@
           </div-->
     </td>
     <td align=right>
-      <a href=#>reindex</a> <strong> | </strong>
-      <a href=#>retype</a> <strong> | </strong>
-      <a href=#>rehash</a> <strong> | </strong>
       <a href="file://{{item.abspath}}">link for file://</a><strong> | </strong>
       <a href="{{this_url}}?_={{item.id}}">this url</a><strong> | </strong>
+      <div id=agents_widget></div><script>$(document).ready(function(){$('#agents_widget').load('/_agents')})</script>
     </td>
   </tr>
 </table><hr/>
@@ -29,7 +27,7 @@
 
 {%block body%}
 <div style="margin-left:10px;">
-  <strong>File Information:</strong>
+  <strong>File Information:<a href=#></strong>
   <table style="margin-left:15px;width:100%">
     <tr>
       <td><strong><small>size</small></strong></td>
@@ -108,25 +106,14 @@
     </table>
   </div>
 
-  {% if item.is_movie %}
+  {# begin body #}
   <hr/>
-  <strong>Movie Details:</strong> <small><a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a></small>
+  <strong>body:</strong>
   <div style="margin-top:5px;margin-left:15px;">
-    <table>
-      {% for k,v in item.tags.items()%}
-    <tr>
-      <td>
-        <strong><small>{{k}}</small></strong>
-      </td>
-      <td>
-        <small><small>{{v}}</small></small>
-      </td>
-    </tr>
-    {%endfor%}</table>
+    {{item.body}}
   </div>
-</div>
-  {% endif  %}
 
+  {#% include "item_detail_genre.html" %#}
 
 <hr/>
   <strong>Tags:</strong> <small><a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a></small>

@@ -20,17 +20,23 @@ class Settings(CorkscrewSettings):
     @property
     def ignore_globs(self):
         """ pulls the 'ignore' setting out of ixle.ini """
-        return [ x for x in self['ixle.ignore'].split(',') if x ]
+        from ixle.dsettings import dynamic_settings
+        dsettings = dynamic_settings()
+        tmp = dsettings['ignore_patterns'].value
+        return [x for x in tmp.split(',') if x ]
 
     def shell_namespace(self):
+        import re
+        from couchdb.mapping import Document
         from ixle.schema import Item
         from ixle import util
         from ixle import heuristics
         from ixle.fs import dbfs
         from ixle import agents
-        from couchdb.mapping import Document
-        import re
+        from ixle import api
+
         return dict(re=re,
+                    api=api,
                     agents=agents,
                     util=util,
                     dbfs=dbfs,
@@ -84,6 +90,8 @@ class Settings(CorkscrewSettings):
                           help='clean couch data dir(DANGER!)')
         parser.add_option('--action', dest='action',default='',
                           help='action [index|stale|]')
+        parser.add_option('--api', dest='api',default='',
+                          help='api <cmd>'),
         parser.add_option('--daemon',"-d", dest="daemon",
                           default=False, action='store_true',
                           help="start couch daemon")

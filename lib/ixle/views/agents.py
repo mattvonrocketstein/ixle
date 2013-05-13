@@ -5,5 +5,5 @@ class AgentView(View):
     url = '/_agents'
     template = '_agents.html'
     def main(self):
-        from ixle.agents import registry
+        from ixle.dsettings import NAMES
         return self.render(agents=registry)

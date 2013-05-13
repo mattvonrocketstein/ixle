@@ -138,6 +138,15 @@ def entry():
     if opts.daemon: sys.exit(CouchDB.start_daemon())
     elif opts.clean: sys.exit(CouchDB.clean_data())
     elif opts.install: sys.exit(CouchDB.install_ixle(settings))
+    elif opts.api:
+        import unipath
+        from ixle import api
+        api_method = getattr(api,opts.api)
+        assert settings.app;
+        assert path,'api commands operate on paths'
+        path = unipath.path.Path(path)
+        sys.exit(api_method(path))
+
     elif opts.action:
         assert settings.app # implicit creation
         action = opts.action
@@ -157,8 +166,8 @@ def entry():
                 report(' maybe try these: '+str(suggestions))
         else:
             agent = kls(*args, **kargs)
-            report('action/agent = '+str([action, agent])+'\n')
-            report('  w/ kargs='+str(kargs))
+            report('action/agent = ' + str([action, agent])+'\n')
+            report('  w/ kargs=' + str(kargs))
             sys.exit(agent())
     else:
         # do whatever corkscrew would have done
