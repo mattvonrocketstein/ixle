@@ -135,7 +135,7 @@ class IxleDBAgent(IxleAgent):
         report('starting query')
         db = self.database
         if q is not None:
-            result = [[x.key, Item.wrap(x.doc, db)] \
+            result = [[x.key, Item.wrap(x.doc)] 
                       for x in db.query(q, include_docs=True) if x.key ]
         else:
             result = [ [ x, Item.load(db, x)] \

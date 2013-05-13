@@ -16,7 +16,21 @@ class DupeRecord(Document):
     resolution = TextField()
     stamp = DateTimeField(default=datetime.now)
 
-class Item(Document):
+class IxleDocument(object):
+    def database(self):
+        from ixle import util
+        return util.database()
+
+class DSetting(Document, IxleDocument):
+    # _id:   absolute path to file (also the primary key)
+    _id   = TextField()
+    value  = TextField()
+
+    @classmethod
+    def get_or_create(self, name):
+        return self.database()[name]
+
+class Item(Document,IxleDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
     # _id:   absolute path to file (also the primary key)
     # fname: just the filename.  includes extensions
@@ -39,6 +53,12 @@ class Item(Document):
     file_type  = TextField()
     is_movie   = BooleanField()
     has_body   = BooleanField()
+    @property
+    def body(self):
+        doc = self.database().get(self.id, attachments=True) #inefficient
+        attachments = doc.pop('_attachments', {})
+        return attachments
+        #self.database().get_attachment(self.id,'body.txt')
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle

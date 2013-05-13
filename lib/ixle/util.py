@@ -13,6 +13,13 @@ from report import report
 from ixle.python import ope
 from ixle.schema import Item
 
+def database():
+    from ixle import settings
+    return settings.Settings().database
+
+def get_api():#....
+    pass
+
 def get_heuristics():
     """ mines heuristic functions out of ixle.heuristics.
         that means: any simple function that takes one

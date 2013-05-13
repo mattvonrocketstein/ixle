@@ -1,5 +1,7 @@
 """ ixle.views
 """
+from flask import flash, redirect
+
 from report import report
 
 from corkscrew.views import Favicon, BluePrint
@@ -17,9 +19,9 @@ from .search import Search, Browser
 from .widgets import DirViewWidget
 from .agents import AgentView
 from .spawn import Spawn
-#from .detail import Detail
+from .detail import Detail
+
 #NIY
-from flask import flash, redirect
 
 class Suggest(View):
     url = '/suggest'
@@ -65,39 +67,6 @@ class Delete(View):
             flash("did nothing; i dont know what you mean.")
         return redirect('/detail?_' + key)
 
-class Detail(View):
-    """ TODO: does not handle filenames with a '#' in them correctly """
-    url = '/detail'
-    template = 'item_detail.html'
-
-    def get_current_item(self):
-        k = self['_']
-        if not k:
-            return self.flask.render_template('not_found.html')
-        item = Item.load(self.db, k)
-        if item is None:
-            return self.flask.render_template('not_found.html')
-        return item
-
-    def main(self):
-        item = self.get_current_item()
-        if not isinstance(item, Item): # not_found
-            return item
-        reset_requests = [ x[len('reset_'):] \
-                           for x in self.request.values.keys() \
-                           if x.startswith('reset_') ]
-        if reset_requests:
-            for field in reset_requests:
-                setattr(item, field, None)
-            self.save(item)
-            self.flash('saved item: '+self['_'])
-
-        from ixle.util import get_heuristics
-        heuristics = {}
-        for fxn_name, fxn in get_heuristics().items():
-            heuristics[fxn_name] = fxn(item)
-        return self.render(item = item,
-                           heuristics = heuristics)
 
 def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
     """ """
@@ -107,7 +76,7 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
             # something like "avi"
             field_query = self['_']
             # both cases return a <Row>-iterator
-            if field_query=='None':
+            if field_query == 'None':
                 field_query = '(NULL)'
                 items = find_empty(self.db, self.ATTR_NAME)
             else:
@@ -146,22 +115,27 @@ Fext = generate_attribute_filter_view('fext', label='extensions')
 FileTypeView  = generate_attribute_filter_view('file_type',label='types')
 MovieView  = generate_attribute_filter_view('is_movie',label='is_movie')
 
-class HomePage(View):
-    url = '/'
-    template = 'item_list.html'
+from .home import HomePage
+from ixle.views.base import View
+class SettingsView(View):
+    url = '/_settings'
+    template = '_settings.html'
 
     def main(self):
-        db = self.settings.database
-        keys = [k for k in db]
-        page=keys[:100]
-        items = [Item.load(db, k) for k in page]
-        return self.render(items=items)
+        from ixle.dsettings import dynamic_settings, DB_NAME
+        settings = dynamic_settings().values()
+        for doc in settings:
+            doc.edit_url = self.settings.server.document_url(DB_NAME, doc.id)
+        return self.render(
+            couch_url=self.settings.server.admin_url(DB_NAME),
+            settings=settings)
 
 __views__= [
     # corkscrew standard views
     CouchView, ListViews, SettingsView, Favicon, Login, Logout,
 
     #main ixle views
+    SettingsView,
     AgentView, Spawn, Browser, Search, HomePage,
     FileTypeView, Fext, Detail, Dupes, MovieView,
 

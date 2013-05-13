@@ -1,18 +1,18 @@
 {%extends "item_list.html"%}
 
 {%block main_menu %}
-      <strong>
-        {%if query%}
-        {%block query_helo%}
-        Querying for terms like: "<i>{{query}}</i>"
-        {%endblock%}
-        {%else%}
-        Search!
-        {%endif%}
-      </strong>
-      <form method=GET action="/search">
-        <input name="_" value="enter query here" type="text">
-        <input type=submit value="search">
-      </form>
-      &nbsp;&nbsp;&nbsp;
+<strong>
+  {%if query%}
+  {%block query_helo%}
+  Querying for terms like: "<i>{{query}}</i>"
+  {%endblock%}
+  {%else%}
+  Search!
+  {%endif%}
+</strong>
+<form method=GET action="/search">
+  <input name="_" value="enter query here" type="text">
+  <input type=submit value="search">
+</form>
+&nbsp;&nbsp;&nbsp;
 {%endblock%}

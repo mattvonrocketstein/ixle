@@ -20,6 +20,19 @@ def more_clean(item):
     #for x in 'xvid'result = result.
     return result
 
+def is_code(item):
+    return all([item.fext in 'py js'.split(),
+                item.file_type=='text'])
+
+def guess_genres(item):
+    # should work on imdbd-movies that have been
+    tmp = item.tags.get(
+        'genres', # tagged movies
+        item.tags.get('genre', []) # tagged audio
+        )
+    if not isinstance(tmp, list):
+        tmp=[tmp]
+    return tmp
 
 def guess_mime(item):
     tmp = MIME_MAP.get(item.fext, None) or \
@@ -32,7 +45,7 @@ def guess_mime(item):
 r_xx_min = re.compile('\d+ min')
 
 def guess_duration(item):
-    # should work on movies and songs
+    # should work on imdbd-movies and songs
     if item.tags:
         runtime = item.tags.get('runtime', None) # imdb tags
         if runtime is not None:

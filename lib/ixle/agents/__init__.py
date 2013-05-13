@@ -14,6 +14,8 @@ from .tagger import Tagger
 from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .space_killer import SpaceKiller
+from .body import Body
+
 class AgentRegistry(dict):
     def register(self,name,kls):
         assert name not in self
@@ -21,7 +23,7 @@ class AgentRegistry(dict):
 
 registry = AgentRegistry()
 [ registry.register(x.nickname, x) for x in
-  MovieFinder, IMDBer, Janitor,
+  MovieFinder, IMDBer, Janitor, Body,
   SpaceKiller,
   StaleChecker, Sizer, Filer, Mimer,
   Stamper, Typer,Dupes, Md5er, Indexer, Tagger ]

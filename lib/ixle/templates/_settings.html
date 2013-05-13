@@ -1,0 +1,16 @@
+{%extends "layout.html"%}
+
+{%block body%}
+<a href="{{couch_url}}"> {{couch_url}}</a>
+{%for setting in settings %}
+<div>
+  <h4><a href="{{setting.edit_url}}">{{setting.id}}</a></h4>
+  <iframe style="margin-left:10px;width:95%;height:300px;" name="framename"
+          id="myframe" src="{{setting.edit_url}}"></iframe>
+  <hr/>
+</div>
+{%endfor%}
+
+
+
+{%endblock%}

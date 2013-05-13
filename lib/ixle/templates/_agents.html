@@ -1,8 +1,7 @@
-{%extends "layout.html"%}
+
 {%block body%}
 
 {%for agent in agents%}
 <a href="/spawn?force=1&agent={{agent}}&path={{query}}">{{agent}}</a>
 <strong>|</strong>{%endfor%}
-
 {%endblock%}
