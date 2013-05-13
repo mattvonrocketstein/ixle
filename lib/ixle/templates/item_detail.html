@@ -27,7 +27,17 @@
 
 {%block body%}
 <div style="margin-left:10px;">
-  <strong>File Information:<a href=#></strong>
+  <table>
+    <tr>
+      <td><strong>File Information:<a href=#></strong>
+      </td>
+      <td id=disconnection_notification>
+        <script>
+          $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{item.abspath}}'})});
+        </script>
+      </td>
+    </tr>
+  </table>
   <table style="margin-left:15px;width:100%">
     <tr>
       <td><strong><small>size</small></strong></td>
