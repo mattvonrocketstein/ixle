@@ -35,7 +35,7 @@ class Search(View):
             items = [Item.load(self.db,k) for k in keys]
         else:
             items = None
-        return dict(p=page,
+        return dict(p=page, is_dir='',
                     num_results=num_results,
                     query=search_query, items=items,
                     start=start, end=end)
@@ -46,27 +46,3 @@ class Search(View):
             return self.render(**ctx)
         else:
             return self.flask.render_template('item_list_raw.html', **ctx)
-
-class Browser(Search):
-
-    blueprint = BluePrint(__name__, __name__)
-    url = '/browser'
-    template = 'browser.html'
-
-    def get_ctx(self):
-        import os
-        from ixle.python import ope, opj
-        from ixle.agents import registry
-        ctx = super(Browser, self).get_ctx()
-        qstring = self['_']
-        if ope(qstring): # should be a dir already..
-            subddirs=[ [x,opj(qstring,x)] for x in os.listdir(qstring)]
-            subddirs = filter(lambda x: os.path.isdir(x[1]), subddirs)
-        else:
-            subddirs=[]
-        ctx.update(subddirs=subddirs,
-                   agent_types = registry.keys())
-        return ctx
-
-    def get_couch_query(self, search_query):
-        return javascript.key_startswith(search_query)

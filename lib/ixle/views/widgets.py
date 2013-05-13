@@ -2,11 +2,22 @@
 
     ajaxy brickabrack
 """
-from ixle.python import sep
+from ixle.python import sep, ope
 
 from .base import View, BluePrint
+class Widget(View):
+    methods = 'GET POST'.split()
 
-class DirViewWidget(View):
+class IsAvailable(Widget):
+    url = '/widgets/is_available'
+
+    def main(self):
+        abspath = self['_']
+        if abspath and ope(abspath):
+            return ''
+        return '<small><font style="color:red;margin-left:15px;">(this file is not available.  is the drive mounted?)</font></small>'
+
+class DirViewWidget(Widget):
     """
         example usage:
           /dir_view_widget?_=/media/sf_XMem/_MOVIES/Next.avi
@@ -14,13 +25,15 @@ class DirViewWidget(View):
     url = '/dir_view_widget'
     blueprint = BluePrint(__name__, __name__)
     template = 'dir_view_widget.html'
-    methods = 'GET POST'.split()
+
 
     def main(self):
         abspath = self['_']
         assert abspath
         abspath = abspath.split(sep)
-        elements = abspath[:-1] # chop off fname
+        is_dir = self['is_dir']
+        if not is_dir: elements = abspath[:-1] # chop off fname
+        else: elements = abspath
         tmp = []
         for i in range(len(elements)):
             component = elements[i]

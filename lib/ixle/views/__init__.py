@@ -15,12 +15,12 @@ from ixle.schema import Item, DupeRecord
 from ixle.query import find_equal, find_empty
 
 from .base import View
-from .search import Search, Browser
-from .widgets import DirViewWidget
+from .search import Search
+from .widgets import DirViewWidget, IsAvailable
 from .agents import AgentView
 from .spawn import Spawn
 from .detail import Detail
-
+from .browser import Browser
 #NIY
 
 class Suggest(View):
@@ -140,5 +140,5 @@ __views__= [
     FileTypeView, Fext, Detail, Dupes, MovieView,
 
     # ajax slaves or simple redirection views
-    Delete, Nav, DirViewWidget,
+    Delete, Nav, DirViewWidget, IsAvailable,
     ]
