@@ -8,7 +8,6 @@ import json
 
 def escapejs(val):
     out = json.dumps(str(val)) # *but see [Important Note] below to be safe
-    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     return out
 
 class Settings(CorkscrewSettings):
