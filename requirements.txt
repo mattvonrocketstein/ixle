@@ -1,3 +1,5 @@
+progressbar==2.3
+pypdf
 pdfminer
 pep362
 unipath
@@ -15,6 +17,6 @@ tornado
 pytest
 unittest2
 # reporting, corkscrew, hammock
-#git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
-#git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
-#git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew
+git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
+git+git://github.com/mattvonrocketstein/hammock.git#egg=hammock
+git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew

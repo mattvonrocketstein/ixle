@@ -29,7 +29,7 @@ class Settings(CorkscrewSettings):
         """ pulls the 'ignore' setting out of ixle.ini """
         from ixle.dsettings import dynamic_settings
         dsettings = dynamic_settings()
-        tmp = dsettings['ignore_patterns'].value
+        tmp = dsettings['ignore_patterns'].value or []
         return [ x for x in tmp.split(',') if x ]
 
     def shell_namespace(self):

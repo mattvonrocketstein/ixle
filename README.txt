@@ -1,3 +1,24 @@
+Clone the repo and install pre-reqs:
+
+  $ git clone git://github.com/mattvonrocketstein/ixle.git
+  $ virtualenv node
+  $ source node/bin/activate
+  (node)$ pip install -r requirements.txt
+
+Install and bootstrap ixle:
+
+  (node)$ python setup.py develop
+  (node)$ ixle -d # start couch daemon
+
+Leave that last command running, do this in a different terminal:
+
+  (node)$ ixle --install # setup couch databases
+  (node)$ ixle           # start webserver
+
+At this point you should be able to see the WUI @ http://localhost:5500
+
+It's empty at this point.  Now check out the "Examples" section below, and index some media.
+
 Examples:
   $ ixle --action=index /path/to/stuff
 
