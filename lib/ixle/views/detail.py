@@ -19,6 +19,7 @@ class Detail(View):
 
     def main(self):
         item = self.get_current_item()
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         if not isinstance(item, Item): # not_found
             return item
         # check for any requests to set specific fields back to nil

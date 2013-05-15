@@ -9,13 +9,15 @@ class Widget(View):
     methods = 'GET POST'.split()
 
 class IsAvailable(Widget):
+    """ answers whether this file exists currently """
     url = '/widgets/is_available'
-
     def main(self):
         abspath = self['_']
         if abspath and ope(abspath):
             return ''
-        return '<small><font style="color:red;margin-left:15px;">(this file is not available.  is the drive mounted?)</font></small>'
+        return ('<small><font style="color:red;margin-left:15px;">'
+                '(this file is not available.  is the drive mounted?)'
+                '</font></small>')
 
 class DirViewWidget(Widget):
     """

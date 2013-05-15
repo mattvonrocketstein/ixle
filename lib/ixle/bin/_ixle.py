@@ -141,7 +141,7 @@ def entry():
     elif opts.api:
         import unipath
         from ixle import api
-        api_method = getattr(api,opts.api)
+        api_method = getattr(api, opts.api)
         assert settings.app;
         assert path,'api commands operate on paths'
         path = unipath.path.Path(path)
