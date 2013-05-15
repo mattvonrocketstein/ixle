@@ -1,4 +1,11 @@
 """ ixle.heuristics
+
+    IMPORTANT:
+      heuristics operate on Item objects.
+      rather than doing some cumbersome registration procedure for heuristics,
+      all heuristics will be mined out of this file based on whether they are
+      callable and whether the first argument's name is "item"
+
 """
 import re
 import datetime

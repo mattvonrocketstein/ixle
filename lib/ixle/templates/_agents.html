@@ -2,6 +2,15 @@
 {%block body%}
 
 {%for agent in agents%}
-<a href="/spawn?force=1&agent={{agent}}&path={{query}}">{{agent}}</a>
+<a href="javascript:post_to_api('{{agent.lower()}}')">
+  {{agent}}
+</a>
 <strong>|</strong>{%endfor%}
-{%endblock%}
+<script>
+  function post_to_api(api_name){
+  console.debug('posting to api@'+api_name);
+  $('#api_results').load('/api',
+  { action : api_name, '_' : '{{_}}'});
+  }
+</script>
+  {%endblock%}

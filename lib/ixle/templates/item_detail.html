@@ -18,7 +18,8 @@
     <td align=right>
       <a href="file://{{item.abspath}}">link for file://</a><strong> | </strong>
       <a href="{{this_url}}?_={{item.id}}">this url</a><strong> | </strong>
-      <div id=agents_widget></div><script>$(document).ready(function(){$('#agents_widget').load('/_agents')})</script>
+      <div id=agents_widget></div>
+      <script>$(document).ready(function(){$('#agents_widget').load('/_agents', {'_':'{{item.id}}'})})</script>
     </td>
   </tr>
 </table><hr/>
@@ -26,6 +27,7 @@
 
 
 {%block body%}
+<div id=api_results><small>no api results</small></div>
 <div style="margin-left:10px;">
   <table>
     <tr>

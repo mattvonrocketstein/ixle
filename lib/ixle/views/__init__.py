@@ -129,7 +129,7 @@ class SettingsView(View):
         return self.render(
             couch_url=self.settings.server.admin_url(DB_NAME),
             settings=settings)
-
+from ixle.views.api import APIView
 __views__= [
     # corkscrew standard views
     CouchView, ListViews, SettingsView, Favicon, Login, Logout,
@@ -140,5 +140,5 @@ __views__= [
     FileTypeView, Fext, Detail, Dupes, MovieView,
 
     # ajax slaves or simple redirection views
-    Delete, Nav, DirViewWidget, IsAvailable,
+    APIView, Delete, Nav, DirViewWidget, IsAvailable,
     ]

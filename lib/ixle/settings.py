@@ -4,6 +4,12 @@
 from corkscrew.settings import Settings as CorkscrewSettings
 import humanize
 
+import json
+
+def escapejs(val):
+    out = json.dumps(str(val)) # *but see [Important Note] below to be safe
+    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+    return out
 
 class Settings(CorkscrewSettings):
 
@@ -15,6 +21,7 @@ class Settings(CorkscrewSettings):
     def _get_app(self):
         app = super(Settings,self)._get_app()
         app.jinja_env.filters["naturaltime"] = humanize.naturaltime
+        app.jinja_env.filters["escapejs"] = escapejs
         return app
 
     @property
@@ -23,7 +30,7 @@ class Settings(CorkscrewSettings):
         from ixle.dsettings import dynamic_settings
         dsettings = dynamic_settings()
         tmp = dsettings['ignore_patterns'].value
-        return [x for x in tmp.split(',') if x ]
+        return [ x for x in tmp.split(',') if x ]
 
     def shell_namespace(self):
         import re

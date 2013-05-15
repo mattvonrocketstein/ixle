@@ -14,11 +14,35 @@ from ixle.python import ope
 from ixle.schema import Item
 
 def database():
+    """ get a handle for the database object """
     from ixle import settings
     return settings.Settings().database
 
-def get_api():#....
-    pass
+def _harvest(modyool, arg_pattern):
+    """ retrieve functions from module iff they have
+        exactly 1 argument and that argument==arg_pattern
+    """
+    names = set(dir(modyool)) - set(dir(__builtins__))
+    matches = []
+    count=0
+    for name in names:
+        count+=1
+        obj = getattr(modyool, name)
+        if callable(obj) and inspect.isfunction(obj):
+            func_sig = pep362.Signature(obj)
+            parameter_dict = func_sig._parameters
+            if len(parameter_dict)==1 and \
+               arg_pattern in parameter_dict:
+                matches.append(obj)
+    return dict([m.__name__, m] for m in matches)
+
+def get_api():
+    from ixle import api
+    d_action = _harvest(api, 'directory')
+    p_action = _harvest(api, 'path')
+    out={}
+    [ out.update(x) for x in [d_action,p_action] ]
+    return out
 
 def get_heuristics():
     """ mines heuristic functions out of ixle.heuristics.
@@ -28,17 +52,7 @@ def get_heuristics():
         returns a dictionary of { fxn_name : fxn }
     """
     from ixle import heuristics
-    names = set(dir(heuristics))-set(dir(__builtins__))
-    matches = []
-    for name in names:
-        obj = getattr(heuristics, name)
-        if callable(obj) and inspect.isfunction(obj):
-            func_sig = pep362.Signature(obj)
-            parameter_dict = func_sig._parameters
-            if len(parameter_dict)==1 and \
-               'item' in parameter_dict:
-                matches.append(obj)
-    return dict([m.__name__, m] for m in matches)
+    return _harvest(heuristics, 'item')
 
 def yield_items_from_rows(fxn):
     """ """
