@@ -12,7 +12,6 @@ imdbpy==4.9
 couchdb==0.8
 Importing==1.10
 tornado
-flask
 pytest
 unittest2
 # reporting, corkscrew, hammock
