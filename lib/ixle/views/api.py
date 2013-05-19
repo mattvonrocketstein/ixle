@@ -18,6 +18,6 @@ class APIView(Widget):
         except Exception, e:
             status = str(e)
         self.flash('ran {0} on "{1}"'.format(action, path))
-        self.flash('status: {0}'.format(status))
-        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
-        return self.redirect('/')
+        status = 'status: {0}'.format(status)
+        self.flash(status)
+        return status
