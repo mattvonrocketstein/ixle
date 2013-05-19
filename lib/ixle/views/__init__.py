@@ -11,17 +11,44 @@ from corkscrew.views import ListViews, SettingsView
 
 from hammock.views.administration import CouchView
 
-from ixle.schema import Item, DupeRecord
+from ixle.schema import Item, Event
 from ixle.query import find_equal, find_empty
 
 from .base import View
 from .search import Search
-from .widgets import DirViewWidget, IsAvailable
+from .widgets import DirViewWidget, IsAvailable, Widget
 from .agents import AgentView
 from .spawn import Spawn
 from .detail import Detail
 from .browser import Browser
 #NIY
+
+class _DB(View):
+    methods = 'GET POST'.split()
+    url = '/_db'
+    template = '_db.html'
+
+    def wrapper(self,db):
+        return type('asdads',
+                    (object,),
+                    dict(
+                        name=db,
+                        edit_url=self.settings.server.edit_url(db)))
+
+    def main(self):
+        db = None
+        if self['_'] or self['size']:
+            db = self.settings.server[ self['_'] or self['size'] ]
+        if self['size']:
+            size = len(db)
+            return str(size)
+        if self['compact']:
+            db.compact()
+            return 'compacted'
+        return self.render(
+            db=self.wrapper(db),
+            db_name=self['_'],
+            dbs = [ self.wrapper(x) for x in self.settings.server])
 
 class Suggest(View):
     url = '/suggest'
@@ -37,8 +64,8 @@ class Dupes(View):
     template = 'dupes.html'
     def main(self):
         if self['clear_all']:
-            self.dupes_db.delete_all()
-        records = [ DupeRecord.load(self.dupes_db, k) \
+            self.dupes_db.delete_all(really=True)
+        records = [ Event.load(self.dupes_db, k) \
                     for k in self.dupes_db.keys() ]
         return self.render(items=records)
 
@@ -138,6 +165,8 @@ __views__= [
     SettingsView,
     AgentView, Spawn, Browser, Search, HomePage,
     FileTypeView, Fext, Detail, Dupes, MovieView,
+
+    _DB,
 
     # ajax slaves or simple redirection views
     APIView, Delete, Nav, DirViewWidget, IsAvailable,

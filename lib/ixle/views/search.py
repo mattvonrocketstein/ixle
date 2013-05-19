@@ -32,7 +32,7 @@ class Search(View):
             end   = page_size * page
             keys = (self.db%couch_query)[ start : end ]
             num_results = len(keys)
-            items = [Item.load(self.db,k) for k in keys]
+            items = [ Item.load(self.db, k) for k in keys ]
         else:
             items = None
         return dict(p=page, is_dir='',
