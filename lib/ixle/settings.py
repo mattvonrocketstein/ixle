@@ -2,12 +2,13 @@
 """
 
 from corkscrew.settings import Settings as CorkscrewSettings
+
 import humanize
 
 import json
 
 def escapejs(val):
-    out = json.dumps(str(val)) # *but see [Important Note] below to be safe
+    out = json.dumps(str(val))
     return out
 
 class Settings(CorkscrewSettings):

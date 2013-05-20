@@ -4,15 +4,10 @@
 import os
 
 from report import report
-from progressbar import Percentage,ProgressBar,Bar,RotatingMarker,ETA,FileTransferSpeed
+
 from ixle.python import sep, opj, splitext
 from ixle.schema import Item
 from .base import IxleAgent, wrap_kbi
-
-PBAR_WIDGETS = ['Files: ',
-                Percentage(), ' ',
-                Bar(marker=RotatingMarker()),
-                ' ', ETA(), ' ', ]
 
 class Indexer(IxleAgent):
     """ only gets new content, and
@@ -53,7 +48,8 @@ class Indexer(IxleAgent):
         count = 0
         stuff = list(os.walk(self.path))
         num_files = len(stuff)
-        pbar = ProgressBar(widgets=PBAR_WIDGETS, maxval=num_files).start()
+        pbar = self.get_progressbar(self,num_files)
+#ProgressBar(widgets=PBAR_WIDGETS, maxval=num_files).start()
         for i in range(num_files):
             root, _dir, files = stuff[i]
             pbar.update(i)

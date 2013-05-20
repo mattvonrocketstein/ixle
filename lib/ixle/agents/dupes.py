@@ -4,7 +4,7 @@
 import os
 
 from .base import ItemIterator
-from ixle.schema import DupeRecord
+from ixle.schema import Event
 from ixle.agents.md5 import Md5er
 from report import report
 
@@ -16,6 +16,7 @@ class Dupes(ItemIterator):
         super(Dupes,self).__init__(*args, **kargs)
         self.md5er = self.subagent(Md5er)
         self.collisions = dict(md5=[], fname=[])
+
     @property
     def dupes_db(self):
         return self.conf.dupes_db
@@ -40,7 +41,7 @@ class Dupes(ItemIterator):
         item_ids = [row.value['_id'] for row in results]
         if len(item_ids)>1:
             reason = 'fname'
-            self.record_collision(reason, item_ids)
+            self.record_collision(reason, item_ids, item)
 
     def seek_md5_collision(self, item):
         if not item.md5:
@@ -50,12 +51,13 @@ class Dupes(ItemIterator):
         results = self.find_matches(item, 'md5')
         if not len(results): return
         item_ids = [row.value['_id'] for row in results] + [item._id]
-        self.record_collision(reason, item_ids)
+        self.record_collision(reason, item_ids, item)
 
-    def record_collision(self, reason, item_ids):
+    def record_collision(self, reason, item_ids, item=None):
         self.collisions[reason] += item_ids
         item_ids = sorted(item_ids)
-        event = DupeRecord(reason=reason, item_ids=item_ids)
+        event = Event(reason=reason, item_ids=item_ids,
+                      details=dict(md5=item.md5))
         event.store(self.dupes_db)
         report(' - by {0}: found {1} dupes'.format(
             reason, len(item_ids)))

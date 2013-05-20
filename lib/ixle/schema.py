@@ -9,12 +9,14 @@ from couchdb.mapping import (TextField, IntegerField,
 
 from ixle.python import sep, ope
 
-class DupeRecord(Document):
+class Event(Document):
+    type = TextField()
     """ recorded event for an alleged duplicate """
     reason = TextField()
     item_ids = ListField(TextField(), default=[])
     resolution = TextField()
     stamp = DateTimeField(default=datetime.now)
+    details  = DictField()
 
 class IxleDocument(object):
     def database(self):
