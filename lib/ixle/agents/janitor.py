@@ -42,18 +42,20 @@ class StaleChecker(KeyIterator, DestructionMixin):
         remove them
     """
     nickname = 'stale'
+
     def __call__(self):
         super(StaleChecker,self).__call__()
         if not self.force:
             report(
                 'finished with dry run.  if you really '
                 'want to kill this stuff, pass --force')
-        else:
-            report('wiped {0} stale records'.format(
-                self.count_deletion))
+        report('processed {0} records, total'.format(self.count_processsed))
+        report('wiped {0} stale records'.format(self.count_deletion))
+
 
 
     def callback(self,item=None, fname=None, **kargs):
+        self.count_processsed += 1
         if not ope(fname):
             print fname
             if self.force:

@@ -44,6 +44,8 @@ class IxleAgent(SaveMixin):
     def __init__(self, path=None, settings=None, fill=None,
                  force=False, **kargs):
         """ fill+path determine self.query """
+        self.count_deletion = -1
+        self.count_processsed = -1
         if self.requires_path:
            if not path or not ope(path):
                assert ope(path), 'path does not exist: '+str(path)
@@ -55,6 +57,14 @@ class IxleAgent(SaveMixin):
                 raise SystemExit('if you use --fill you cant '
                                  'use a path (and vice versa)')
         self.fill = fill
+
+    def get_progressbar(self, N, label='Files: '):
+        from progressbar import Percentage,ProgressBar,Bar,RotatingMarker,ETA,FileTransferSpeed
+        PBAR_WIDGETS = [label,
+                        Percentage(), ' ',
+                        Bar(marker=RotatingMarker()),
+                        ' ', ETA(), ' ', ]
+        return ProgressBar(widgets=PBAR_WIDGETS, maxval=N).start()
 
     # KISS with _ixle FORBIDDEN
     def subagent(self, kls):
@@ -135,7 +145,7 @@ class IxleDBAgent(IxleAgent):
         report('starting query')
         db = self.database
         if q is not None:
-            result = [[x.key, Item.wrap(x.doc)] 
+            result = [[x.key, Item.wrap(x.doc)]
                       for x in db.query(q, include_docs=True) if x.key ]
         else:
             result = [ [ x, Item.load(db, x)] \
@@ -147,15 +157,27 @@ class IxleDBAgent(IxleAgent):
 class KeyIterator(IxleDBAgent):
     @wrap_kbi
     def __call__(self):
-        for key,item in self:
+        kis = list(iter(self))
+        pbar = self.get_progressbar(len(kis), label='Num Keys:')
+        for index,(key, item) in enumerate(kis):
             self.callback(item=None, fname=key)
+            pbar.update(index)
+        pbar.finish()
+        report.console.draw_line()
 
 class ItemIterator(IxleDBAgent):
     @wrap_kbi
     def __call__(self):
-        stuff=[x for x in self]
+        kis = list(iter(self))
+        pbar = self.get_progressbar(len(kis), label='Num Keys:')
+        for index,(key, item) in enumerate(kis):
+            self.callback(item=item, fname=key)
+            pbar.update(index)
+        pbar.finish()
+        report.console.draw_line()
+"""        stuff=[x for x in self]
         report('working on {0} keys'.format(len(stuff)))
         for thing in stuff:
             key, item = thing
             self.callback(fname=key, item=item)
-        report('finished.')
+"""

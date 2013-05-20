@@ -1,24 +1,42 @@
 """ ixle.api
 """
 import unipath
+from report import report
 from ixle import util, query
 from ixle.schema import Item
+from ixle.util import database, conf
+
+def call_agent(agent_nick, item):
+    from ixle.agents import registry
+    kls = registry[agent_nick]
+    agent = kls(path=item.id, settings=conf())
+    result = agent.callback(item=item)
+    report('called agent, got '+str(result))
+    return result
 
 def _space_filename(item):
-    from ixle.agents import registry
-    agent_nick = 'spacekiller'
     i1 = item.fname
-    kls = registry[agent_nick]
-    result = kls(path=item.id).callback(item=item)
+    result = call_agent('spacekiller', item)
     i2 = item.fname
     return dict(
         changed_filename='"{0}" to "{1}"'.format(i1,i2))
 
-def spacekiller(path):
-    from ixle.util import database
+def path2item(path):
     db = database()
-    item = Item.load(db,path)
-    return _space_filename(item)
+    return Item.load(db, path)
+
+def spacekiller(path):
+    return _space_filename(path2item(path))
+
+def typer(path):
+    item=path2item(path)
+    result = call_agent('typer',item)
+    return dict(status='ok')
+
+def moviefinder(path):
+    item = path2item(path)
+    result = call_agent('moviefinder', item)
+    return dict(status='ok')
 
 def kill_directory(directory):
     print 'this is killd'

@@ -13,10 +13,13 @@ from report import report
 from ixle.python import ope
 from ixle.schema import Item
 
+def conf():
+    from ixle import settings
+    return settings.Settings()
+
 def database():
     """ get a handle for the database object """
-    from ixle import settings
-    return settings.Settings().database
+    return conf().database
 
 def _harvest(modyool, arg_pattern):
     """ retrieve functions from module iff they have

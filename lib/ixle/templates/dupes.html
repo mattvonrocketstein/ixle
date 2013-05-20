@@ -11,6 +11,7 @@
      {%for record in items%}
      <strong>event@{{record.stamp}}</strong>
      <small><b>reason: </b>{{record.reason}}</small>
+     <div style="margin-left:15px;"> {{record.details}} </div>
      <div style="margin-left:15px;">
        <small>
          {%for absf in record.item_ids%}

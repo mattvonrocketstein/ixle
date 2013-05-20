@@ -1,0 +1,35 @@
+{%extends "layout.html"%}
+{%block body%}
+{%if db_name %}
+<div>
+  <h4><a href="db.edit_url">{{db.edit_url}}</a></h4>
+  <iframe style="margin-left:10px;width:95%;height:300px;" name="framename"
+          id="myframe" src="{{db.edit_url}}"></iframe>
+  <hr/>
+</div>
+{%endif%}
+
+<div style="margin-left:15px;">
+    <strong>database statistics</strong>
+    {%for db in dbs%}
+    <span>
+      <small>
+        <a href="/_db?_={{db.name}}">{{db.name}}</a>
+        {size:?,length:<span id=size_{{db.name}}>?</span>}
+      </small>
+      <script>
+          $(document).ready(function(){$('#size_{{db.name}}').load('{{this_url}}',{size:'{{db.name}}'})})
+      </script>
+    </span>
+{%endfor%}
+    <hr/>
+<strong>compact:</strong>
+    {%for db in dbs%}
+    <span>
+      <small>
+        <a href="/_db?_={{db.name}}&compact=1">{{db.name}}</a>
+    </small>
+    </span>
+{%endfor%}</div>
+
+{%endblock%}
