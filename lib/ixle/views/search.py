@@ -12,6 +12,7 @@ class Search(View):
 
     template = 'search.html'
     url = '/search'
+    methods = 'get post'.upper().split()
 
     def get_couch_query(self,search_query):
         return javascript.key_search(search_query)
