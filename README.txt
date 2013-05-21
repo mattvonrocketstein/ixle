@@ -1,3 +1,7 @@
+
+Getting Started
+================
+
 Clone the repo and install pre-reqs:
 
   $ git clone git://github.com/mattvonrocketstein/ixle.git
@@ -17,9 +21,11 @@ Leave that last command running, do this in a different terminal:
 
 At this point you should be able to see the WUI @ http://localhost:5500
 
-It's empty at this point.  Now check out the "Examples" section below, and index some media.
+Unless you've done this all before, the database is empty right now.
+Check out the "Examples" section below, and index some media.
 
 Examples:
+=========
   $ ixle --action=index /path/to/stuff
 
     Indexes everything under a certain directory;
@@ -39,3 +45,16 @@ Examples:
     that attribute set.  If you want to recompute, use --force
 
   $ ixle --action=file /path/to/stuff
+
+WebUI QuickLinks:
+=================
+
+   * Couch info ( http://localhost:5500/_db )
+        Couch database size, length. Can also compact the databases
+
+   * Edit dynamic-settings ( http://localhost:5500/_settings )
+
+        These are settings stored in couchdb (instead of the .ini).
+        Use `ignore_patterns` to ignore filenames matching certain patterns
+        Use `ignore_dirs` to mark certain directories as hands-off.
+        Use `random_sample_size` to change item-count on ( http://localhost:5500/_random )
