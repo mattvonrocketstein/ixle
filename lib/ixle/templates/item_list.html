@@ -1,7 +1,7 @@
 {%extends "layout.html"%}
 
 {% block body %}
-<strong>Results:</strong>
+<strong>Results:</strong> <small><i>(from DB)</i></small>
 <div style="margin-left:15px;" id=item_list>
 {%if items%}
 {%include "item_list_raw.html"%}
@@ -12,7 +12,7 @@
 
 <script>
   $(document).ready(function(){
-    $('#item_list').load('{{this_url}}?ajax=1&p={{p}}&_={{query}}')
+    $('#item_list').load('{{this_url}}',{ajax:1, p:{{p}}, _:'{{query}}'})
   });
 </script>
 

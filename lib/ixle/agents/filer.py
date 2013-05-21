@@ -1,12 +1,15 @@
 """ ixle.agents.filer """
 
 from report import report
+from ixle.python import ope
 from .base import ItemIterator
+from ixle.query import javascript
 
 class Filer(ItemIterator):
 
     nickname = 'filer'
     covers_fields = ['file_magic']
+    DEBUG = True
 
     def callback(self, item=None, **kargs):
         if any([self.force, not item.file_magic]):

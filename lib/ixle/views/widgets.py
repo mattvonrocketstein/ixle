@@ -1,8 +1,10 @@
+# -*- coding: utf-8
 """ ixle.views.widgets
 
     ajaxy brickabrack
 """
 from ixle.python import sep, ope
+from report import report
 
 from .base import View, BluePrint
 class Widget(View):
@@ -11,13 +13,17 @@ class Widget(View):
 class IsAvailable(Widget):
     """ answers whether this file exists currently """
     url = '/widgets/is_available'
+
     def main(self):
         abspath = self['_']
         if abspath and ope(abspath):
-            return ''
-        return ('<small><font style="color:red;margin-left:15px;">'
-                '(this file is not available.  is the drive mounted?)'
-                '</font></small>')
+            return '<font style="color:green;">exists ✓</font>'
+        msg = '(this file is not available.  is the drive mounted?)'
+        report(msg.replace('this file','"{0}"'.format(abspath)))
+        return ''.join([
+            '<small><font style="color:red;margin-left:15px;">',
+            msg,
+            '</font></small>'])
 
 class DirViewWidget(Widget):
     """

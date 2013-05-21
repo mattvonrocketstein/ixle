@@ -23,7 +23,7 @@ def more_clean(item):
     for x in 'xvid'.split():
         if x in bits: bits.remove(x)
     result = '.'.join(['_'.join(bits),
-                       item.fext])
+                       item.fext or ''])
     #for x in 'xvid'result = result.
     return result
 

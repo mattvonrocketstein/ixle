@@ -17,6 +17,7 @@ def call_agent(agent_nick, item):
 def _space_filename(item):
     i1 = item.fname
     result = call_agent('spacekiller', item)
+    #report_what_changed(item)
     i2 = item.fname
     return dict(
         changed_filename='"{0}" to "{1}"'.format(i1,i2))

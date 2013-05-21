@@ -7,15 +7,15 @@ from ixle.agents.base import KeyIterator
 
 class DestructionMixin(object):
     def get_count_deletion(self):
-        return getattr(self, '_deletion_count', 0)
+        return self.record['_deletion_count']
 
     def set_count_deletion(self,v):
-        self._deletion_count = self.get_count_deletion() + 1
+        self.record['_deletion_count'] = self.get_count_deletion() + 1
 
     count_deletion = property(get_count_deletion, set_count_deletion)
 
     def delete_record(self, key):
-        self.count_deletion += 1
+        self.record['count_deletion'] += 1
         del self.database[key]
 
 
@@ -28,8 +28,12 @@ class Janitor(KeyIterator, DestructionMixin):
         NOTE: cannot be combined with stalechecker,
               because of shared folders, temporary
               mounts, etc
+
+        TODO: use reduce here
     """
+
     nickname = 'janitor'
+
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
             print fname
@@ -49,13 +53,13 @@ class StaleChecker(KeyIterator, DestructionMixin):
             report(
                 'finished with dry run.  if you really '
                 'want to kill this stuff, pass --force')
-        report('processed {0} records, total'.format(self.count_processsed))
-        report('wiped {0} stale records'.format(self.count_deletion))
+        report('processed {0} records, total'.format(self.record['count_processsed']))
+        report('wiped {0} stale records'.format(self.record['count_deletion']))
 
 
 
     def callback(self,item=None, fname=None, **kargs):
-        self.count_processsed += 1
+        self.record['count_processsed'] += 1
         if not ope(fname):
             print fname
             if self.force:
