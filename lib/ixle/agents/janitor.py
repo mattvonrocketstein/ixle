@@ -33,6 +33,9 @@ class Janitor(KeyIterator, DestructionMixin):
     """
 
     nickname = 'janitor'
+    def __call__(self, *args, **kargs):
+        report("sweeping up anything matching: {0}".format(self.conf.ignore_globs))
+        return super(Janitor,self).__call__(*args, **kargs)
 
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
