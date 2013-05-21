@@ -3,13 +3,11 @@
 from mimetypes import guess_type
 
 from report import report
+from ixle.util import report_if_verbose
 from ixle.agents.base import ItemIterator
 from ixle.heuristics import (FEXT_MAP, guess_mime, is_video,
                              is_crypto, is_text, is_audio, is_image)
 
-def report_if_verbose(*args, **kargs):
-    # TODO:
-    pass
 
 class Mimer(ItemIterator):
     nickname = 'mimer'

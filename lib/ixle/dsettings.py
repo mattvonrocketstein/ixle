@@ -7,6 +7,7 @@ from ixle.schema import DSetting
 NAMES = [
     'ignore_patterns',
     'ignore_dirs',
+    'random_sample_size'
     ]
 
 DB_NAME = 'ixle_settings'
