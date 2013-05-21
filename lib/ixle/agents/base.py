@@ -3,6 +3,7 @@
 import os
 import fnmatch
 import random
+from collections import defaultdict
 from couchdb.http import ResourceConflict
 
 from report import report
@@ -34,8 +35,6 @@ class SaveMixin(object):
             if not quiet:
                 report(' {0}: {1}'.format(failure_type, failure_msg))
             return False
-
-from collections import defaultdict
 
 class IxleAgent(SaveMixin):
 
