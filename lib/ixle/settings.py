@@ -25,11 +25,22 @@ class Settings(CorkscrewSettings):
         return app
 
     @property
+    def _dynamic(self):
+        if getattr(self,'_dsettings', None) is None:
+            from ixle.dsettings import dynamic_settings
+            self._dsettings = dynamic_settings()
+        return self._dsettings
+
+    @property
+    def random_sample_size(self):
+        tmp = self._dynamic['random_sample_size'].value or 10
+        return int(tmp)
+
+
+    @property
     def ignore_globs(self):
-        """ pulls the 'ignore' setting out of ixle.ini """
-        from ixle.dsettings import dynamic_settings
-        dsettings = dynamic_settings()
-        tmp = dsettings['ignore_patterns'].value or ''
+        """ pulls the 'ignore_patterns' setting out of couchdb """
+        tmp = self._dynamic['ignore_patterns'].value or ''
         return [ x for x in tmp.split(',') if x ]
 
     def shell_namespace(self):

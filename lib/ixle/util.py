@@ -17,6 +17,10 @@ def conf():
     from ixle import settings
     return settings.Settings()
 
+def report_if_verbose(*args, **kargs):
+    # TODO:
+    pass
+
 def database():
     """ get a handle for the database object """
     return conf().database
