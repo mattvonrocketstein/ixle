@@ -48,7 +48,7 @@ class Indexer(IxleAgent):
         count = 0
         stuff = list(os.walk(self.path))
         num_files = len(stuff)
-        pbar = self.get_progressbar(self,num_files)
+        pbar = self.get_progressbar(num_files)
 #ProgressBar(widgets=PBAR_WIDGETS, maxval=num_files).start()
         for i in range(num_files):
             root, _dir, files = stuff[i]

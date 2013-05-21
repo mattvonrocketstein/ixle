@@ -7,6 +7,10 @@ from ixle.agents.base import ItemIterator
 from ixle.heuristics import (FEXT_MAP, guess_mime, is_video,
                              is_crypto, is_text, is_audio, is_image)
 
+def report_if_verbose(*args, **kargs):
+    # TODO:
+    pass
+
 class Mimer(ItemIterator):
     nickname = 'mimer'
     covers_fields = ['mime_type']
@@ -14,16 +18,16 @@ class Mimer(ItemIterator):
     def set_mime(self, item):
         typ, encoding = guess_type(item.id)
         if typ:
-            report('set_mime: '+typ)
+            report_if_verbose('set_mime: '+typ)
         else:
             typ = guess_mime(item)
-            report('set_consult: ' + str(typ))
+            report_if_verbose('set_consult: ' + str(typ))
         item.mime_type = typ
         self.save(item)
 
     def callback(self, item=None, **kargs):
         if not self.is_subagent:
-            report(item.fname)
+            report_if_verbose(item.fname)
         if any([self.force, not item.mime_type]):
             self.set_mime(item)
 
@@ -39,7 +43,7 @@ class Typer(ItemIterator):
 
     def callback(self, item=None, **kargs):
         changed = False
-        report(item.fname)
+        report_if_verbose(item.fname)
         self.mimer.callback(item=item, **kargs)
 
         if any([self.force, not item.file_type]):
@@ -64,14 +68,14 @@ class Typer(ItemIterator):
                 elif 'image' in advice: typ = 'image'
                 else:
                     changed = False
-                    print '-'*80,'\n'+'unknown file-type:', item.id
-                    print item.mime_type, '::', item.file_magic
-                    print '-'*80
+                    #print '-'*80,'\n'+'unknown file-type:', item.id
+                    #print item.mime_type, '::', item.file_magic
+                    #print '-'*80
                     return
 
             item.file_type = typ
-            print typ, item.id
+            #print typ, item.id
             if changed:
                 self.save(item)
         else:
-            print item.id, item.file_type
+            report_if_verbose(item.id, item.file_type)

@@ -2,7 +2,7 @@
 """
 import os
 import fnmatch
-
+import random
 from couchdb.http import ResourceConflict
 
 from report import report
@@ -27,12 +27,15 @@ class SaveMixin(object):
         item.t_last_seen = now()
         try:
             item.store(self.database)
+            self.record['count_saved']+=1
             return True
         except ResourceConflict as err:
             failure_type, failure_msg = err.args[0]
             if not quiet:
                 report(' {0}: {1}'.format(failure_type, failure_msg))
             return False
+
+from collections import defaultdict
 
 class IxleAgent(SaveMixin):
 
@@ -44,8 +47,7 @@ class IxleAgent(SaveMixin):
     def __init__(self, path=None, settings=None, fill=None,
                  force=False, **kargs):
         """ fill+path determine self.query """
-        self.count_deletion = -1
-        self.count_processsed = -1
+        self.record = defaultdict(lambda: 0)
         if self.requires_path:
            if not path or not ope(path):
                assert ope(path), 'path does not exist: '+str(path)
@@ -59,6 +61,7 @@ class IxleAgent(SaveMixin):
         self.fill = fill
 
     def get_progressbar(self, N, label='Files: '):
+        assert N>0,str(N)
         from progressbar import Percentage,ProgressBar,Bar,RotatingMarker,ETA,FileTransferSpeed
         PBAR_WIDGETS = [label,
                         Percentage(), ' ',
@@ -82,7 +85,11 @@ class IxleAgent(SaveMixin):
     def run_and_collect(self, cmd):
         """ for gathering the output from file(1) and md5(1) etc """
         cmd = cmd.replace('`','\`')
-        return os.popen(cmd).read().strip()
+        try:
+            return os.popen(cmd).read().strip()
+        except IOError,e:
+            report("IOError: " + str(e))
+            return None
 
     def is_ignored(self, fname):
         """ """
@@ -154,30 +161,41 @@ class IxleDBAgent(IxleAgent):
         report('finished query ({0})'.format(t2-t1))
         return iter(result)
 
-class KeyIterator(IxleDBAgent):
     @wrap_kbi
     def __call__(self):
         kis = list(iter(self))
-        pbar = self.get_progressbar(len(kis), label='Num Keys:')
-        for index,(key, item) in enumerate(kis):
-            self.callback(item=None, fname=key)
-            pbar.update(index)
-        pbar.finish()
+        num_items = len(kis)
+        if num_items:
+            random_index = random.randint(0, num_items-1)
+            report("WorkUnits: {0}".format(num_items))
+            pbar = self.get_progressbar(
+                num_items, label=self.__class__.__name__+':')
+            report.console.draw_line()
+            DEBUG = getattr(self, 'DEBUG', False)
+            for index,(key, item) in enumerate(kis):
+                cb_kargs = self._get_callback_args(key, item)
+                if DEBUG:
+                    if index==1:
+                        print ('\n\nfirst item, halting because DEBUG=True.'
+                               '  enjoy a shell...')
+                        from IPython import Shell;
+                        Shell.IPShellEmbed(
+                            argv=['-noconfirm_exit'])()
+                    if index==random_index:
+                        self.record['random_key'] = key
+                self.callback(**cb_kargs)
+                self.record['count_processsed'] += 1
+                pbar.update(index)
+            pbar.finish()
         report.console.draw_line()
+        print self.record
 
-class ItemIterator(IxleDBAgent):
-    @wrap_kbi
-    def __call__(self):
-        kis = list(iter(self))
-        pbar = self.get_progressbar(len(kis), label='Num Keys:')
-        for index,(key, item) in enumerate(kis):
-            self.callback(item=item, fname=key)
-            pbar.update(index)
-        pbar.finish()
-        report.console.draw_line()
-"""        stuff=[x for x in self]
-        report('working on {0} keys'.format(len(stuff)))
-        for thing in stuff:
-            key, item = thing
-            self.callback(fname=key, item=item)
-"""
+class KeyIterator(IxleDBAgent):
+    def _get_callback_args(self, key, item):
+        return dict(item=None, fname=key)
+
+class ItemIterator(KeyIterator):
+    def _get_callback_args(self, key, item):
+        result = super(ItemIterator,self)._get_callback_args(key,item)
+        result.update(item=item)
+        return result

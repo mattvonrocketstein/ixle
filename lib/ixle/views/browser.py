@@ -11,6 +11,7 @@ class Browser(Search):
     blueprint = BluePrint(__name__, __name__)
     url = '/browser'
     template = 'browser.html'
+    methods = 'get post'.upper().split()
 
     def get_ctx(self):
         import os
@@ -19,12 +20,15 @@ class Browser(Search):
         ctx = super(Browser, self).get_ctx()
         qstring = self['_']
         if ope(qstring): # should be a dir already..
-            subddirs=[ [x,opj(qstring,x)] for x in os.listdir(qstring)]
-            subddirs = filter(lambda x: os.path.isdir(x[1]), subddirs)
+            contents = [ [x, opj(qstring,x)] for x in os.listdir(qstring)]
+
         else:
-            subddirs=[]
+            contents = []
+        subddirs = filter(lambda x: os.path.isdir(x[1]), contents)
+        files = dict([x for x in contents if os.path.isfile(x[1])])
+
         ctx.update(subddirs=subddirs,
-                   is_dir='yes',
+                   is_dir='yes', files=files,
                    agent_types = registry.keys())
         return ctx
 
