@@ -11,19 +11,7 @@ def escapejs(val):
     out = json.dumps(str(val))
     return out
 
-class Settings(CorkscrewSettings):
-
-    default_file = 'ixle.ini'
-
-    def __repr__(self):
-        return '<ixle.settings.Settings>'
-
-    def _get_app(self):
-        app = super(Settings,self)._get_app()
-        app.jinja_env.filters["naturaltime"] = humanize.naturaltime
-        app.jinja_env.filters["escapejs"] = escapejs
-        return app
-
+class DSettingsMixin(object):
     @property
     def _dynamic(self):
         if getattr(self,'_dsettings', None) is None:
@@ -43,7 +31,28 @@ class Settings(CorkscrewSettings):
         tmp = self._dynamic['ignore_patterns'].value or ''
         return [ x for x in tmp.split(',') if x ]
 
+class Settings(CorkscrewSettings, DSettingsMixin):
+
+    default_file = 'ixle.ini'
+
+    env_filters = dict(
+        # TODO: move this into corkscrew
+        naturaltime=humanize.naturaltime,
+        escapejs=escapejs)
+
+    def __repr__(self):
+        return '<ixle.settings.Settings>'
+
+    def _get_app(self):
+        app = super(Settings,self)._get_app()
+        for name,fxn in self.env_filters.items():
+            app.jinja_env.filters[name] = fxn
+        return app
+
     def shell_namespace(self):
+        """ the namespace published to ipython
+            when using 'ixle --shell'
+        """
         import re
         from couchdb.mapping import Document
         from ixle.schema import Item
@@ -76,6 +85,7 @@ class Settings(CorkscrewSettings):
 
     @property
     def database(self):
+        # TODO: abstract this caching pattern
         db = getattr(self, '_database', None)
         if db is None:
             db = self.server[ self['ixle.db_name'] ]
@@ -84,6 +94,7 @@ class Settings(CorkscrewSettings):
 
     @property
     def dupes_db(self):
+        # TODO: abstract this caching pattern
         from ixle.bin._ixle import dupes_postfix
         db = getattr(self, '_dupes_database', None)
         if db is None:
@@ -93,6 +104,7 @@ class Settings(CorkscrewSettings):
 
     @classmethod
     def get_parser(kls):
+        from ixle.agents import registry
         parser = CorkscrewSettings.get_parser()
         parser.add_option('--force', dest='force', default=False,
                           action='store_true', help='force overwrite')
@@ -107,7 +119,9 @@ class Settings(CorkscrewSettings):
                           default=False, action='store_true',
                           help='clean couch data dir(DANGER!)')
         parser.add_option('--action', dest='action',default='',
-                          help='action [index|stale|]')
+                          help='action [{0}]'.format(
+                              '|'.join(registry.keys())))
+
         parser.add_option('--api', dest='api',default='',
                           help='api <cmd>'),
         parser.add_option('--daemon',"-d", dest="daemon",
