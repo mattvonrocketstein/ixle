@@ -12,16 +12,19 @@ class Sizer(ItemIterator):
 
     def get_size(self, item):
         # FIXME: use python
-        tmp = self.run_and_collect(
-            'du "' + item.abspath + '" 2>/dev/null').strip().split()
-        if tmp:
-            return int(tmp[0])
+        if item.exists():
+           tmp = self.run_and_collect(
+               'du "' + item.abspath + '" 2>/dev/null').strip().split()
+           if tmp:
+               return int(tmp[0])
+        else:
+            self.record['count_errors'] += 1
 
     def callback(self, item=None, **kargs):
         if any([self.force, not item.size]):
             report(item.abspath)
             size = self.get_size(item)
-            if size:
+            if size is not None:
                 item.size = size
                 report(str([size, item.fname]))
                 self.save(item)
