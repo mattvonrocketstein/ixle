@@ -11,7 +11,6 @@ class Browser(Search):
     blueprint = BluePrint(__name__, __name__)
     url = '/browser'
     template = 'browser.html'
-    methods = 'get post'.upper().split()
 
     def get_ctx(self):
         import os
