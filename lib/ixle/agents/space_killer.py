@@ -8,24 +8,32 @@ from ixle.python import ope
 def clean_path_name(pname):
     return pname.replace(' ','_')
 
-class SpaceKiller(ItemIterator): # should be FSIterator
+class Mover(ItemIterator):
+    def move_item(self, item, new_key):
+        # TODO: make this a method on databases.
+        if self.force:
+            old_key = item._id
+            item._id = new_key
+            self.save(item)
+            del self.database[old_key]
+            self.record['count_moved'] += 1
+        else:
+            self.record['count_wouldhave_moved']+=1
+
+class SpaceKiller(Mover): # should be FSIterator
     """ converts spaces to underscores in file names,
         moves the associated documents too.
     """
 
     nickname = 'spacekiller'
 
-    def move_item(self, item, new_key):
-        # TODO: make this a method on databases.
-        old_key = item._id
-        item._id = new_key
-        self.save(item)
-        del self.database[old_key]
+    #@staticmethod
+    #def mover_method(src):
 
     def callback(self, item=None, **kargs):
         report(item.fname)
         src = item.abspath
-        new_fname = clean_path_name(item.fname)
+        new_fname = os.path.split(src)[:-1]#src.item.fname)
         # TODO: be more careful (only replace the last match..)
         dst = src.replace(item.fname, new_fname)
         if src!=dst:

@@ -1,4 +1,4 @@
-""" ixle.agents.dupes
+""" ixle.events
 """
 
 import os
@@ -8,18 +8,20 @@ from ixle.schema import Event
 from ixle.agents.md5 import Md5er
 from report import report
 
-class Dupes(ItemIterator):
+class Events(ItemIterator):
     """ saves size info """
-    nickname = 'dupes'
+
+    nickname = 'events'
     requires_path = False
+
     def __init__(self, *args, **kargs):
-        super(Dupes,self).__init__(*args, **kargs)
+        super(Events, self).__init__(*args, **kargs)
         self.md5er = self.subagent(Md5er)
         self.collisions = dict(md5=[], fname=[])
 
     @property
-    def dupes_db(self):
-        return self.conf.dupes_db
+    def events_db(self):
+        return self.conf.events_db
 
     def write_dupe(self, item1, item2):
         pass
@@ -36,7 +38,7 @@ class Dupes(ItemIterator):
             return
         results = self.find_matches(item, 'fname')
         if not len(results):
-            #report(' - no dupes for this fname');
+            #report(' - no events for this fname');
             return
         item_ids = [row.value['_id'] for row in results]
         if len(item_ids)>1:
@@ -58,8 +60,8 @@ class Dupes(ItemIterator):
         item_ids = sorted(item_ids)
         event = Event(reason=reason, item_ids=item_ids,
                       details=dict(md5=item.md5))
-        event.store(self.dupes_db)
-        report(' - by {0}: found {1} dupes'.format(
+        event.store(self.events_db)
+        report(' - by {0}: found {1} events'.format(
             reason, len(item_ids)))
 
     def callback(self, item=None, **kargs):

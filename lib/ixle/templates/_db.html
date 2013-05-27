@@ -2,7 +2,7 @@
 {%block body%}
 {%if db_name %}
 <div>
-  <h4><a href="db.edit_url">{{db.edit_url}}</a></h4>
+  <h4><a href="{{db.edit_url}}">{{db.edit_url}}</a></h4>
   <iframe style="margin-left:10px;width:95%;height:300px;" name="framename"
           id="myframe" src="{{db.edit_url}}"></iframe>
   <hr/>

@@ -10,6 +10,7 @@ from .base import ItemIterator
 class Tagger(ItemIterator):
     nickname = 'tagger'
     covers_fields = ['tags']
+    DEBUG = True
 
     def _query_override(self):
         if not self.path:
@@ -17,6 +18,9 @@ class Tagger(ItemIterator):
                                          value='mp3')
 
     def callback(self, item=None, **kargs):
+        if not item.exists():
+            self.record['count_error]']+=1
+            return
         if any([self.force, not item.tags]):
             report(item.fname)
             try:
@@ -24,6 +28,7 @@ class Tagger(ItemIterator):
             except (EOFError, mutagen.flac.FLACNoHeaderError,
                     mutagen.mp3.HeaderNotFoundError), e:
                 report("error decoding: "+str(e))
+                self.record['count_error']+=1
                 return
             if f is not None:
                 data = f.info.__dict__.copy() # bitrate, etc
@@ -40,5 +45,9 @@ class Tagger(ItemIterator):
                         elif len(v)==0:
                             continue
                     item.tags[k] = v
+                else:
+                    report("got tags, but they were empty.")
                 if item.tags:
                     self.save(item)
+            else:
+                report("file exists but cannot open mutagen File object")

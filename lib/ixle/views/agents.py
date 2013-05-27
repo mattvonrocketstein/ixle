@@ -5,8 +5,11 @@
 from .widgets import Widget
 
 class AgentView(Widget):
+
     url = '/_agents'
+
     template = '_agents.html'
+
     def main(self):
         from ixle.agents import registry
         return self.render(_=self['_'],

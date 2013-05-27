@@ -14,11 +14,43 @@ from ixle.python import ope, abspath, now
 
 def wrap_kbi(fxn):
     def newf(*args, **kargs):
+        out = None
         try:
-            fxn(*args, **kargs)
+            out = fxn(*args, **kargs)
         except KeyboardInterrupt:
             report("Exiting.")
+        finally:
+            return out
     return newf
+
+
+class DestructionMixin(object):
+
+    def delete_file(self, key=None, item=None):
+        report('deleting file')
+        if key and item:
+            self.record['errors'] += 1
+            self.record['error'] = 'cant pass key and item'
+        if not (key or item):
+            self.record['errors'] += 1
+            self.record['error'] = 'need either key or item'
+        if not key:
+            if item is None:
+                self.record['errors']+=1
+                self.record['error']='item is none'
+            key = item.id
+        report('deleting file',key)
+        if not os.path.exists(key):
+            self.record['errors']+=1
+            self.record['error']='file does not exist.'
+        os.remove(key) # TODO: use unipath
+        self.record['files_deleted'] +=1
+        self.delete_record(key)
+
+    def delete_record(self, key):
+        self.record['records_deleted'] += 1
+        del self.database[key]
+
 
 class SaveMixin(object):
     # TODO: abstract
@@ -173,7 +205,7 @@ class IxleDBAgent(IxleAgent):
             DEBUG = getattr(self, 'DEBUG', False)
             for index,(key, item) in enumerate(kis):
                 cb_kargs = self._get_callback_args(key, item)
-                if DEBUG:
+                if False:
                     if index==1:
                         print ('\n\nfirst item, halting because DEBUG=True.'
                                '  enjoy a shell...')
@@ -185,16 +217,22 @@ class IxleDBAgent(IxleAgent):
                 self.callback(**cb_kargs)
                 self.record['count_processsed'] += 1
                 pbar.update(index)
+            else:
+                pass #report('list-iter was empty!')
             pbar.finish()
         report.console.draw_line()
-        print self.record
+        tmp = dict(self.record)
+        print tmp
+        return tmp
 
 class KeyIterator(IxleDBAgent):
     def _get_callback_args(self, key, item):
         return dict(item=None, fname=key)
 
 class ItemIterator(KeyIterator):
+
     def _get_callback_args(self, key, item):
-        result = super(ItemIterator,self)._get_callback_args(key,item)
+        result = super(ItemIterator, self)._get_callback_args(key, item)
         result.update(item=item)
+        report('deleting '+key)
         return result

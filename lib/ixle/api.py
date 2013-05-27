@@ -1,4 +1,13 @@
 """ ixle.api
+
+    DEFINITIONS:
+
+      api-methods operate on Item objects, and might have side-effects on the
+      database or the filesystem.
+
+      rather than doing some cumbersome registration procedure for api-methods,
+      all api-methods will be mined out of this file based on whether they are
+      callable and whether the first argument's name is "path".
 """
 import unipath
 from report import report
@@ -7,16 +16,37 @@ from ixle.schema import Item
 from ixle.util import database, conf
 
 def call_agent(agent_nick, item):
+    """ helper method for when you want to
+        turn agents into api methods
+    """
     from ixle.agents import registry
     kls = registry[agent_nick]
+    class mymixin(object):
+        def __iter__(self):
+            return iter([[item.abspath, item]])
+    kls = type('Dynamic_API_From_Agent',
+               (mymixin, kls),
+               {})
     agent = kls(path=item.id, settings=conf())
-    result = agent.callback(item=item)
-    report('called agent, got '+str(result))
-    return result
+    result = agent()
+    report('called agent, got ' + str(result))
+    return agent, result
+
+def build_agent_method(name):
+    def fxn(path):
+        agent, result = call_agent(name, path2item(path))
+        return dict(agent.record)
+    fxn.__name__ = name
+    return fxn
+
+tagger = build_agent_method('tagger')
+filer = build_agent_method('filer')
+renamer = build_agent_method('renamer')
+slayer = build_agent_method('slayer')
 
 def _space_filename(item):
     i1 = item.fname
-    result = call_agent('spacekiller', item)
+    agent, result = call_agent('spacekiller', item)
     #report_what_changed(item)
     i2 = item.fname
     return dict(
@@ -31,12 +61,13 @@ def spacekiller(path):
 
 def typer(path):
     item=path2item(path)
-    result = call_agent('typer',item)
+    agent, result = call_agent('typer',item)
     return dict(status='ok')
+
 
 def moviefinder(path):
     item = path2item(path)
-    result = call_agent('moviefinder', item)
+    agent, result = call_agent('moviefinder', item)
     return dict(status='ok')
 
 def kill_directory(directory):

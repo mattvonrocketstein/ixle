@@ -21,8 +21,16 @@ def report_if_verbose(*args, **kargs):
     # TODO:
     pass
 
+def get_or_create(DB_NAME):
+    from ixle.settings import Settings
+    server = Settings().server
+    if DB_NAME not in server:
+        server.create(DB_NAME)
+    db = server[DB_NAME]
+    return db
+
 def database():
-    """ get a handle for the database object """
+    """ get a handle for the main database object """
     return conf().database
 
 def _harvest(modyool, arg_pattern):

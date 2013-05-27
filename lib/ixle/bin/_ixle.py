@@ -13,7 +13,11 @@ from report import report
 
 from ixle.settings import Settings
 from ixle.python import opj, ope, dirname, abspath
-dupes_postfix = '_dupes'
+
+db_postfixes = ['',          # main database, do not remove!
+                '_settings', # dynamic settings database
+                '_events'    # events and suggestions
+                ]
 
 class IxleMetadata:
     ixle_home = dirname(dirname(__file__))
@@ -117,7 +121,7 @@ class CouchDB(object):
         else:
             auth = None
 
-        for db_postfix in ['', dupes_postfix]:
+        for db_postfix in db_postfixes:
             this_db_name = db_name + db_postfix
             code, content = add_db(this_db_name, auth=auth)
             if content.get('error', None)=='file_exists':
