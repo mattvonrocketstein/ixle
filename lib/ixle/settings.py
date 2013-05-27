@@ -93,13 +93,10 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         return db
 
     @property
-    def dupes_db(self):
+    def events_db(self):
         # TODO: abstract this caching pattern
-        from ixle.bin._ixle import dupes_postfix
-        db = getattr(self, '_dupes_database', None)
-        if db is None:
-            db = self.server[ self['ixle.db_name'] + dupes_postfix ]
-            self._dupes_database = db
+        from ixle.util import get_or_create
+        db = get_or_create('ixle_events')
         return db
 
     @classmethod

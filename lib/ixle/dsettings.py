@@ -11,14 +11,10 @@ NAMES = [
     ]
 
 DB_NAME = 'ixle_settings'
+from ixle.util import get_or_create
 
 def get_or_create_settings_database():
-    from ixle.settings import Settings
-    server = Settings().server
-    if DB_NAME not in server:
-        server.create(DB_NAME)
-    db = server[DB_NAME]
-    return db
+    return get_or_create(DB_NAME)
 
 def dynamic_settings():
     db = get_or_create_settings_database()

@@ -50,7 +50,9 @@ WebUI QuickLinks:
 =================
 
    * Couch info ( http://localhost:5500/_db )
-        Couch database size, length. Can also compact the databases
+
+        Shows total couchdb size and per-db length.
+        Can also compact the databases.
 
    * Edit dynamic-settings ( http://localhost:5500/_settings )
 

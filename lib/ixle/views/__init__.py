@@ -59,14 +59,14 @@ class Suggest(View):
         suggestions = []
         return self.render(suggestions=suggestions)
 
-class Dupes(View):
-    url = '/dupes'
-    template = 'dupes.html'
+class Events(View):
+    url = '/events'
+    template = 'events.html'
     def main(self):
         if self['clear_all']:
-            self.dupes_db.delete_all(really=True)
-        records = [ Event.load(self.dupes_db, k) \
-                    for k in self.dupes_db.keys() ]
+            self.events_db.delete_all(really=True)
+        records = [ Event.load(self.events_db, k) \
+                    for k in self.events_db.keys() ]
         return self.render(items=records)
 
 class Nav(View):
@@ -164,7 +164,7 @@ __views__= [
     #main ixle views
     SettingsView,
     AgentView, Spawn, Browser, Search, HomePage,
-    FileTypeView, Fext, Detail, Dupes, MovieView,
+    FileTypeView, Fext, Detail, Events, MovieView,
 
     _DB,
 

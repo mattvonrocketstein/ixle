@@ -1,17 +1,23 @@
 """ ixle.heuristics
 
     IMPORTANT:
-      heuristics operate on Item objects.
+
+      heuristics operate on Item objects, and have no side-effects.
+      in general they determine "best-guesses" for questions like
+      "is the file represented by this Item a movie?".  heuristics
+      should be small and fairly fast (md5'ing a file is not considered
+      fast).
+
       rather than doing some cumbersome registration procedure for heuristics,
       all heuristics will be mined out of this file based on whether they are
-      callable and whether the first argument's name is "item"
-
+      callable and whether the first argument's name is "item".
 """
 import re
 import datetime
 from report import report
 from ixle.heuristics.movies import *
 from ixle.util import smart_split
+
 # used in guessing mime-type
 MIME_MAP = dict(part='data',
                 aa='audio', couch='data',
@@ -19,11 +25,20 @@ MIME_MAP = dict(part='data',
                 srt='text')
 
 def more_clean(item):
+    # split on all kinds of nonalpha-numeric junk
     bits = smart_split(item.just_name.lower())
+
+    # kill common junk that's found in torrent files, etc
     for x in 'xvid'.split():
         if x in bits: bits.remove(x)
     result = '.'.join(['_'.join(bits),
                        item.fext or ''])
+    # if original filename does not start with '_', neither
+    # should the result.  (this happens with files like "[1]-foo-bar.mp3")
+    one = re.compile('_+').match(item.fname)
+    two = re.compile('_+').match(result)
+    if not one and two:
+        result = result[two.span()[-1]:]
     #for x in 'xvid'result = result.
     return result
 
@@ -74,6 +89,7 @@ FEXT_MAP = dict(
     js='code', py='code',
     pub='crypto',
     exe='windows-executable',
+    flv='video',
     m4v='video', wma='windows-media',)
 
 # used for determining file_type, layer 1 specificity
@@ -83,7 +99,7 @@ r_crypto = [re.compile(_) for _ in
 r_text  = [ re.compile(_) for _ in
             ['.* text'] ]
 r_video = [ re.compile(_) for _ in
-            ['AVI', 'video: .*'] ]
+            ['AVI', 'Flash Video', 'video: .*'] ]
 r_audio = [ re.compile(_) for _ in
             ['Audio file.*','Microsoft ASF','MPEG ADTS'] ]
 r_image = [ re.compile(_) for _ in
@@ -97,10 +113,12 @@ def _generic(item, r_list):
             for y in r_list:
                 if y.match(x):
                     return True
-    # else: use mimetype
 def is_crypto(item):  return _generic(item, r_crypto)
 def is_text(item):  return _generic(item, r_text)
-def is_video(item): return _generic(item, r_video)
+def is_video(item):
+    return _generic(item, r_video) or \
+               (FEXT_MAP.get(item.fext,None)=='video')
+
 def is_audio(item): return _generic(item, r_audio)
 def is_image(item): return _generic(item, r_image)
 

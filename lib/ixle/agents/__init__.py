@@ -7,7 +7,7 @@ from .sizer import Sizer
 from .filer import Filer
 from .stamper import Stamper
 from .typer import Typer, Mimer
-from .dupes import Dupes
+from .events import Events
 from .md5 import Md5er
 from .indexer import Indexer
 from .tagger import Tagger
@@ -15,6 +15,8 @@ from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .space_killer import SpaceKiller
 from .body import Body
+from .renamer import Renamer
+from .slayer import Slayer
 
 class AgentRegistry(dict):
     def register(self,name,kls):
@@ -22,8 +24,9 @@ class AgentRegistry(dict):
         self[name] = kls
 
 registry = AgentRegistry()
+
 [ registry.register(x.nickname, x) for x in
-  MovieFinder, IMDBer, Janitor, Body,
-  SpaceKiller,
+  MovieFinder, IMDBer, Janitor, Body, Renamer,
+  SpaceKiller, Slayer,
   StaleChecker, Sizer, Filer, Mimer,
-  Stamper, Typer,Dupes, Md5er, Indexer, Tagger ]
+  Stamper, Typer, Events, Md5er, Indexer, Tagger ]

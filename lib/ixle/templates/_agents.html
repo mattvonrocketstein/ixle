@@ -7,10 +7,6 @@
 </a>
 <strong>|</strong>{%endfor%}
 <script>
-  function post_to_api(api_name){
-  console.debug('posting to api@'+api_name);
-  $('#api_results').load('/api',
-  { action : api_name, '_' : '{{_}}'});
-  }
+  {%include "javascript/post_to_api.js" %}
 </script>
   {%endblock%}

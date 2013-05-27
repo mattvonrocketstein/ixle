@@ -21,16 +21,19 @@ class Detail(View):
         item = self.get_current_item()
         if not isinstance(item, Item): # not_found
             return item
+
         # check for any requests to set specific fields back to nil
         reset_requests = [ x[len('reset_'):] \
                            for x in self.request.values.keys() \
                            if x.startswith('reset_') ]
         if reset_requests:
+            # TODO: do this with api
             for field in reset_requests:
                 setattr(item, field, None)
             self.save(item)
-            self.flash('saved item: '+self['_'])
-            #self.redirect(..)
+            self.flash('saved item: ' + self.record)
+            return self.redirect(self.url+'?_='+self['_'])
+
         from ixle.util import get_heuristics
         heuristics = {}
         for fxn_name, fxn in get_heuristics().items():

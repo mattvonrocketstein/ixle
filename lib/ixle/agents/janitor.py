@@ -3,20 +3,7 @@
 from report import report
 
 from ixle.python import ope
-from ixle.agents.base import KeyIterator
-
-class DestructionMixin(object):
-    def get_count_deletion(self):
-        return self.record['_deletion_count']
-
-    def set_count_deletion(self,v):
-        self.record['_deletion_count'] = self.get_count_deletion() + 1
-
-    count_deletion = property(get_count_deletion, set_count_deletion)
-
-    def delete_record(self, key):
-        self.record['count_deletion'] += 1
-        del self.database[key]
+from ixle.agents.base import KeyIterator, DestructionMixin
 
 
 class Janitor(KeyIterator, DestructionMixin):
@@ -35,7 +22,7 @@ class Janitor(KeyIterator, DestructionMixin):
     nickname = 'janitor'
     def __call__(self, *args, **kargs):
         report("sweeping up anything matching: {0}".format(self.conf.ignore_globs))
-        return super(Janitor,self).__call__(*args, **kargs)
+        return super(Janitor, self).__call__(*args, **kargs)
 
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
