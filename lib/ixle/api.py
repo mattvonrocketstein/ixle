@@ -27,18 +27,25 @@ def call_agent(agent_nick, item):
     kls = type('Dynamic_API_From_Agent',
                (mymixin, kls),
                {})
-    agent = kls(path=item.id, settings=conf())
+    agent = kls(path=item.id, settings=conf(), force=True,)
     result = agent()
     report('called agent, got ' + str(result))
     return agent, result
 
 def build_agent_method(name):
     def fxn(path):
-        agent, result = call_agent(name, path2item(path))
-        return dict(agent.record)
+        item = path2item(path)
+        if item is None:
+            return dict(error='no item found: "{0}"'.format(path))
+        agent, result = call_agent(name, item)
+        if not result: result=agent.record
+        return dict(result)
     fxn.__name__ = name
     return fxn
 
+stale = build_agent_method('stale')
+imdb = build_agent_method('imdb')
+moviefinder = build_agent_method('moviefinder')
 tagger = build_agent_method('tagger')
 filer = build_agent_method('filer')
 renamer = build_agent_method('renamer')

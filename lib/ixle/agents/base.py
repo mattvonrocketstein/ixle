@@ -31,32 +31,37 @@ class DestructionMixin(object):
         if key and item:
             self.record['errors'] += 1
             self.record['error'] = 'cant pass key and item'
+            return
         if not (key or item):
             self.record['errors'] += 1
             self.record['error'] = 'need either key or item'
+            return
         if not key:
             if item is None:
-                self.record['errors']+=1
-                self.record['error']='item is none'
-            key = item.id
+                self.record['errors'] += 1
+                self.record['error'] = 'item is none'
+                return
+            key = item and item.id
+        if not key:
+            self.record['errors'] += 1
+            self.record['error'] = 'item is none'
         report('deleting file',key)
         if not os.path.exists(key):
-            self.record['errors']+=1
+            self.record['errors'] += 1
             self.record['error']='file does not exist.'
         os.remove(key) # TODO: use unipath
-        self.record['files_deleted'] +=1
+        self.record['files_deleted'] += 1
         self.delete_record(key)
 
     def delete_record(self, key):
-        self.record['records_deleted'] += 1
         del self.database[key]
+        self.record['records_deleted'] += 1
 
 
 class SaveMixin(object):
     # TODO: abstract
     def save(self, item, quiet=False):
         """ """
-        # TODO: count saves
         item.t_last_seen = now()
         try:
             item.store(self.database)
@@ -234,5 +239,4 @@ class ItemIterator(KeyIterator):
     def _get_callback_args(self, key, item):
         result = super(ItemIterator, self)._get_callback_args(key, item)
         result.update(item=item)
-        report('deleting '+key)
         return result

@@ -66,6 +66,7 @@ class Events(ItemIterator):
 
     def callback(self, item=None, **kargs):
         report(item._id)
+
         if item._id not in self.collisions['fname']:
             self.seek_fname_collision(item)
         if item._id not in self.collisions['md5']:

@@ -53,6 +53,7 @@ class IMDBer(ItemIterator):
     covers_fields = ['tags']
     def __init__(self, *args, **kargs):
         super(IMDBer,self).__init__(*args, **kargs)
+        self.moviefinder = self.subagent(MovieFinder)
         #assert not self.path, 'i cant use a path'
 
     def _query_override(self):
@@ -62,9 +63,11 @@ class IMDBer(ItemIterator):
             path=self.path)
 
     def callback(self, item=None, **kargs):
+        if item.is_movie is None:
+            self.moviefinder.callback(item=item)
+        report(item.fname)
         if not item.is_movie:
             return
-        report(item.fname)
         if any([self.force, not item.tags]):
             report(item.fname)
             name,year = [heuristics.guess_movie_name(item),

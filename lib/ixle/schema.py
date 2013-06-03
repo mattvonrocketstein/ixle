@@ -1,7 +1,9 @@
 """ ixle.schema
 """
 import os
+import unipath as Unipath
 from datetime import datetime
+from ixle.python import ope, opj
 from couchdb.mapping import Document
 from couchdb.mapping import (TextField, IntegerField,
                              DateTimeField, ListField,
@@ -61,6 +63,14 @@ class Item(Document,IxleDocument):
         attachments = doc.pop('_attachments', {})
         return attachments
         #self.database().get_attachment(self.id,'body.txt')
+
+    @property
+    def unipath(self):
+        return Unipath.FSPath(self.id)
+
+    @property
+    def dir(self):
+        return self.unipath.parent
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle

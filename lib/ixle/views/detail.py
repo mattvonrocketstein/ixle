@@ -14,7 +14,7 @@ class Detail(View):
             return self.flask.render_template('not_found.html')
         item = Item.load(self.db, k)
         if item is None:
-            return self.flask.render_template('not_found.html')
+            return self.flask.render_template('not_found.html', filename=k)
         return item
 
     def main(self):
@@ -31,7 +31,7 @@ class Detail(View):
             for field in reset_requests:
                 setattr(item, field, None)
             self.save(item)
-            self.flash('saved item: ' + self.record)
+            self.flash('saved item: ' + str(self.record))
             return self.redirect(self.url+'?_='+self['_'])
 
         from ixle.util import get_heuristics
