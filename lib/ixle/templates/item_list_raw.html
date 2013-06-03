@@ -4,7 +4,7 @@
   <tr>
     <td><b>fname</b></td>
     <td><strong>first seen</strong></td>
-    <td><strong>earliest mod-date</strong></td>
+    <td NOWRAP><strong>earliest mod-date</strong></td>
     <td><strong>last mod-date</strong></td>
     <td><b>fextension</b></td>
     <td><b>ftype</b></td>
@@ -13,7 +13,9 @@
   </tr>
   {%for item in items%}
   <tr>
-    <td><small><a href="/detail?_={{item.id}}">{{item.fname}}</a></small></td>
+    <td><small>
+        <a href="javascript:show_detail({{item.id|escapejs}})">{{item.fname}}</a>
+    </small></td>
     <td NOWRAP> <small>{{item.t_seen|naturaltime}}</small></td>
     <td NOWRAP> <small>{{item.t_mod|naturaltime}}</small></td>
     <td NOWRAP> <small>{{item.t_last_mod|naturaltime}}</small></td>
@@ -52,4 +54,7 @@
     </td>
   </tr>
 </table>
+<script>
+  {%include "javascript/show_detail.js"%}
+</script>
 {% endblock %}

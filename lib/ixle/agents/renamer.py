@@ -80,9 +80,12 @@ class Renamer(DestructionMixin, ItemIterator):
 
     def handle_does_not_exist(self, item=None):
         err = 'ERROR: file@{0} does not exist.  is the drive mounted?'.format(item.fname)
-        report(err)
+        self.report_error(err)
+
+    def report_error(self, *args, **kargs):
         self.record['error_count'] += 1
-        self.record['last_error'] = err
+        report(*args, **kargs)
+        self.record['last_error'] = [ args, kargs ]
 
     def callback(self, item, fname=None, **kargs):
         if not item.exists():
@@ -96,13 +99,10 @@ class Renamer(DestructionMixin, ItemIterator):
                 report('name does not differ from suggestion.')
                 return
             else:
-
                 of = item.id
                 abs_newf, side_effects = move(item, new_name, self.database)
-                from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
                 if abs_newf in self.database:
-                    self.record['error_count'] += 1
-                    self.record['last_error'] = absf + ' destination would create duplicate record'
+                    self.report_error(absf + ' destination would create duplicate record')
                     return
                 else:
                     side_effects.append(

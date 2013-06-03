@@ -14,6 +14,7 @@ class Detail(View):
             return self.flask.render_template('not_found.html')
         item = Item.load(self.db, k)
         if item is None:
+            from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
             return self.flask.render_template('not_found.html', filename=k)
         return item
 
