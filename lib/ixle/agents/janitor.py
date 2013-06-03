@@ -44,7 +44,7 @@ class StaleChecker(KeyIterator, DestructionMixin):
                 'finished with dry run.  if you really '
                 'want to kill this stuff, pass --force')
         report('processed {0} records, total'.format(self.record['count_processsed']))
-        report('wiped {0} stale records'.format(self.record['count_deletion']))
+        report('wiped {0} stale records'.format(self.record['records_deleted']))
 
 
 

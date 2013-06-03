@@ -1,4 +1,25 @@
 {%extends "layout.html"%}
 {%block main_menu%}
+
+
+{%if filename%}
+<h2>Record not found:</h2>
+<span style="margin-left:15px;"><small>"{{filename}}"</small></strong></span>
+<br/><hr/>
+<div style="margin-left:25px;">
+This file may or may not exist.. but the database has never heard of it.<br/>
+<strong>Considering (re)indexing one of the parents:</strong><br/>
+  <span style="margin-left:15px;" id=dir_view_widget>
+  <small>
+    (dir_view_widget not loaded)
+  </small>
+</span>
+<script>
+  {%with abspath=filename%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
+</script>
+</div>
+{%else%}
 <h2>not found.</h2>
+{%endif%}
+
 {%endblock%}}

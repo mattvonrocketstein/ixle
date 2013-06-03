@@ -29,7 +29,7 @@ def more_clean(item):
     bits = smart_split(item.just_name.lower())
 
     # kill common junk that's found in torrent files, etc
-    for x in 'xvid'.split():
+    for x in 'dvdrip eng xvid'.split():
         if x in bits: bits.remove(x)
     result = '.'.join(['_'.join(bits),
                        item.fext or ''])

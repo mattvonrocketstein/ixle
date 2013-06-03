@@ -3,6 +3,7 @@
 
 from .widgets import Widget
 from ixle.util import get_api
+from report import report
 
 class APIView(Widget):
 
@@ -19,10 +20,12 @@ class APIView(Widget):
             error = 'no api-action found with name "{0}"'.format(action)
             #self.flash(error)
             return '<font color=red>' + error + '</font>'
-        try:
-            status = ackshun(path)
-        except Exception, e:
-            status = str([ action, e ])
+        #try:
+        status = ackshun(path)
+        #except Exception, e:
+        #    report('encountered error running api command')
+        #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+        #    status = str([ action, e ])
         self.flash('ran {0} on \'{1}\''.format(action, path))
         #status = 'status: {0}'.format(status)
         #self.flash(status)

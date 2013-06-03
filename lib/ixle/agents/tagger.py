@@ -19,7 +19,8 @@ class Tagger(ItemIterator):
 
     def callback(self, item=None, **kargs):
         if not item.exists():
-            self.record['count_error]']+=1
+            report('item does not exist: ' + item.fname)
+            self.record['count_error'] += 1
             return
         if any([self.force, not item.tags]):
             report(item.fname)
