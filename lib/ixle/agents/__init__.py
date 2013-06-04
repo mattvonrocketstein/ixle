@@ -10,10 +10,9 @@ from .typer import Typer, Mimer
 from .events import Events
 from .md5 import Md5er
 from .indexer import Indexer
-from .tagger import Tagger
+from .tagger import Tagger, ImageTagger
 from .body import Body
 from ._imdb import IMDBer, MovieFinder
-from .space_killer import SpaceKiller
 from .body import Body
 #from .renamer import Renamer
 from .slayer import Slayer
@@ -26,7 +25,8 @@ class AgentRegistry(dict):
 registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
+<<<<<<< HEAD
   MovieFinder, IMDBer, Janitor, Body, #Renamer,
-  SpaceKiller, Slayer,
+  SpaceKiller, Slayer, ImageTagger,
   StaleChecker, Sizer, Filer, Mimer,
   Stamper, Typer, Events, Md5er, Indexer, Tagger ]

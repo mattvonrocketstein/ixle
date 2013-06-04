@@ -1,6 +1,10 @@
 """ ixle.settings
 """
+<<<<<<< HEAD
 import couchdb
+=======
+import warnings
+>>>>>>> e57f104... tagging for images
 from corkscrew.settings import Settings as CorkscrewSettings
 
 import humanize
@@ -8,7 +12,11 @@ import humanize
 import json
 
 def escapejs(val):
-    out = json.dumps(str(val))
+    try:
+        out = json.dumps(str(val))
+    except UnicodeEncodeError,e:
+        print 'error decoding ',val
+        out = val
     return out
 
 class DSettingsMixin(object):

@@ -81,7 +81,8 @@ class IxleAgent(SaveMixin):
     def complain_missing(self, apath=None):
         report('file missing. gone? not mounted?')
 
-    def __init__(self, path=None, settings=None, fill=None,
+    def __init__(self, path=None, settings=None,
+                 items=[], fill=None,
                  force=False, **kargs):
         """ fill+path determine self.query """
         self.record = defaultdict(lambda: 0)
@@ -97,6 +98,10 @@ class IxleAgent(SaveMixin):
                 raise SystemExit('if you use --fill you cant '
                                  'use a path (and vice versa)')
         self.fill = fill
+        if items:
+            report('instantiated {0} with size {1} item-list'.format(
+                self,len(items)))
+            self.__iter__ = lambda himself: ([i.id, i] for i in items)
 
     def get_progressbar(self, N, label='Files: '):
         assert N>0,str(N)
@@ -187,7 +192,7 @@ class IxleDBAgent(IxleAgent):
         """
         q = self.query
         t1 = now()
-        report('starting query')
+        report('starting query: ',q)
         db = self.database
         if q is not None:
             result = [[x.key, Item.wrap(x.doc)]
@@ -196,7 +201,7 @@ class IxleDBAgent(IxleAgent):
             result = [ [ x, Item.load(db, x)] \
                        for x in db ]
         t2 = now()
-        report('finished query ({0})'.format(t2-t1))
+        report('finished query ({0}s)'.format(t2-t1))
         return iter(result)
 
     @wrap_kbi
