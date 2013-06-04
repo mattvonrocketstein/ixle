@@ -6,7 +6,7 @@ from ixle.schema import Item
 class Detail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
-    template = 'item_detail.html'
+    template = 'item/detail.html'
 
     def get_current_item(self):
         k = self['_']
@@ -14,7 +14,6 @@ class Detail(View):
             return self.flask.render_template('not_found.html')
         item = Item.load(self.db, k)
         if item is None:
-            from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
             return self.flask.render_template('not_found.html', filename=k)
         return item
 

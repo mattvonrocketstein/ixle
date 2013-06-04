@@ -11,6 +11,7 @@ from report import report
 from ixle.schema import Item
 from ixle.query import javascript
 from ixle.python import ope, abspath, now
+from ixle.exceptions import FileDoesntExist
 
 def wrap_kbi(fxn):
     def newf(*args, **kargs):
@@ -86,7 +87,8 @@ class IxleAgent(SaveMixin):
         self.record = defaultdict(lambda: 0)
         if self.requires_path:
            if not path or not ope(path):
-               assert ope(path), 'path does not exist: '+str(path)
+               if not ope(path):
+                   raise FileDoesntExist(str(path))
         self.path = path and abspath(path)
         self.conf = settings
         self.force = force
@@ -219,7 +221,11 @@ class IxleDBAgent(IxleAgent):
                             argv=['-noconfirm_exit'])()
                     if index==random_index:
                         self.record['random_key'] = key
-                self.callback(**cb_kargs)
+                try:
+                    self.callback(**cb_kargs)
+                except Exception,e:
+                    self.report_error("ERROR IN CALLBACK:" + str(e))
+                    raise
                 self.record['count_processsed'] += 1
                 pbar.update(index)
             else:
@@ -229,6 +235,11 @@ class IxleDBAgent(IxleAgent):
         tmp = dict(self.record)
         print tmp
         return tmp
+
+    def report_error(self, *args, **kargs):
+        self.record['error_count'] += 1
+        report(*args, **kargs)
+        self.record['last_error'] = [ args, kargs ]
 
 class KeyIterator(IxleDBAgent):
     def _get_callback_args(self, key, item):

@@ -58,18 +58,19 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         from ixle.schema import Item
         from ixle import util
         from ixle import heuristics
-        from ixle.fs import dbfs
+        #from ixle.fs import dbfs
         from ixle import agents
         from ixle import api
-
+        from ixle import metadata
         return dict(re=re,
                     api=api,
                     agents=agents,
+                    metadata=metadata.metadata,
                     util=util,
-                    dbfs=dbfs,
+                    #dbfs=dbfs,
                     heuristics=heuristics,
                     item=Item, Item=Item,
-                    dupes_db=self.dupes_db,
+                    #dupes_db=self.dupes_db,
                     database=self.database)
 
     @property

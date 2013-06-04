@@ -4,6 +4,7 @@
 
 """
 import shutil
+import tempfile
 import base64
 import os, sys
 from glob import glob
@@ -11,6 +12,7 @@ from glob import glob
 import requests, demjson
 from report import report
 
+from ixle.metadata import metadata
 from ixle.settings import Settings
 from ixle.python import opj, ope, dirname, abspath
 
@@ -19,11 +21,7 @@ db_postfixes = ['',          # main database, do not remove!
                 '_events'    # events and suggestions
                 ]
 
-class IxleMetadata:
-    ixle_home = dirname(dirname(__file__))
-    ixle_config = opj(ixle_home, 'config')
-    default_local_ini = abspath(opj(ixle_config, 'local.ini'))
-    virgin_local_ini = abspath(opj(ixle_config, 'local.ini.original'))
+from ixle.metadata import IxleMetadata
 
 class CouchDB(object):
     @staticmethod
@@ -34,7 +32,16 @@ class CouchDB(object):
             error = 'Directory should exist: ' + local_ini
             return error
         else:
-            couch_cmd = 'couchdb -n -a {0}'.format(local_ini)
+            override_ini = tempfile.mktemp(suffix='.ini')
+            path2couchpy = opj(sys.prefix, #assumes venv?
+                                'bin','couchpy')
+            assert ope(path2couchpy)
+            metadata.couch_settings['query_servers']['python'] = path2couchpy
+            metadata.couch_settings['httpd']['port'] = Settings()['couch']['port']
+
+            with open(override_ini,'w') as fhandle:
+                metadata.couch_settings.write(fhandle)
+            couch_cmd = 'couchdb -n -a {0}'.format(override_ini)
             assert os.path.exists('./cdb')
             print '--> running', couch_cmd
             return os.system(couch_cmd)
