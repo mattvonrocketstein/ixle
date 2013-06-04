@@ -6,7 +6,8 @@ from ixle.python import ope, opj
 from ixle.util import get_heuristics
 from ixle.schema import Item
 from .base import ItemIterator, DestructionMixin
-
+from ixle.side_effects import *
+from ixle.exceptions import *
 def move(item, dst, db):
     report('called for {0} :: {1}'.format(item.fname, dst))
     assert item and dst, 'need a database and fs-dst to execute move'
@@ -26,53 +27,15 @@ def move(item, dst, db):
         return move(
             item, opj(dst, item.fname), db)
 
-    assert not Unipath.FSPath(dst).exists(), 'file exists'
+    if Unipath.FSPath(dst).exists():
+        raise FileExists(dst)
     assert dst!=item.id,'destination is a noop'
     side_effects.append( MoveFile(item=item, dst=dst) )
     side_effects.append( MoveRecord(old_key=oid, new_key=dst, db=db) )
+    item._moved_to = dst
     return dst, side_effects
 
 
-class SideEffect(object):
-    def __init__(self, **kargs):
-        for k,v in kargs.items():
-            setattr(self,k,v)
-    def __repr__(self):
-        return "<SideEffect>"
-class DeleteRecord(SideEffect):
-    def __repr__(self):
-        return "<DeleteRecord: {0} : {1}>".format(self.key)
-
-    def __call__(self):
-        self.agent.delete_record(self.key)
-
-class MoveRecord(SideEffect):
-    def __repr__(self):
-        return "<MoveRecord: {0} : {1}>".format(self.old_key, self.new_key)
-
-    def __call__(self):
-        report('moving record', self)
-        old_doc = Item.load(self.db, self.old_key)
-        new_doc = Item.load(self.db, self.new_key) or Item()
-        for attr_name in old_doc._fields:
-            setattr(new_doc, attr_name, getattr(old_doc, attr_name))
-        new_doc._id = self.new_key
-        new_doc.fname = new_doc.unipath.name
-        report('saving record', new_doc)
-        new_doc.store(self.db)
-        return new_doc
-        #print 'about to save him'
-        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
-        #side_effects.append(lambda: setattr(item,'fname', item.unipath.name))
-        #side_effects.append(lambda: setattr(item,'_id', dst))
-        #self.new_key
-
-class MoveFile(SideEffect):
-    def __repr__(self):
-        return "<MoveFile: {0} : {1}>".format(self.item, self.dst)
-
-    def __call__(self):
-        self.item.unipath.move(self.dst)
 
 class Renamer(DestructionMixin, ItemIterator):
     nickname = 'renamer'
@@ -81,11 +44,6 @@ class Renamer(DestructionMixin, ItemIterator):
     def handle_does_not_exist(self, item=None):
         err = 'ERROR: file@{0} does not exist.  is the drive mounted?'.format(item.fname)
         self.report_error(err)
-
-    def report_error(self, *args, **kargs):
-        self.record['error_count'] += 1
-        report(*args, **kargs)
-        self.record['last_error'] = [ args, kargs ]
 
     def callback(self, item, fname=None, **kargs):
         if not item.exists():
@@ -111,4 +69,4 @@ class Renamer(DestructionMixin, ItemIterator):
                             key=of))
                     [ x() for x in side_effects ]
                     self.record['moved_count'] += 1
-                    self.record['redirect_to'] = item.id
+                    self.record['redirect_to'] = item._moved_to # hack

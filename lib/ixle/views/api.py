@@ -1,6 +1,6 @@
 """ ixle.views.api
 """
-
+import json
 from .widgets import Widget
 from ixle.util import get_api
 from report import report
@@ -8,7 +8,7 @@ from report import report
 class APIView(Widget):
 
     url = '/api'
-
+    returns_json = True
     def main(self):
         path = self['_']
         action = self['action']
@@ -20,8 +20,15 @@ class APIView(Widget):
             error = 'no api-action found with name "{0}"'.format(action)
             #self.flash(error)
             return '<font color=red>' + error + '</font>'
-        #try:
-        status = ackshun(path)
+        print 'calling api with: ', ackshun, path
+        try:
+            status = ackshun(path)
+        except Exception,e:
+            import sys, traceback
+            err_data = traceback.format_exc()
+            print err_data
+            return dict(error=err_data)
+
         #except Exception, e:
         #    report('encountered error running api command')
         #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
@@ -29,4 +36,5 @@ class APIView(Widget):
         self.flash('ran {0} on \'{1}\''.format(action, path))
         #status = 'status: {0}'.format(status)
         #self.flash(status)
-        return '{0}'.format(status)
+        print 'api returning json:',status
+        return status

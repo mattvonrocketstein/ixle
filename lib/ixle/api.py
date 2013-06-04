@@ -30,6 +30,9 @@ def call_agent(agent_nick, item):
     agent = kls(path=item.id, settings=conf(), force=True,)
     result = agent()
     report('called agent, got ' + str(result))
+    if result is None:
+        print 'result should have been self.record'
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     return agent, result
 
 def build_agent_method(name):

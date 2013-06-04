@@ -29,8 +29,16 @@ def more_clean(item):
     bits = smart_split(item.just_name.lower())
 
     # kill common junk that's found in torrent files, etc
-    for x in 'dvdrip eng xvid'.split():
+    for x in 'cam dvdrip brrip eng xvid'.split():
         if x in bits: bits.remove(x)
+    #remove 1080p, x264, etc
+    bits2=[]
+    for x in bits:
+        if not any([
+            re.compile('[a-zA-Z]\d+').match(x),
+            re.compile('\d+[a-zA-Z]').match(x)]):
+            bits2.append(x)
+    bits = bits2
     result = '.'.join(['_'.join(bits),
                        item.fext or ''])
     # if original filename does not start with '_', neither
