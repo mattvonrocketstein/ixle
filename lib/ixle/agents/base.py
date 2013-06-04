@@ -74,7 +74,18 @@ class SaveMixin(object):
                 report(' {0}: {1}'.format(failure_type, failure_msg))
             return False
 
-class IxleAgent(SaveMixin):
+class ReportMixin(object):
+
+    def report_error(self, *args, **kargs):
+        self.record['error_count'] += 1
+        report(*args, **kargs)
+        self.record['last_error'] = [ args, kargs ]
+
+    def report_status(self, status):
+        report(status)
+        self.record['last_status'] = status
+
+class IxleAgent(SaveMixin, ReportMixin):
 
     is_subagent = False
 
@@ -241,10 +252,6 @@ class IxleDBAgent(IxleAgent):
         print tmp
         return tmp
 
-    def report_error(self, *args, **kargs):
-        self.record['error_count'] += 1
-        report(*args, **kargs)
-        self.record['last_error'] = [ args, kargs ]
 
 class KeyIterator(IxleDBAgent):
     def _get_callback_args(self, key, item):

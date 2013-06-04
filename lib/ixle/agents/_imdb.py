@@ -76,9 +76,11 @@ class IMDBer(ItemIterator):
             api_obj = IMDBApi(name, year=year)
             matches = api_obj()
             if not matches:
-                report('no matches for this search: ' + str([name,year]))
+                self.report_status(
+                    'no matches for this search: ' + str([name,year]))
             elif len(matches)>1:
-                report('multiple matches for this search: ' + str([name,year]))
+                self.report_status(
+                    'multiple matches for this search: ' + str([name,year]))
                 raise Exception, NotImplemented
             elif len(matches)==1:
                 match = matches[0]

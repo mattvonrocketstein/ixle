@@ -40,14 +40,21 @@ def hachm(filename):
     return meta
 
 class GenericTagger(ItemIterator):
-    pass
-
-class ImageTagger(ItemIterator):
     covers_fields = ['tags']
     DEBUG = True
-    nickname = 'itagger'
 
     def callback(self, item=None, **kargs):
+        from ixle.exceptions import FileDoesntExist
+        if not item.exists():
+            err = 'item does not exist: ' + item.fname
+            self.report_error(err)
+            return dict(error=FileDoesntExist(err))
+        return self.tagger_callback(item=item, **kargs)
+
+class ImageTagger(GenericTagger):
+    nickname = 'itagger'
+
+    def tagger_callback(self,item=None,**kargs):
         m = hachm(item.id)
         if m:
             m=dict(m)
@@ -55,35 +62,29 @@ class ImageTagger(ItemIterator):
         item.tags = m
         self.save(item)
 
-class Tagger(ItemIterator):
-    nickname = 'tagger'
-    covers_fields = ['tags']
-    DEBUG = True
+class MusicTagger(GenericTagger):
+    nickname = 'mtagger'
 
     def _query_override(self):
         if not self.path:
             return javascript.find_equal(fieldname='fext',
                                          value='mp3')
 
-    def callback(self, item=None, **kargs):
-        if not item.exists():
-            self.report_error('item does not exist: ' + item.fname)
-            return
+    def tagger_callback(self, item=None, **kargs):
         if any([self.force, not item.tags]):
             report(item.fname)
             try:
                 f = mutagen.File(item.abspath, easy=True)
             except (EOFError, mutagen.flac.FLACNoHeaderError,
                     mutagen.mp3.HeaderNotFoundError), e:
-                report("error decoding: "+str(e))
-                self.record['count_error']+=1
+                self.report_error("error decoding: "+str(e))
                 return
             if f is not None:
                 data = f.info.__dict__.copy() # bitrate, etc
                 try:
                     data.update(f)
                 except mutagen.easyid3.EasyID3KeyError:
-                    report('error in __getitem__ for EasyID3')
+                    self.report_error('error in __getitem__ for EasyID3')
                     return
                 for k, v in data.items():
                     if isinstance(v, list):
@@ -94,8 +95,10 @@ class Tagger(ItemIterator):
                             continue
                     item.tags[k] = v
                 else:
-                    report("got tags, but they were empty.")
+                    self.report_status("got tags, but they were empty.")
                 if item.tags:
                     self.save(item)
             else:
-                report("file exists but cannot open mutagen File object")
+                self.report_status(
+                    "file exists but cannot open"
+                    " mutagen File object.. is this a music file?")

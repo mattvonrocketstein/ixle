@@ -29,7 +29,7 @@
   <div style="margin-left:15px;">
        {%for short_name, apath in files.items()%}
        <small>
-         <a href="#?_={{apath}}">{{short_name}}</a>
+         <a href="javascript:show_detail({{apath|escapejs}})">{{short_name}}</a>
        </small>
        <strong>|</strong>
        {%endfor%}
@@ -76,5 +76,6 @@
 
 <script>
   {%with abspath=query%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
+  {%include "javascript/show_detail.js"%}
 </script>
 {%endblock%}
