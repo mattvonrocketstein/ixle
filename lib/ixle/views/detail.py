@@ -1,6 +1,7 @@
 """ ixle.views.detail """
 
-from .base import View
+from report import report
+from ixle.views.base import View
 from ixle.schema import Item
 
 class Detail(View):
@@ -22,14 +23,27 @@ class Detail(View):
         if not isinstance(item, Item): # not_found
             return item
 
+        # TODO: should be api command
         # check for any requests to set specific fields back to nil
         reset_requests = [ x[len('reset_'):] \
                            for x in self.request.values.keys() \
                            if x.startswith('reset_') ]
         if reset_requests:
             # TODO: do this with api
+            from ixle.agents import registry
             for field in reset_requests:
                 setattr(item, field, None)
+                for agent_kls in registry.values():
+                    if field in getattr(agent_kls,'covers_fields', []):
+                        report('reseting "{0}" covers with: {1}'.format(
+                            field, agent_kls))
+                        agent = agent_kls(items=[])
+                        result = agent.callback(
+                            item=item, key=item.id)
+                        report('got: ' + str(agent.record))
+
+                print 'finished with all agents, all fields'
+                from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
             self.save(item)
             self.flash('saved item: ' + str(self.record))
             return self.redirect(self.url+'?_='+self['_'])

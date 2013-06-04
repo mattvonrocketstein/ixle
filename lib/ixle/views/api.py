@@ -19,7 +19,7 @@ class APIView(Widget):
         except KeyError:
             error = 'no api-action found with name "{0}"'.format(action)
             #self.flash(error)
-            return '<font color=red>' + error + '</font>'
+            return dict(error='APIView can\'t find an api-action called "{0}"'.format(action))
         print 'calling api with: ', ackshun, path
         try:
             status = ackshun(path)

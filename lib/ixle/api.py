@@ -31,8 +31,7 @@ def call_agent(agent_nick, item):
     result = agent()
     report('called agent, got ' + str(result))
     if result is None:
-        print 'result should have been self.record'
-        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+        print 'got None-result from agent, should have been self.record.'
     return agent, result
 
 def build_agent_method(name):
@@ -47,6 +46,7 @@ def build_agent_method(name):
     return fxn
 
 stale = build_agent_method('stale')
+itagger = build_agent_method('itagger')
 imdb = build_agent_method('imdb')
 moviefinder = build_agent_method('moviefinder')
 tagger = build_agent_method('tagger')
@@ -64,6 +64,7 @@ def _space_filename(item):
 
 def path2item(path):
     db = database()
+    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     return Item.load(db, path)
 
 def spacekiller(path):
