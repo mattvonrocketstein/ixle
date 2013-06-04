@@ -10,7 +10,7 @@ from .typer import Typer, Mimer
 from .events import Events
 from .md5 import Md5er
 from .indexer import Indexer
-from .tagger import Tagger, ImageTagger
+from .tagger import MusicTagger, ImageTagger
 from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .body import Body
@@ -25,8 +25,20 @@ class AgentRegistry(dict):
 registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
-<<<<<<< HEAD
-  MovieFinder, IMDBer, Janitor, Body, #Renamer,
-  SpaceKiller, Slayer, ImageTagger,
-  StaleChecker, Sizer, Filer, Mimer,
-  Stamper, Typer, Events, Md5er, Indexer, Tagger ]
+  SpaceKiller,
+  #heuristic record-rewriters
+  MovieFinder, IMDBer,
+  # filesystem-modifiers / heuristics record-rewriters
+  Renamer,
+  # experimental
+  Body, Events,
+  # clean-up (major side-effects)
+  StaleChecker, Janitor, Slayer,
+  # core record-rewriters
+  Sizer, Md5er, Filer, Mimer,
+  Stamper, Typer,
+  # the index stands alone
+  Indexer,
+  # adaptive-taggers
+  ImageTagger, MusicTagger
+  ])

@@ -37,7 +37,10 @@ class Detail(View):
                     if field in getattr(agent_kls,'covers_fields', []):
                         report('reseting "{0}" covers with: {1}'.format(
                             field, agent_kls))
-                        agent = agent_kls(items=[])
+                        agent = agent_kls(
+                            items=[],
+                            settings=self.settings,)
+
                         result = agent.callback(
                             item=item, key=item.id)
                         report('got: ' + str(agent.record))
