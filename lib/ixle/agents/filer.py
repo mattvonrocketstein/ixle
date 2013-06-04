@@ -20,5 +20,6 @@ class Filer(ItemIterator):
                 result = [ x.strip() for x in result.split(',') ]
                 result = [x for x in result if x]
                 item.file_magic = result
-                print item.abspath, result
+                self.report_status('{0} gives: {1}'.format(
+                    item.id, result))
                 self.save(item)

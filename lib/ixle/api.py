@@ -50,24 +50,14 @@ itagger = build_agent_method('itagger')
 imdb = build_agent_method('imdb')
 moviefinder = build_agent_method('moviefinder')
 mtagger = build_agent_method('mtagger')
+sizer = build_agent_method('sizer')
 filer = build_agent_method('filer')
 renamer = build_agent_method('renamer')
 slayer = build_agent_method('slayer')
 
-def _space_filename(item):
-    i1 = item.fname
-    agent, result = call_agent('spacekiller', item)
-    #report_what_changed(item)
-    i2 = item.fname
-    return dict(
-        changed_filename='"{0}" to "{1}"'.format(i1,i2))
-
 def path2item(path):
     db = database()
     return Item.load(db, path)
-
-def spacekiller(path):
-    return _space_filename(path2item(path))
 
 def typer(path):
     item=path2item(path)
