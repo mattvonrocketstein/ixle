@@ -26,7 +26,7 @@ class Sizer(ItemIterator):
             size = self.get_size(item)
             if size is not None:
                 item.size = size
-                report(str([size, item.fname]))
+                self.report_status(str([size, item.fname]))
                 self.save(item)
             else:
                 self.complain_missing()
