@@ -1,11 +1,16 @@
+""" ixle.side_effects
 """
-"""
+from report import report
+
+from ixle.schema import Item
+
 class SideEffect(object):
     def __init__(self, **kargs):
         for k,v in kargs.items():
             setattr(self,k,v)
     def __repr__(self):
         return "<SideEffect>"
+
 class DeleteRecord(SideEffect):
     def __repr__(self):
         return "<DeleteRecord: {0} : {1}>".format(self.key)
