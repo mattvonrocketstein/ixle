@@ -76,10 +76,10 @@ class IMDBer(ItemIterator):
             api_obj = IMDBApi(name, year=year)
             matches = api_obj()
             if not matches:
-                report('no matches for this search: '+str([name,year]))
+                report('no matches for this search: ' + str([name,year]))
             elif len(matches)>1:
-                report('multiple matches for this search: '+str([name,year]))
-                from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+                report('multiple matches for this search: ' + str([name,year]))
+                raise Exception, NotImplemented
             elif len(matches)==1:
                 match = matches[0]
                 item.tags=match

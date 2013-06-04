@@ -54,7 +54,6 @@ class ImageTagger(ItemIterator):
         else: m={}
         item.tags = m
         self.save(item)
-        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
 
 class Tagger(ItemIterator):
     nickname = 'tagger'

@@ -64,7 +64,6 @@ def _space_filename(item):
 
 def path2item(path):
     db = database()
-    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     return Item.load(db, path)
 
 def spacekiller(path):
