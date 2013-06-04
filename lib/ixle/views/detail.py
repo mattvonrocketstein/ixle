@@ -41,9 +41,6 @@ class Detail(View):
                         result = agent.callback(
                             item=item, key=item.id)
                         report('got: ' + str(agent.record))
-
-                print 'finished with all agents, all fields'
-                from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
             self.save(item)
             self.flash('saved item: ' + str(self.record))
             return self.redirect(self.url+'?_='+self['_'])
