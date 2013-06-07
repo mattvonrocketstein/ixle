@@ -23,7 +23,9 @@ def hachm(filename):
         filename,realname=filename,filename
     parser = createParser(filename)
     # See what keys you can extract
-    tmp = metadata.extractMetadata(parser)._Metadata__data.iteritems()
+    tmp = metadata.extractMetadata(parser)
+    if tmp is None: return {}
+    else: tmp = tmp._Metadata__data.iteritems()
     for k,v in tmp:
         if v.values:
             print v.key, v.values[0].value

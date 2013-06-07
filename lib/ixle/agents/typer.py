@@ -21,11 +21,12 @@ class Mimer(ItemIterator):
             typ = guess_mime(item)
             report_if_verbose('set_consult: ' + str(typ))
         item.mime_type = typ
+        self.report_status('{0} for {1}'.format(typ, item.id))
         self.save(item)
 
     def callback(self, item=None, **kargs):
         if not self.is_subagent:
-            report_if_verbose(item.fname)
+            self.report_status(item.fname)
         if any([self.force, not item.mime_type]):
             self.set_mime(item)
 
