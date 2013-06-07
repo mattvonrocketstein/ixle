@@ -53,6 +53,7 @@ mtagger = build_agent_method('mtagger')
 sizer = build_agent_method('sizer')
 filer = build_agent_method('filer')
 renamer = build_agent_method('renamer')
+mimer = build_agent_method('mimer')
 slayer = build_agent_method('slayer')
 
 def path2item(path):
