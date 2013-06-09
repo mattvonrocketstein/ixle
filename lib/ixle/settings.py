@@ -1,10 +1,7 @@
 """ ixle.settings
 """
-<<<<<<< HEAD
 import couchdb
-=======
 import warnings
->>>>>>> e57f104... tagging for images
 from corkscrew.settings import Settings as CorkscrewSettings
 
 import humanize
@@ -106,7 +103,11 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         # TODO: abstract this caching pattern
         db = getattr(self, '_database', None)
         if db is None:
-            db = self._create_main_database()
+            import socket
+            try:
+                db = self._create_main_database()
+            except socket.error, e:
+                raise RuntimeError('is the internet turned on? originally: '+str(e))
             self._db = db
         return db
 
