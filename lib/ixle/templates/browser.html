@@ -6,15 +6,11 @@
       Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
     </td>
     <td align=right>
-      <span id=disconnection_notification>
-        <script>
-          $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{query}}'})});
-        </script>
-      </span>
+      {%include "widgets/fs_disconnect_notification.html"%}
       <small>
         <a href=#>index directory</a> |
         <a href=#>unindex directory</a> |
-        <a href=#>rename recursively</a>
+        <a href="javascript:interstitial_api_call('rename_dir')">rename dir recursively</a>
         <!--a href="/api?action=kill_directory&_={{query}}">kill directory</a-->
       </small>
     </td>
