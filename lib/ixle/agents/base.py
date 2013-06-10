@@ -12,6 +12,7 @@ from ixle.schema import Item
 from ixle.query import javascript
 from ixle.python import ope, abspath, now
 from ixle.exceptions import FileDoesntExist
+from .mixins import DestructionMixin, SaveMixin, ReportMixin
 
 def wrap_kbi(fxn):
     def newf(*args, **kargs):
@@ -23,67 +24,6 @@ def wrap_kbi(fxn):
         finally:
             return out
     return newf
-
-
-class DestructionMixin(object):
-
-    def delete_file(self, key=None, item=None):
-        report('deleting file')
-        if key and item:
-            self.record['errors'] += 1
-            self.record['error'] = 'cant pass key and item'
-            return
-        if not (key or item):
-            self.record['errors'] += 1
-            self.record['error'] = 'need either key or item'
-            return
-        if not key:
-            if item is None:
-                self.record['errors'] += 1
-                self.record['error'] = 'item is none'
-                return
-            key = item and item.id
-        if not key:
-            self.record['errors'] += 1
-            self.record['error'] = 'item is none'
-        report('deleting file',key)
-        if not os.path.exists(key):
-            self.record['errors'] += 1
-            self.record['error']='file does not exist.'
-        os.remove(key) # TODO: use unipath
-        self.record['files_deleted'] += 1
-        self.delete_record(key)
-
-    def delete_record(self, key):
-        del self.database[key]
-        self.record['records_deleted'] += 1
-
-
-class SaveMixin(object):
-    # TODO: abstract
-    def save(self, item, quiet=False):
-        """ """
-        item.t_last_seen = now()
-        try:
-            item.store(self.database)
-            self.record['count_saved']+=1
-            return True
-        except ResourceConflict as err:
-            failure_type, failure_msg = err.args[0]
-            if not quiet:
-                report(' {0}: {1}'.format(failure_type, failure_msg))
-            return False
-
-class ReportMixin(object):
-
-    def report_error(self, *args, **kargs):
-        self.record['error_count'] += 1
-        report(*args, **kargs)
-        self.record['last_error'] = [ args, kargs ]
-
-    def report_status(self, status):
-        report(status)
-        self.record['last_status'] = status
 
 class IxleAgent(SaveMixin, ReportMixin):
 
@@ -157,9 +97,7 @@ class IxleAgent(SaveMixin, ReportMixin):
     def database(self):
         return self.conf.database
 
-class IxleDBAgent(IxleAgent):
-    requires_path = False
-
+class QueryDecidingAspect(object):
     # TODO: use template
     def _query_from_path(self):
         return ("function(doc){"
@@ -197,10 +135,25 @@ class IxleDBAgent(IxleAgent):
             report.console.draw_line()
         return q
 
-    def __iter__(self):
-        """ dbagents dont require path, but when one is given then
+class IxleDBAgent(QueryDecidingAspect, IxleAgent):
+    """
+            Not all DB Agents dont require path, but when one is given then
             you only get back keys from underneath that path.
-        """
+
+            For ad-hoc queries, the query is determined with the following
+            resolution-order:
+
+              1. if subclass defines `_query_override`, use that
+              2. if isinstance has self.path set, use that
+                 (typically self.path is populated via commandline)
+              3. if self.fill is True, a query will be generated which
+                 can return everything that doesn't have that value set
+              4. the default case is to assume we want all keys
+
+    """
+    requires_path = False
+
+    def __iter__(self):
         q = self.query
         t1 = now()
         report('starting query: ',q)
@@ -252,13 +205,15 @@ class IxleDBAgent(IxleAgent):
         print tmp
         return tmp
 
-
 class KeyIterator(IxleDBAgent):
+    """ agent base-class to iterate over keys in the 'ixle' database.
+        keys are guaranteed absolute filepaths
+    """
     def _get_callback_args(self, key, item):
         return dict(item=None, fname=key)
 
 class ItemIterator(KeyIterator):
-
+    """ agent base-class to iterate over items from the database """
     def _get_callback_args(self, key, item):
         result = super(ItemIterator, self)._get_callback_args(key, item)
         result.update(item=item)
