@@ -22,6 +22,7 @@ db_postfixes = ['',          # main database, do not remove!
                 ]
 
 class CouchDB(object):
+
     @staticmethod
     def start_daemon():
         # TODO: allow local_ini override with -c option
