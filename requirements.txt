@@ -1,22 +1,29 @@
 configparser
 progressbar==2.3
-pypdf
+pypdf==1.13
 pdfminer
-pep362
-unipath
-mutagen
-importlib
-pygments # required by reporting
-humanize
-requests
+pep362==0.6.2
+unipath==1.0
+mutagen==1.21
+importlib==1.0.2
+# required by reporting
+pygments==1.6
+humanize==0.4
+requests==1.2.3
 demjson==1.6
-flask
+flask==0.9
+# TODO: requires SQLAlchemy, ugh.  replace it
 imdbpy==4.9
+# TODO: can upgrade to .9 now i think?
 couchdb==0.8
 Importing==1.10
-tornado
-pytest
+tornado==3.0.2
+pytest==2.3.5
 unittest2
+configparser
+hachoir-metadata
+hachoir-core
+hachoir-parser
 # reporting, corkscrew, hammock
 git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
 git+git://github.com/mattvonrocketstein/hammock.git#egg=hammock
