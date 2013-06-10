@@ -143,4 +143,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         parser.add_option('--daemon',"-d", dest="daemon",
                           default=False, action='store_true',
                           help="start couch daemon")
+        parser.add_option('--test',"-t", dest="self_test",
+                          default=False, action='store_true',
+                          help="run self tests")
         return parser

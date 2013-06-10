@@ -14,11 +14,11 @@ from report import report
 
 from ixle.metadata import metadata
 from ixle.settings import Settings
+from ixle.local_couch import CouchDB
+from ixle.metadata import IxleMetadata
 from ixle.python import opj, ope, dirname, abspath
 
-
 from ixle.metadata import IxleMetadata
-
 from ixle.local_couch import CouchDB
 
 def entry():
@@ -31,7 +31,10 @@ def entry():
         path = abspath(clargs.pop())
     else:
         path = None
-    if opts.daemon: sys.exit(CouchDB.start_daemon())
+    if opts.self_test:
+        # call tox programmatically, here
+        sys.exit(NotImplementedError)
+    elif opts.daemon: sys.exit(CouchDB.start_daemon())
     elif opts.clean: sys.exit(CouchDB.clean_data())
     elif opts.install: sys.exit(CouchDB.install_ixle(settings))
     elif opts.api:
@@ -39,7 +42,7 @@ def entry():
         from ixle import api
         api_method = getattr(api, opts.api)
         assert settings.app;
-        assert path,'api commands operate on paths'
+        assert path, 'api commands operate on paths'
         path = unipath.path.Path(path)
         sys.exit(api_method(path))
 
