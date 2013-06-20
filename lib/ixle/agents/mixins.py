@@ -11,7 +11,7 @@ class DestructionMixin(object):
         report('deleting file')
         if key and item:
             self.record['errors'] += 1
-            self.record['error'] = 'cant pass key and item'
+            self.record['error'] = 'cant pass key and item to delete_file.'
             return
         if not (key or item):
             self.record['errors'] += 1
@@ -33,6 +33,9 @@ class DestructionMixin(object):
         os.remove(key) # TODO: use unipath
         self.record['files_deleted'] += 1
         self.delete_record(key)
+
+    def delete_item(self, item):
+        return self.delete_record(item.id)
 
     def delete_record(self, key):
         del self.database[key]

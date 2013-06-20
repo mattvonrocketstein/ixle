@@ -53,6 +53,13 @@ class IxleAgent(SaveMixin, ReportMixin):
             report('instantiated {0} with size {1} item-list'.format(
                 self,len(items)))
             self.__iter__ = lambda himself: ([i.id, i] for i in items)
+        from ixle.schema import Event
+        e = Event(
+            #reason="birthday::"+self.__class__.__name__
+            reason="birthday",
+            details={'agent':self.__class__.__name__}
+            )
+        e.save()
 
     def get_progressbar(self, N, label='Files: '):
         assert N>0,str(N)

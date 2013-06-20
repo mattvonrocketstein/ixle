@@ -1,3 +1,10 @@
+# If you have trouble with lxml compilation:
+#   apt-get install libxml2-dev libxslt-dev
+#
+# If you're happy with a possibly older version
+# of lxml altogether though, you could try
+#   apt-get install python-lxml
+
 configparser
 progressbar==2.3
 pypdf==1.13
@@ -5,7 +12,12 @@ pdfminer
 pep362==0.6.2
 unipath==1.0
 mutagen==1.21
+
+# unfortunately this may break pip w/
+# non-2.6 python versions.  if you're using 2.7,
+# might need to comment this line out
 importlib==1.0.2
+
 # required by reporting
 pygments==1.6
 humanize==0.4
@@ -20,6 +32,9 @@ Importing==1.10
 tornado==3.0.2
 pytest==2.3.5
 unittest2
+jinja2
+# required by jinja but not installed?
+markupsafe==0.18
 configparser
 hachoir-metadata
 hachoir-core
@@ -28,3 +43,5 @@ hachoir-parser
 git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
 git+git://github.com/mattvonrocketstein/hammock.git#egg=hammock
 git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew
+Flask-Silk
+Flask-AutoIndex

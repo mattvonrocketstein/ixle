@@ -12,5 +12,7 @@ class AgentView(Widget):
 
     def main(self):
         from ixle.agents import registry
-        return self.render(_=self['_'],
-                           agents=registry)
+        from ixle.util import get_api
+        return self.render(
+            _=self['_'],
+            agents=set(registry.keys() + get_api().keys()))

@@ -23,7 +23,9 @@ def call_agent(agent_nick, item):
     kls = registry[agent_nick]
     class mymixin(object):
         def __iter__(self):
+            # bypasses the normal query mechanism
             return iter([[item.abspath, item]])
+
     kls = type('Dynamic_API_From_Agent',
                (mymixin, kls),
                {})
@@ -40,7 +42,7 @@ def build_agent_method(name):
         if item is None:
             return dict(error='no item found: "{0}"'.format(path))
         agent, result = call_agent(name, item)
-        if not result: result=agent.record
+        if not result: result = agent.record
         return dict(result)
     fxn.__name__ = name
     return fxn
@@ -55,14 +57,21 @@ filer = build_agent_method('filer')
 renamer = build_agent_method('renamer')
 mimer = build_agent_method('mimer')
 slayer = build_agent_method('slayer')
+janitor = build_agent_method('janitor')
 
 def path2item(path):
     db = database()
     return Item.load(db, path)
 
+def unindex(path):
+    from ixle.agents.unindex import Unindex
+    agent = Unindex(path=path, settings=conf(), force=True)
+    result = agent()
+    return result or agent.record
+
 def typer(path):
-    item=path2item(path)
-    agent, result = call_agent('typer',item)
+    item = path2item(path)
+    agent, result = call_agent('typer', item)
     return dict(status='ok')
 
 
@@ -86,3 +95,23 @@ def kill_directory(directory):
         count += 0
     return dict(docs_deleted=count,
                 dirs_deleted=[d])
+
+def blacklist(path):
+    """ kill files like "torrent_downloaded_from_demonoid.txt"
+        with a click, and keep the filename in a list.  later,
+        any files indexed with that name will be killed automatically,
+        but an event will be recorded.
+    """
+    item = path2item(path)
+    fname = item.fname
+    from ixle.schema import DSetting
+    from ixle.dsettings import FnameBlackList
+    from ixle.agents.janitor import Janitor
+    z2 = FnameBlackList.get_or_create()
+    blacklist = z2.decode()
+    assert blacklist is not None
+    if fname not in blacklist:
+        blacklist.append(fname)
+        z2.encode(blacklist)
+    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+    return janitor(path)

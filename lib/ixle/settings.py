@@ -52,6 +52,12 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         app = super(Settings,self)._get_app()
         for name,fxn in self.env_filters.items():
             app.jinja_env.filters[name] = fxn
+
+        from flask import Blueprint
+        from flask.ext.silk import Silk
+        blu = Blueprint(__name__, __name__)
+        silk = Silk(blu, silk_path='/icons/')
+
         return app
 
     def shell_namespace(self):
@@ -109,13 +115,6 @@ class Settings(CorkscrewSettings, DSettingsMixin):
             except socket.error, e:
                 raise RuntimeError('is the internet turned on? originally: '+str(e))
             self._db = db
-        return db
-
-    @property
-    def events_db(self):
-        # TODO: abstract this caching pattern
-        from ixle.util import get_or_create
-        db = get_or_create('ixle_events')
         return db
 
     @classmethod

@@ -36,7 +36,8 @@ class Search(View):
             items = [ Item.load(self.db, k) for k in keys ]
         else:
             items = None
-        return dict(p=page, is_dir='',
+        return dict(_=search_query,
+                    p=page, is_dir='',
                     num_results=num_results,
                     query=search_query, items=items,
                     start=start, end=end)
