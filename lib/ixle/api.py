@@ -23,7 +23,9 @@ def call_agent(agent_nick, item):
     kls = registry[agent_nick]
     class mymixin(object):
         def __iter__(self):
+            # bypasses the normal query mechanism
             return iter([[item.abspath, item]])
+
     kls = type('Dynamic_API_From_Agent',
                (mymixin, kls),
                {})
@@ -60,9 +62,15 @@ def path2item(path):
     db = database()
     return Item.load(db, path)
 
+def unindex(path):
+    from ixle.agents.unindex import Unindex
+    agent = Unindex(path=path, settings=conf(), force=True)
+    result = agent()
+    return result or agent.record
+
 def typer(path):
-    item=path2item(path)
-    agent, result = call_agent('typer',item)
+    item = path2item(path)
+    agent, result = call_agent('typer', item)
     return dict(status='ok')
 
 

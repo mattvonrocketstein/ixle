@@ -3,13 +3,13 @@
 {%block query_helo%}
 <table width=100%>
   <tr><td>
-      Browsing: "<i><span id=dir_view_widget>{{query}}</span></i>"
+      Browsing: {{_}}"<i><span id=dir_view_widget>{{query}}</span></i>"
     </td>
     <td align=right>
       {%include "widgets/fs_disconnect_notification.html"%}
       <small>
         <a href=#>index directory</a> |
-        <a href=#>unindex directory</a> |
+        <a href="javascript:post_to_api('unindex')">unindex directory</a> |
         <a href="javascript:interstitial_api_call('rename_dir')">rename dir recursively</a>
         <!--a href="/api?action=kill_directory&_={{query}}">kill directory</a-->
       </small>
@@ -19,7 +19,7 @@
 {%endblock%}
 
 {% block body %}
-<div style="width:100%">
+<div id=block_body style="margin-left:10px;width:100%">
   {%if files%}
   <strong>Files:</strong> <small><i>(according to filesystem)</i></small>
   <div style="margin-left:15px;">
@@ -73,5 +73,6 @@
 <script>
   {%with abspath=query%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
   {%include "javascript/show_detail.js"%}
+  {%include "javascript/post_to_api.js" %}
 </script>
 {%endblock%}

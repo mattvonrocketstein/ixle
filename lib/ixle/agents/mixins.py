@@ -34,6 +34,9 @@ class DestructionMixin(object):
         self.record['files_deleted'] += 1
         self.delete_record(key)
 
+    def delete_item(self, item):
+        return self.delete_record(item.id)
+
     def delete_record(self, key):
         del self.database[key]
         self.record['records_deleted'] += 1
