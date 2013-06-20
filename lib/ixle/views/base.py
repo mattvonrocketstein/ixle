@@ -24,7 +24,3 @@ class View(CorkscrewView, SaveMixin):
     def db(self):
         return self.settings.database
     database=db
-
-    @property
-    def events_db(self):
-        return self.settings.events_db

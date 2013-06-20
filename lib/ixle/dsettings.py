@@ -3,8 +3,10 @@
 """
 from report import report
 from ixle.schema import DSetting
-
+FNAME_BLACKLIST = 'fname_blacklist'
 NAMES = [
+    # any indexed item with this fname will be deleted from fs & db
+    FNAME_BLACKLIST,
     'ignore_patterns',
     'ignore_dirs',
     'random_sample_size'
@@ -33,3 +35,10 @@ def dynamic_settings():
 def clean_dsettings(db=None):
     # remove old setting we no longer use
     pass
+
+import json
+class FnameBlackList(DSetting):
+    setting_name = FNAME_BLACKLIST
+    default_value = '[]'
+    def decode(self):
+        return super(FnameBlackList, self).decode() or json.loads(self.default_value)

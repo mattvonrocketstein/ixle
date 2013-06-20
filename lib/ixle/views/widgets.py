@@ -22,7 +22,7 @@ class IsAvailable(Widget):
         report(msg.replace('this file','"{0}"'.format(abspath)))
         return ''.join([
             '<small><font style="color:red;margin-left:15px;">',
-            msg,
+            "<img src=/static/img/icon/red-x.png width=25px>"+msg,
             '</font></small>'])
 
 class DirViewWidget(Widget):

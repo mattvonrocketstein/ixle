@@ -1,17 +1,28 @@
 """ ixle.schema
 """
 import os
+from report import report
 import unipath as Unipath
 from datetime import datetime
 from ixle.python import ope, opj
 from couchdb.mapping import Document
+from couchdb.http import ResourceNotFound
 from couchdb.mapping import (TextField, IntegerField,
                              DateTimeField, ListField,
                              DictField, BooleanField)
 
 from ixle.python import sep, ope
 
-class Event(Document):
+
+class IxleDocument(object):
+    def save(self):
+        self.store(self.database())
+
+    def database(self):
+        from ixle import util
+        return util.database()
+
+class Event(Document, IxleDocument):
     type = TextField()
     """ recorded event for an alleged duplicate """
     reason = TextField()
@@ -20,19 +31,49 @@ class Event(Document):
     stamp = DateTimeField(default=datetime.now)
     details  = DictField()
 
-class IxleDocument(object):
-    def database(self):
-        from ixle import util
-        return util.database()
+    @property
+    def jdetails(self):
+        import json
+        return json.dumps(self.details or {})
 
+    @classmethod
+    def database(self):
+        from ixle.util import get_or_create
+        db = get_or_create('ixle_events')
+        return db
+    db = database
+
+import json
 class DSetting(Document, IxleDocument):
     # _id:   absolute path to file (also the primary key)
     _id   = TextField()
     value  = TextField()
 
     @classmethod
-    def get_or_create(self, name):
-        return self.database()[name]
+    def database(kls):
+        from ixle.dsettings import get_or_create_settings_database
+        return get_or_create_settings_database()
+
+    def encode(self,v):
+        self.value = json.dumps(v)
+        self.save()
+        report("saved {0} for setting @ {1}".format(v,self))
+
+    def decode(self):
+        return self.value and json.loads(self.value)
+
+    @classmethod
+    def get_or_create(kls, name=None):
+        if name is None:
+            assert kls.setting_name, 'blahblah'
+        try:
+            return kls.load(kls.database(), name)
+        except ResourceNotFound:
+            himself = kls(
+                _id = name,
+                value=getattr(self,'default_value', None))
+            himself.save()
+            return himself
 
 class Item(Document,IxleDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
