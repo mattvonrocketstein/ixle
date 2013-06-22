@@ -2,15 +2,21 @@
 
 from report import report
 
-from ixle.python import ope
+from ixle.python import ope, ops
 from ixle.agents.base import KeyIterator, DestructionMixin
+from ixle.agents.base import ItemIterator
 
 
-class Janitor(KeyIterator, DestructionMixin):
-    """ looks thru the database and finds anything
-        that, according to the global-ignores in
-        ixle.ini, should not be in the database at
-        all.
+class Janitor(ItemIterator, DestructionMixin):
+    """ looks thru the database and finds various
+        undesirables and removes them.  "undesirables"
+        fall into a few categories currently:
+
+        1) extension patterns that, according to the
+           global-ignores in ixle.ini, should not be
+           in the database at all.
+
+        2) exact filenames in the dynamic blacklist setting
 
         NOTE: cannot be combined with stalechecker,
               because of shared folders, temporary
@@ -24,10 +30,24 @@ class Janitor(KeyIterator, DestructionMixin):
         report("sweeping up anything matching: {0}".format(self.conf.ignore_globs))
         return super(Janitor, self).__call__(*args, **kargs)
 
+    def is_blacklisted(self, key):
+        from ixle.dsettings import FnameBlackList
+        blacklist = getattr(self, '_blacklist_cache', None)
+        if blacklist is None:
+            report('no cache found.. recomputing blacklist setting')
+            blacklist_setting = FnameBlackList.get_or_create()
+            self._blacklist_cache = blacklist_setting.decode()
+            return self.is_blacklisted(key)
+        return ops(key)[-1] in blacklist
+
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
             print fname
             self.delete_record(fname)
+        if self.is_blacklisted(fname):
+            self.delete_file(key=fname)
+            self.delete_record(key=fname)
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
 
 class StaleChecker(KeyIterator, DestructionMixin):
     """ looks thru the database, checking for

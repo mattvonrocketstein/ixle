@@ -9,9 +9,23 @@
 <div style="margin-left:15px;"
      {% if items %}
      {%for record in items%}
-     <strong>event@{{record.stamp}}</strong>
-     <small><b>reason: </b>{{record.reason}}</small>
-     <div style="margin-left:15px;"> {{record.details}} </div>
+     <table>
+       <tr>
+         <td><small>event@{{record.stamp}}</small></td>
+         <td><b>reason: </b>{{record.reason}}
+         <td>
+       </tr>
+       <tr>
+         <td id="record_{{record.rev}}" colspan=2>
+           <script>
+             var ppTable = prettyPrint({{record.jdetails}});
+             $('#record_{{record.rev}}').html('' + $(ppTable).html());
+           </script>
+         </td>
+       </tr>
+     </table>
+     <hr/>
+     <div style="margin-left:15px;"> details: {{record.details}} </div>
      <div style="margin-left:15px;">
        <small>
          {%for absf in record.item_ids%}

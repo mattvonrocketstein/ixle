@@ -2,6 +2,7 @@
 """
 import os
 opj = os.path.join
+ops = os.path.split
 ope = os.path.exists
 walk = os.path.walk
 isdir = os.path.isdir

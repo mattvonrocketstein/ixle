@@ -58,16 +58,7 @@ class Suggest(View):
         splits = '- .'
         suggestions = []
         return self.render(suggestions=suggestions)
-
-class Events(View):
-    url = '/events'
-    template = 'events.html'
-    def main(self):
-        if self['clear_all']:
-            self.events_db.delete_all(really=True)
-        records = [ Event.load(self.events_db, k) \
-                    for k in self.events_db.keys() ]
-        return self.render(items=records)
+from .events import Events
 
 class Nav(View):
     url = '/_nav'
@@ -157,7 +148,9 @@ class SettingsView(View):
         return self.render(
             couch_url=self.settings.server.admin_url(DB_NAME),
             settings=settings)
+
 from ixle.views.api import APIView
+
 __views__= [
     # corkscrew standard views
     CouchView, ListViews, SettingsView, Favicon, Login, Logout,

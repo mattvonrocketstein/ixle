@@ -11,7 +11,7 @@ class DestructionMixin(object):
         report('deleting file')
         if key and item:
             self.record['errors'] += 1
-            self.record['error'] = 'cant pass key and item'
+            self.record['error'] = 'cant pass key and item to delete_file.'
             return
         if not (key or item):
             self.record['errors'] += 1
