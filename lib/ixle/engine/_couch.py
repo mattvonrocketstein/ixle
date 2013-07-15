@@ -16,8 +16,8 @@ import requests
 from ixle.python import ope, opj
 from ixle.metadata import IxleMetadata, metadata
 
-from .data import db_postfixes
 from .base import Engine
+from .data import db_postfixes
 
 class CouchDB(Engine):
 
@@ -74,9 +74,13 @@ class CouchDB(Engine):
             with open(override_ini,'w') as fhandle:
                 metadata.couch_settings.write(fhandle)
             couch_cmd = 'couchdb -n -a {0}'.format(override_ini)
-            assert os.path.exists('./cdb')
+            assert os.path.exists(self.daemon_data_dir)
             print '--> running', couch_cmd
             return os.system(couch_cmd)
+
+    @property
+    def daemon_data_dir(self):
+        return './cdb'
 
     @staticmethod
     def purge_data():
@@ -106,7 +110,7 @@ class CouchDB(Engine):
             shutil.copy(IxleMetadata.virgin_local_ini,
                         IxleMetadata.default_local_ini)
 
-        data_dir = './cdb'
+        data_dir = self.daemon_data_dir
         data_files = get_data_files(data_dir)
         reset_local_dot_ini()
         if ope(data_dir) and data_files:
