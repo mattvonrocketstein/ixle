@@ -1,4 +1,4 @@
-""" ixle.local_couch
+""" ixle.engine._couchdb
 
     Abstraction representing this application's
     (self-hosted) couchdb instance
@@ -6,22 +6,62 @@
 import tempfile
 import sys
 import os
+from glob import glob
 import base64
 import demjson
 import shutil
 import requests
 
-from ixle.settings import Settings
 from ixle.python import ope, opj
-from glob import glob
+import couchdb
 from ixle.metadata import IxleMetadata, metadata
 
-db_postfixes = ['',          # main database, do not remove!
-                '_settings', # dynamic settings database
-                '_events'    # events and suggestions
-                ]
+from .data import db_postfixes
 
 class CouchDB(object):
+    def get_server(self):
+        server = getattr(self, '_server', None)
+        if server is None:
+            # ugh, hack
+            from hammock._couch import Server
+            conf = type('conf', (object,), dict(settings=self))
+            server = Server(conf)
+            self._server = server
+        return server
+
+    def get_database(self):
+        # TODO: abstract this caching pattern
+        db = getattr(self, '_database', None)
+        if db is None:
+            import socket
+            try:
+                db = self._create_main_database()
+            except socket.error, e:
+                raise RuntimeError('is the internet turned on? originally: '+str(e))
+            self._db = db
+        return db
+
+    @property
+    def settings(self):
+        from ixle.settings import Settings
+        return Settings()
+
+    def __getitem__(self, name):
+        return self.settings[name]
+
+    def _create_main_database(self):
+        """ this can either create the main database
+            or create a connection to it.  the
+            (see also: the `database` property handles
+            caching the database and it's connection locally)
+        """
+        main_db_name = self['ixle']['db_name']
+        try:
+            return self.get_server()[ main_db_name  ]
+        except couchdb.http.ResourceNotFound:
+            from ixle.util import report
+            raise RuntimeError("ResourceNotFound creating main database;"
+                               " did you run 'ixle --install'?")
 
     @staticmethod
     def start_daemon():
@@ -36,7 +76,7 @@ class CouchDB(object):
                                 'bin','couchpy')
             assert ope(path2couchpy)
             metadata.couch_settings['query_servers']['python'] = path2couchpy
-            metadata.couch_settings['httpd']['port'] = Settings()['couch']['port']
+            metadata.couch_settings['httpd']['port'] = self.settings['couch']['port']
 
             with open(override_ini,'w') as fhandle:
                 metadata.couch_settings.write(fhandle)

@@ -7,6 +7,7 @@ from corkscrew.settings import Settings as CorkscrewSettings
 import humanize
 
 import json
+from ixle.engine import engine
 
 def escapejs(val):
     try:
@@ -86,36 +87,11 @@ class Settings(CorkscrewSettings, DSettingsMixin):
 
     @property
     def server(self):
-        server = getattr(self, '_server', None)
-        if server is None:
-            # ugh, hack
-            from hammock._couch import Server
-            conf = type('conf', (object,), dict(settings=self))
-            server = Server(conf)
-            self._server = server
-        return server
-
-    def _create_main_database(self):
-        main_db_name = self['ixle']['db_name']
-        try:
-            return self.server[ main_db_name  ]
-        except couchdb.http.ResourceNotFound:
-            from ixle.util import report
-            raise RuntimeError("ResourceNotFound creating main database;"
-                               " did you run 'ixle --install'?")
+        return engine.get_server()
 
     @property
     def database(self):
-        # TODO: abstract this caching pattern
-        db = getattr(self, '_database', None)
-        if db is None:
-            import socket
-            try:
-                db = self._create_main_database()
-            except socket.error, e:
-                raise RuntimeError('is the internet turned on? originally: '+str(e))
-            self._db = db
-        return db
+        return engine.get_database()
 
     @classmethod
     def get_parser(kls):
