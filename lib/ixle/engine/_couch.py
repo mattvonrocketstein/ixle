@@ -3,10 +3,9 @@
     Abstraction representing this application's
     (self-hosted) couchdb instance
 """
-import tempfile
-import os, sys
 import base64
 import shutil
+import os, sys
 from glob import glob
 
 import demjson
@@ -21,6 +20,8 @@ from .data import db_postfixes
 
 class CouchDB(Engine):
 
+    server_cmd = 'couchdb -n -a {0}'
+
     def get_server(self):
         server = getattr(self, '_server', None)
         if server is None:
@@ -31,25 +32,7 @@ class CouchDB(Engine):
             self._server = server
         return server
 
-    def get_database(self):
-        # TODO: abstract this caching pattern
-        db = getattr(self, '_database', None)
-        if db is None:
-            import socket
-            try:
-                db = self._create_main_database()
-            except socket.error, e:
-                raise RuntimeError('is the internet turned on? originally: '+str(e))
-            self._db = db
-        return db
-
-    def _create_main_database(self):
-        """ this can either create the main database
-            or create a connection to it.  the
-            (see also: the `database` property handles
-            caching the database and it's connection locally)
-        """
-        main_db_name = self['ixle']['db_name']
+    def _create_main_database(self, main_db_name):
         try:
             return self.get_server()[ main_db_name  ]
         except couchdb.http.ResourceNotFound:
@@ -59,28 +42,18 @@ class CouchDB(Engine):
 
     def start_daemon(self):
         # TODO: allow local_ini override with -c option
-        local_ini = IxleMetadata.default_local_ini
-        if not ope(local_ini):
-            error = 'Directory should exist: ' + local_ini
-            return error
-        else:
-            override_ini = tempfile.mktemp(suffix='.ini')
-            path2couchpy = opj(sys.prefix, #assumes venv?
+        override_ini = self._get_tmp_ini()
+        path2couchpy = opj(sys.prefix, #assumes venv?
                                 'bin','couchpy')
-            assert ope(path2couchpy)
-            metadata.couch_settings['query_servers']['python'] = path2couchpy
-            metadata.couch_settings['httpd']['port'] = self.settings['couch']['port']
+        assert ope(path2couchpy)
+        self.engine_settings['query_servers']['python'] = path2couchpy
+        self.engine_settings['httpd']['port'] = self.settings['couch']['port']
 
-            with open(override_ini,'w') as fhandle:
-                metadata.couch_settings.write(fhandle)
-            couch_cmd = 'couchdb -n -a {0}'.format(override_ini)
-            assert os.path.exists(self.daemon_data_dir)
-            print '--> running', couch_cmd
-            return os.system(couch_cmd)
+        with open(override_ini, 'w') as fhandle:
+                self.engine_settings.write(fhandle)
+        couch_cmd = self.server_cmd.format(override_ini)
+        self._start_daemon(couch_cmd)
 
-    @property
-    def daemon_data_dir(self):
-        return './cdb'
 
     @staticmethod
     def purge_data():
@@ -110,7 +83,7 @@ class CouchDB(Engine):
             shutil.copy(IxleMetadata.virgin_local_ini,
                         IxleMetadata.default_local_ini)
 
-        data_dir = self.daemon_data_dir
+        data_dir = self.settings['ixle']['data_dir']
         data_files = get_data_files(data_dir)
         reset_local_dot_ini()
         if ope(data_dir) and data_files:
