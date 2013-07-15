@@ -5,29 +5,35 @@ from report import report
 import unipath as Unipath
 from datetime import datetime
 from ixle.python import ope, opj
-from couchdb.mapping import Document
+from couchdb.mapping import Document as CDocument
+from mongoengine import Document, StringField, BooleanField, ListField, DateTimeField, DictField, IntField
 from couchdb.http import ResourceNotFound
-from couchdb.mapping import (TextField, IntegerField,
-                             DateTimeField, ListField,
-                             DictField, BooleanField)
+#from couchdb.mapping import (TextField, IntField,
+#                             DateTimeField, ListField,
+#                             DictField, BooleanField)
 
 from ixle.python import sep, ope
 
+class User(Document):
+    email = StringField(required=True)
+    first_name = StringField(max_length=50)
+    last_name = StringField(max_length=50)
 
 class IxleDocument(object):
     def save(self):
         self.store(self.database())
 
     def database(self):
+        # HACK
         from ixle import util
         return util.database()
 
 class Event(Document, IxleDocument):
-    type = TextField()
+    type = StringField()
     """ recorded event for an alleged duplicate """
-    reason = TextField()
-    item_ids = ListField(TextField(), default=[])
-    resolution = TextField()
+    reason = StringField()
+    item_ids = ListField(StringField(), default=[])
+    resolution = StringField()
     stamp = DateTimeField(default=datetime.now)
     details  = DictField()
 
@@ -44,10 +50,10 @@ class Event(Document, IxleDocument):
     db = database
 
 import json
-class DSetting(Document, IxleDocument):
+class DSetting(CDocument, IxleDocument):
     # _id:   absolute path to file (also the primary key)
-    _id   = TextField()
-    value  = TextField()
+    _id   = StringField()
+    value  = StringField()
 
     @classmethod
     def database(kls):
@@ -80,24 +86,25 @@ class Item(Document,IxleDocument):
     # _id:   absolute path to file (also the primary key)
     # fname: just the filename.  includes extensions
     # fext:  just the extension.  (for "foo.py", this is simply "py")
-    _id   = TextField()
+    _id   = StringField()
     tags  = DictField()
-    fname = TextField()
-    fext  = TextField()
+    fname = StringField()
+    fext  = StringField()
 
     # output for these fields is retrieved from posix command line utilities.
     # new processes are cheap.  the files these commands run on are potentially
     # huge, but the output is small so pipes should be inexpensive.  doing it
     # this way are probably better than anything in python's stdlib..
 
-    md5        = TextField()            # via md5sum(1)
-    size       = IntegerField()         # via du(1)
-    file_magic = ListField(TextField(),
+    md5        = StringField()            # via md5sum(1)
+    size       = IntField()         # via du(1)
+    file_magic = ListField(StringField(),
                            default=[])  # via file(1)
-    mime_type  = TextField()            # via mimetypes module
-    file_type  = TextField()
+    mime_type  = StringField()            # via mimetypes module
+    file_type  = StringField()
     is_movie   = BooleanField()
     has_body   = BooleanField()
+
     @property
     def body(self):
         doc = self.database().get(self.id, attachments=True) #inefficient

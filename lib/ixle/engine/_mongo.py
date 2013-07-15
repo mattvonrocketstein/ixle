@@ -1,6 +1,7 @@
 """ ixle.engine._mongo
 """
 
+import mongoengine
 import configparser
 from pymongo import MongoClient
 import os
@@ -8,24 +9,15 @@ from ixle.util import report
 from .base import Engine
 
 MYCP = configparser.ConfigParser
-class DBWrapper(object):
-    def __init__(self, name, real_db):
-        self._name=name
-        self._db = real_db
-        self._collection = getattr(self._db, self._name)
-
-    def __iter__(self):
-        return self._collection.find()
 
 class MongoDB(Engine):
     server_cmd = 'mongod --config {0}'
 
-    def _create_main_database(self, main_db_name):
-        return DBWrapper(
-            main_db_name,
-            getattr(self.get_server(), main_db_name))
-
-    #def get_database(self)
+    def get_database(self):
+        self.get_server()
+        from ixle.schema import Item
+        return Item.objects
+    
     def _read_engine_settings(self):
         """ HACK:
               super's version only works for standard .ini files,
@@ -59,5 +51,9 @@ class MongoDB(Engine):
         self._start_daemon(cmd)
 
     def get_server(self):
-        return MongoClient(self.settings['mongo']['host'],
-                           int(self.settings['mongo']['port']))
+        port = int(self.settings['mongo']['port'])
+        host = self.settings['mongo']['host']
+        mongoengine.connect(self['ixle']['db_name'],
+                            host=host,
+                            port=port)
+        return MongoClient(host, port)
