@@ -4,26 +4,20 @@
     (self-hosted) couchdb instance
 """
 import tempfile
-import sys
-import os
-from glob import glob
+import os, sys
 import base64
-import demjson
 import shutil
+from glob import glob
+
+import demjson
+import couchdb
 import requests
 
 from ixle.python import ope, opj
-import couchdb
 from ixle.metadata import IxleMetadata, metadata
 
 from .data import db_postfixes
-class Engine(object):
-    def __init__(self):
-        from ixle.settings import Settings
-        self.settings = Settings()
-
-    def __getitem__(self, name):
-        return self.settings[name]
+from .base import Engine
 
 class CouchDB(Engine):
 
