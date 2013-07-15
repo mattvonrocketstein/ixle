@@ -107,11 +107,11 @@ class CouchDB(object):
             return doit(earl, auth=auth)
 
         host, db_name, user, password, port = [
-            settings['couch.server'],
-            settings['ixle.db_name'],
-            settings['couch.username'],
-            base64.b64decode(settings['couch.password']),
-            settings['couch.port'],]
+            settings['couch']['server'],
+            settings['ixle']['db_name'],
+            settings['couch']['username'],
+            base64.b64decode(settings['couch']['password']),
+            settings['couch']['port'],]
         host = host[:-1] if host.endswith('/') else host
 
         code, content = add_admin(password)

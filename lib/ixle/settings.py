@@ -1,6 +1,6 @@
 """ ixle.settings
 """
-
+import couchdb
 from corkscrew.settings import Settings as CorkscrewSettings
 
 import humanize
@@ -83,12 +83,21 @@ class Settings(CorkscrewSettings, DSettingsMixin):
             self._server = server
         return server
 
+    def _create_main_database(self):
+        main_db_name = self['ixle']['db_name']
+        try:
+            return self.server[ main_db_name  ]
+        except couchdb.http.ResourceNotFound:
+            from ixle.util import report
+            raise RuntimeError("ResourceNotFound creating main database;"
+                               " did you run 'ixle --install'?")
+
     @property
     def database(self):
         # TODO: abstract this caching pattern
         db = getattr(self, '_database', None)
         if db is None:
-            db = self.server[ self['ixle.db_name'] ]
+            db = self._create_main_database()
             self._db = db
         return db
 
