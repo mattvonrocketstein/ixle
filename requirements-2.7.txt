@@ -1,3 +1,5 @@
+pymongo
+mongoengine
 configparser
 progressbar==2.3
 pypdf
