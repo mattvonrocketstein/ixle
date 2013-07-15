@@ -17,13 +17,12 @@ from ixle.settings import Settings
 from ixle.local_couch import CouchDB
 from ixle.metadata import IxleMetadata
 from ixle.python import opj, ope, dirname, abspath
-
 from ixle.metadata import IxleMetadata
-from ixle.engine import engine
 
 def entry():
     """ entry point from commandline """
     settings = Settings()
+    engine = settings._engine
     opts, clargs = settings.get_parser().parse_args()
     action, args, kargs = None, tuple(), dict()
     if clargs:

@@ -4,8 +4,8 @@ import couchdb
 import warnings
 from corkscrew.settings import Settings as CorkscrewSettings
 
-import humanize
 import json
+import humanize
 
 def escapejs(val):
     try:
@@ -85,8 +85,12 @@ class Settings(CorkscrewSettings, DSettingsMixin):
 
     @property
     def _engine(self):
-        from ixle.engine import engine
-        return engine
+        if hasattr(self, '_engine_'): return self._engine_
+        else:
+            import ixle.engine as engines
+            engine_name = self['ixle']['engine']
+            self._engine_ = getattr(engines, engine_name)
+            return self._engine_
 
     @property
     def server(self):
