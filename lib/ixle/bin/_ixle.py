@@ -19,7 +19,9 @@ from ixle.metadata import IxleMetadata
 from ixle.python import opj, ope, dirname, abspath
 
 from ixle.metadata import IxleMetadata
-from ixle.local_couch import CouchDB
+from ixle.engine._couch import CouchDB
+
+engine = CouchDB
 
 def entry():
     """ entry point from commandline """
@@ -34,9 +36,9 @@ def entry():
     if opts.self_test:
         # call tox programmatically, here
         sys.exit(NotImplementedError)
-    elif opts.daemon: sys.exit(CouchDB.start_daemon())
-    elif opts.clean: sys.exit(CouchDB.clean_data())
-    elif opts.install: sys.exit(CouchDB.install_ixle(settings))
+    elif opts.daemon: sys.exit(engine.start_daemon())
+    elif opts.clean: sys.exit(engine.clean())
+    elif opts.install: sys.exit(engine.install())
     elif opts.api:
         import unipath
         from ixle import api

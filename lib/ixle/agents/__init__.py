@@ -25,11 +25,10 @@ class AgentRegistry(dict):
 registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
-  SpaceKiller,
   #heuristic record-rewriters
   MovieFinder, IMDBer,
   # filesystem-modifiers / heuristics record-rewriters
-  Renamer,
+  #Renamer,
   # experimental
   Body, Events,
   # clean-up (major side-effects)
@@ -41,4 +40,4 @@ registry = AgentRegistry()
   Indexer,
   # adaptive-taggers
   ImageTagger, MusicTagger
-  ])
+  ]
