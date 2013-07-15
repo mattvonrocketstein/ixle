@@ -19,9 +19,7 @@ from ixle.metadata import IxleMetadata
 from ixle.python import opj, ope, dirname, abspath
 
 from ixle.metadata import IxleMetadata
-from ixle.engine._couch import CouchDB
-
-engine = CouchDB
+from ixle.engine import engine
 
 def entry():
     """ entry point from commandline """
