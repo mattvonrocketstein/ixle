@@ -3,4 +3,6 @@
 #from pymongo import MongoClient
 #client = MongoClient()
 class MongoDB(object):
-    pass
+    def get_server(self):
+        return MongoClient('localhost', 27017)
+

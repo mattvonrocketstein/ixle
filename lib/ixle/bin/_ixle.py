@@ -35,7 +35,7 @@ def entry():
         # call tox programmatically, here
         sys.exit(NotImplementedError)
     elif opts.daemon: sys.exit(engine.start_daemon())
-    elif opts.clean: sys.exit(engine.clean())
+    elif opts.purge: sys.exit(engine.purge_data())
     elif opts.install: sys.exit(engine.install())
     elif opts.api:
         import unipath

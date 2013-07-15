@@ -17,8 +17,16 @@ import couchdb
 from ixle.metadata import IxleMetadata, metadata
 
 from .data import db_postfixes
+class Engine(object):
+    def __init__(self):
+        from ixle.settings import Settings
+        self.settings = Settings()
 
-class CouchDB(object):
+    def __getitem__(self, name):
+        return self.settings[name]
+
+class CouchDB(Engine):
+
     def get_server(self):
         server = getattr(self, '_server', None)
         if server is None:
@@ -41,14 +49,6 @@ class CouchDB(object):
             self._db = db
         return db
 
-    @property
-    def settings(self):
-        from ixle.settings import Settings
-        return Settings()
-
-    def __getitem__(self, name):
-        return self.settings[name]
-
     def _create_main_database(self):
         """ this can either create the main database
             or create a connection to it.  the
@@ -63,8 +63,7 @@ class CouchDB(object):
             raise RuntimeError("ResourceNotFound creating main database;"
                                " did you run 'ixle --install'?")
 
-    @staticmethod
-    def start_daemon():
+    def start_daemon(self):
         # TODO: allow local_ini override with -c option
         local_ini = IxleMetadata.default_local_ini
         if not ope(local_ini):
@@ -86,7 +85,7 @@ class CouchDB(object):
             return os.system(couch_cmd)
 
     @staticmethod
-    def clean_data():
+    def purge_data():
         """ remove the couchdb data and start over
             careful, because this kills *everything*:
               1) ixle user,

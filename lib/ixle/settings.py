@@ -5,9 +5,7 @@ import warnings
 from corkscrew.settings import Settings as CorkscrewSettings
 
 import humanize
-
 import json
-from ixle.engine import engine
 
 def escapejs(val):
     try:
@@ -86,12 +84,17 @@ class Settings(CorkscrewSettings, DSettingsMixin):
                     database=self.database)
 
     @property
+    def _engine(self):
+        from ixle.engine import engine
+        return engine
+
+    @property
     def server(self):
-        return engine.get_server()
+        return self._engine.get_server()
 
     @property
     def database(self):
-        return engine.get_database()
+        return self._engine.get_database()
 
     @classmethod
     def get_parser(kls):
@@ -106,9 +109,9 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         parser.add_option('--install', dest='install',
                           default=False, action='store_true',
                           help='boostrap ixle into running couchdb')
-        parser.add_option('--clean', dest='clean',
+        parser.add_option('--purge', dest='purge',
                           default=False, action='store_true',
-                          help='clean couch data dir(DANGER!)')
+                          help='purge all data from engine(DANGER!)')
         parser.add_option('--action', dest='action',default='',
                           help='action [{0}]'.format(
                               '|'.join(registry.keys())))
