@@ -1,8 +1,7 @@
 """ ixle.engine._mongo
 """
-#from pymongo import MongoClient
-#client = MongoClient()
-class MongoDB(object):
+from .base import Engine
+class MongoDB(Engine):
     def get_server(self):
-        return MongoClient('localhost', 27017)
-
+        return MongoClient(self.settings['mongo']['server'],
+                           self.settings['mongo']['port'])
