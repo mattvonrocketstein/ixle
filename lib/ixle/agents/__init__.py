@@ -15,7 +15,7 @@ from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .space_killer import SpaceKiller
 from .body import Body
-from .renamer import Renamer
+#from .renamer import Renamer
 from .slayer import Slayer
 
 class AgentRegistry(dict):
@@ -26,7 +26,7 @@ class AgentRegistry(dict):
 registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
-  MovieFinder, IMDBer, Janitor, Body, Renamer,
+  MovieFinder, IMDBer, Janitor, Body, #Renamer,
   SpaceKiller, Slayer,
   StaleChecker, Sizer, Filer, Mimer,
   Stamper, Typer, Events, Md5er, Indexer, Tagger ]
