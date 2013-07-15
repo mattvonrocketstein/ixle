@@ -5,6 +5,8 @@
 # of lxml altogether though, you could try
 #   apt-get install python-lxml
 
+pymongo
+mongoengine
 configparser
 progressbar==2.3
 pypdf==1.13

@@ -36,6 +36,7 @@ class IxleAgent(SaveMixin, ReportMixin):
                  items=[], fill=None,
                  force=False, **kargs):
         """ fill+path determine self.query """
+        settings._engine.get_server() # HACK: ensure we're initialized
         self.record = defaultdict(lambda: 0)
         if self.requires_path:
            if not path or not ope(path):

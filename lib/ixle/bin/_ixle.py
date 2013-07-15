@@ -50,7 +50,7 @@ def entry():
         action = opts.action
         kargs = dict(path=path, settings=settings, fill=opts.fill)
         kargs.update(**opts.__dict__)
-        FORBIDDEN='daemon encode clean runner install shell port'.split()
+        FORBIDDEN = 'daemon encode purge runner install shell port'.split()
         [ kargs.pop(x) for x in FORBIDDEN]
         from ixle.agents import registry as _map
         try:

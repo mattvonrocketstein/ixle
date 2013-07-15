@@ -23,6 +23,7 @@ class Indexer(IxleAgent):
         self.index()
 
     def callback(self, id=None, **kargs):
+        print id
         if self.is_ignored(id):
             #report('ignoring')
             return
