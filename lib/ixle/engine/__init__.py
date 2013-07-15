@@ -2,5 +2,6 @@
 """
 from ixle.engine._mongo import MongoDB
 from ixle.engine._couch import CouchDB
-#engine = CouchDB() #
-engine = MongoDB()
+
+couch = couchdb = CouchDB()
+mongo = mongodb = MongoDB()
