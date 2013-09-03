@@ -14,7 +14,6 @@ from report import report
 
 from ixle.metadata import metadata
 from ixle.settings import Settings
-from ixle.local_couch import CouchDB
 from ixle.metadata import IxleMetadata
 from ixle.python import opj, ope, dirname, abspath
 from ixle.metadata import IxleMetadata

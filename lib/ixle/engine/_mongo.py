@@ -9,6 +9,13 @@ from ixle.util import report
 from .base import Engine
 
 MYCP = configparser.ConfigParser
+class mcw(object):
+    def __init__(self,old):
+        self.old=old
+
+    def __iter__(self):
+        from ixle.schema import Item
+        return Item.objects.all()
 
 class MongoDB(Engine):
     server_cmd = 'mongod --config {0}'
@@ -17,7 +24,7 @@ class MongoDB(Engine):
         self.get_server()
         from ixle.schema import Item
         return Item.objects
-    
+
     def _read_engine_settings(self):
         """ HACK:
               super's version only works for standard .ini files,
@@ -56,4 +63,4 @@ class MongoDB(Engine):
         mongoengine.connect(self['ixle']['db_name'],
                             host=host,
                             port=port)
-        return MongoClient(host, port)
+        return mcw(MongoClient(host, port))

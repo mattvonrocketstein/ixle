@@ -18,7 +18,7 @@ def escapejs(val):
 class DSettingsMixin(object):
     @property
     def _dynamic(self):
-        if getattr(self,'_dsettings', None) is None:
+        if getattr(self, '_dsettings', None) is None:
             from ixle.dsettings import dynamic_settings
             self._dsettings = dynamic_settings()
         return self._dsettings
@@ -128,4 +128,12 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         parser.add_option('--test',"-t", dest="self_test",
                           default=False, action='store_true',
                           help="run self tests")
+        return parser
+
+class TestSettings(Settings):
+    @classmethod
+    def get_parser(kls):
+        parser = Settings.get_parser()
+        parser.add_option('-s',dest='asd',default='')
+        #parser.parse_args = lambda: args,kargs
         return parser

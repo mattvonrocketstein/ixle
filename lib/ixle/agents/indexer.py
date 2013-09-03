@@ -23,7 +23,8 @@ class Indexer(IxleAgent):
         self.index()
 
     def callback(self, id=None, **kargs):
-        print id
+        print self.is_ignored(id), id
+        return
         if self.is_ignored(id):
             #report('ignoring')
             return
@@ -55,6 +56,7 @@ class Indexer(IxleAgent):
             root, _dir, files = stuff[i]
             pbar.update(i)
             for rel_name in files:
+                print rel_name
                 count += 1
                 self.callback(id=opj(root, rel_name))
         pbar.finish()
