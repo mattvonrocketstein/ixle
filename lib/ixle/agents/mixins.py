@@ -5,6 +5,7 @@ from report import report
 from ixle.python import now
 from couchdb.http import ResourceConflict
 
+
 class DestructionMixin(object):
 
     def delete_file(self, key=None, item=None):
@@ -58,6 +59,9 @@ class SaveMixin(object):
             return False
 
 class ReportMixin(object):
+
+    def complain_missing(self, apath=None):
+        report('file missing. gone? not mounted?')
 
     def report_error(self, *args, **kargs):
         self.record['error_count'] += 1

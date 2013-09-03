@@ -26,6 +26,7 @@ humanize==0.4
 requests==1.2.3
 demjson==1.6
 flask==0.9
+Flask-AutoIndex
 # TODO: requires SQLAlchemy, ugh.  replace it
 imdbpy==4.9
 # TODO: can upgrade to .9 now i think?
