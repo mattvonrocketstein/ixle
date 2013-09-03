@@ -153,7 +153,7 @@ from ixle.views.api import APIView
 
 __views__= [
     # corkscrew standard views
-    CouchView, ListViews, SettingsView, Favicon, Login, Logout,
+    CouchView, ListViews, Favicon, Login, Logout,
 
     #main ixle views
     SettingsView,

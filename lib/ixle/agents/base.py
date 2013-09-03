@@ -29,9 +29,6 @@ class IxleAgent(SaveMixin, ReportMixin):
 
     is_subagent = False
 
-    def complain_missing(self, apath=None):
-        report('file missing. gone? not mounted?')
-
     def __init__(self, path=None, settings=None,
                  items=[], fill=None,
                  force=False, **kargs):
@@ -40,7 +37,7 @@ class IxleAgent(SaveMixin, ReportMixin):
         self.record = defaultdict(lambda: 0)
         if self.requires_path:
            if not path or not ope(path):
-               if not ope(path):
+               if not path or not ope(path):
                    raise FileDoesntExist(str(path))
         self.path = path and abspath(path)
         self.conf = settings
