@@ -21,7 +21,8 @@ from .agents import AgentView
 from .spawn import Spawn
 from .detail import Detail
 from .browser import Browser
-#NIY
+from .dsettings import SettingsView#NIY
+from .home import HomePage
 
 class _DB(View):
     methods = 'GET POST'.split()
@@ -133,22 +134,6 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
 Fext = generate_attribute_filter_view('fext', label='extensions')
 FileTypeView  = generate_attribute_filter_view('file_type',label='types')
 MovieView  = generate_attribute_filter_view('is_movie',label='is_movie')
-
-from .home import HomePage
-from ixle.views.base import View
-class SettingsView(View):
-    url = '/_settings'
-    template = '_settings.html'
-
-    def main(self):
-        from ixle.dsettings import dynamic_settings, DB_NAME
-        tmp = dynamic_settings()
-        settings = tmp.values()
-        for doc in settings:
-            doc.edit_url = self.settings.server.document_url(DB_NAME, doc.id)
-        return self.render(
-            couch_url=self.settings.server.admin_url(DB_NAME),
-            settings=settings)
 
 from ixle.views.api import APIView
 
