@@ -112,7 +112,7 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
             <a href="?_={{fext}}">{{fext}}</a> |
             {%endfor%}
             """
-            fext_list = self.db._unique_values_for_fieldname(self.ATTR_NAME)
+            fext_list = self.db.distinct(field=self.ATTR_NAME)
             return dict(this_url=self.url,
                         label=self.label,
                         fext_list=fext_list)
