@@ -32,7 +32,7 @@ def hachm(filename):
     # Turn the tags into a defaultdict
     metalist = metadata.extractMetadata(parser).exportPlaintext()
     meta = defaultdict(defaultdict)
-    #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+
     for item in metalist[1:]:
         item = [x.strip() for x in item.split('-') if x.strip()][0]
         item = [ x.strip().lower().replace(' ','_') for x in item.split(':') ]

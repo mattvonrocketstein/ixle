@@ -24,7 +24,6 @@ def report_if_verbose(*args, **kargs):
 def get_or_create(DB_NAME):
     from ixle.settings import Settings
     server = Settings().server
-    #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     if DB_NAME not in server:
         report("creating database {0} on {1} ".format(DB_NAME, server))
         server.create(DB_NAME)
