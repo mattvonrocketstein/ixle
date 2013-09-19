@@ -65,7 +65,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         """
         import re
         from couchdb.mapping import Document
-        from ixle.schema import Item
+        from ixle.schema import Item, DSetting
         from ixle import util
         from ixle import heuristics
         #from ixle.fs import dbfs
@@ -77,6 +77,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
                     agents=agents,
                     metadata=metadata.metadata,
                     util=util,
+                    dsetting=DSetting,
                     #dbfs=dbfs,
                     heuristics=heuristics,
                     item=Item, Item=Item,

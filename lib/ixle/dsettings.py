@@ -20,16 +20,18 @@ def get_or_create_settings_database():
 
 def dynamic_settings():
     db = get_or_create_settings_database()
-    existing = [ DSetting.load(db, k) for k in db ]
-    names = [ x._id for x in existing ]
+    #existing = [ DSetting.load(db, k) for k in db ]
+    existing = [s for s in DSetting.objects.all()]#)[ for k in db ]
+    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+    names = [ x.name for x in existing ]
     for expected_name in NAMES:
         if expected_name not in names:
-            new_setting = DSetting(_id=expected_name)
-            new_setting.store(db)
+            new_setting = DSetting(name=expected_name)
+            new_setting.save() #new_setting.store(db)
             existing.append(new_setting)
     tmp={}
     for x in existing:
-        tmp[x._id] = x
+        tmp[x.name] = x
     return tmp
 
 def clean_dsettings(db=None):
@@ -37,8 +39,10 @@ def clean_dsettings(db=None):
     pass
 
 import json
+"""
 class FnameBlackList(DSetting):
     setting_name = FNAME_BLACKLIST
     default_value = '[]'
     def decode(self):
         return super(FnameBlackList, self).decode() or json.loads(self.default_value)
+"""
