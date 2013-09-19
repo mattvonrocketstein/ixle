@@ -9,13 +9,35 @@ from ixle.util import report
 from .base import Engine
 
 MYCP = configparser.ConfigParser
-class mcw(object):
+class MongoDatabaseWrapper(object):
+    def __init__(self,old):
+        self.old = old
+    def __iter__(self):
+        return self.old.find()
+
+class MongoClientWrapper(object):
     def __init__(self,old):
         self.old=old
+    def create(self,db_name):
+        return self.old[db_name]
+    def __getitem__(self,name):
+        return MongoDatabaseWrapper(self.old[name])
 
-    def __iter__(self):
-        from ixle.schema import Item
-        return Item.objects.all()
+    def edit_url(self, db):
+        return '#edit_url-{0}'.format(db)
+
+    def document_url(self, db_name, doc_id):
+        return '#doc_url-{0}-{1}'.format(db_name, doc_id)
+
+    def admin_url(self, db_name):
+        return '#admin_url-{0}'.format(db_name)
+
+    def __contains__(self, other):
+        assert isinstance(other, basestring)
+        return other in self.old.collection_names()
+#raise Exception#def __iter__(self):
+        #from ixle.schema import Item
+        #return Item.objects.all()
 
 class MongoDB(Engine):
     server_cmd = 'mongod --config {0}'
@@ -63,4 +85,6 @@ class MongoDB(Engine):
         mongoengine.connect(self['ixle']['db_name'],
                             host=host,
                             port=port)
-        return mcw(MongoClient(host, port))
+        return MongoClientWrapper(
+            getattr(MongoClient(host, port),
+                    self['ixle']['db_name']))

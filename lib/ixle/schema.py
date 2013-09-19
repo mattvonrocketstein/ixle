@@ -1,34 +1,21 @@
 """ ixle.schema
 """
 import os
-from report import report
-import unipath as Unipath
+import json
+
 from datetime import datetime
-from ixle.python import ope, opj
-from couchdb.mapping import Document as CDocument
-from mongoengine import Document, StringField, BooleanField, ListField, DateTimeField, DictField, IntField
-from couchdb.http import ResourceNotFound
-#from couchdb.mapping import (TextField, IntField,
-#                             DateTimeField, ListField,
-#                             DictField, BooleanField)
 
-from ixle.python import sep, ope
+import unipath as Unipath
+from mongoengine import (StringField, BooleanField,
+                         ListField, DateTimeField,
+                         DictField, IntField)
+from mongoengine import Document as mDocument
 
-class User(Document):
-    email = StringField(required=True)
-    first_name = StringField(max_length=50)
-    last_name = StringField(max_length=50)
 
-class IxleDocument(object):
-    def save(self):
-        self.store(self.database())
+from report import report
+from ixle.python import sep, ope, opj
 
-    def database(self):
-        # HACK
-        from ixle import util
-        return util.database()
-
-class Event(Document, IxleDocument):
+class Event(mDocument):
     type = StringField()
     """ recorded event for an alleged duplicate """
     reason = StringField()
@@ -49,10 +36,10 @@ class Event(Document, IxleDocument):
         return db
     db = database
 
-import json
-class DSetting(CDocument, IxleDocument):
+
+class DSetting(mDocument):
     # _id:   absolute path to file (also the primary key)
-    _id   = StringField()
+    name   = StringField()
     value  = StringField()
 
     @classmethod
@@ -60,7 +47,7 @@ class DSetting(CDocument, IxleDocument):
         from ixle.dsettings import get_or_create_settings_database
         return get_or_create_settings_database()
 
-    def encode(self,v):
+    def encode(self, v):
         self.value = json.dumps(v)
         self.save()
         report("saved {0} for setting @ {1}".format(v,self))
@@ -81,15 +68,15 @@ class DSetting(CDocument, IxleDocument):
             himself.save()
             return himself
 
-class Item(Document,IxleDocument):
+class Item(mDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
     # _id:   absolute path to file (also the primary key)
     # fname: just the filename.  includes extensions
     # fext:  just the extension.  (for "foo.py", this is simply "py")
-    _id   = StringField()
-    tags  = DictField()
-    fname = StringField()
-    fext  = StringField()
+    path   = StringField(required=True)
+    host   = StringField()
+    tags   = ListField(StringField())
+    fext   = StringField()
 
     # output for these fields is retrieved from posix command line utilities.
     # new processes are cheap.  the files these commands run on are potentially
@@ -103,18 +90,10 @@ class Item(Document,IxleDocument):
     mime_type  = StringField()            # via mimetypes module
     file_type  = StringField()
     is_movie   = BooleanField()
-    has_body   = BooleanField()
-
-    @property
-    def body(self):
-        doc = self.database().get(self.id, attachments=True) #inefficient
-        attachments = doc.pop('_attachments', {})
-        return attachments
-        #self.database().get_attachment(self.id,'body.txt')
 
     @property
     def unipath(self):
-        return Unipath.FSPath(self.id)
+        return Unipath.FSPath(self.path)
 
     @property
     def dir(self):
@@ -129,30 +108,19 @@ class Item(Document,IxleDocument):
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
 
-    def database(self):
-        from ixle import settings
-        return settings.Settings().database
-
-    def raw_contents(self):
-        return self.database().get_attachment(self, 'body.txt').read()
+    #def database(self):
+    #    from ixle import settings
+    #    return settings.Settings().database
 
     def exists(self):
         """ NOTE: False here does not mean the file is gone..
                   it could be that it's simply not mounted
         """
-        return ope(self.abspath)
+        return self.unpath.exists()
 
     @property
     def just_name(self):
         return os.path.splitext(self.fname)[0]
-
-    @property
-    def abspath(self):
-        try:
-            return self.id.encode('utf-8')
-        except UnicodeEncodeError,e:
-            print self.id
-            raise
 
     @property
     def size_mb(self):
@@ -161,4 +129,8 @@ class Item(Document,IxleDocument):
 
     @property
     def dirname(self):
-        return self.abspath.split(sep)
+        return self.unipath.dirname
+
+    @staticmethod
+    def _connect_db():
+        from ixle.engine._mongo import connect; return connect()
