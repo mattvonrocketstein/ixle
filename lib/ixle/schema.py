@@ -130,7 +130,3 @@ class Item(mDocument):
     @property
     def dirname(self):
         return self.unipath.dirname
-
-    @staticmethod
-    def _connect_db():
-        from ixle.engine._mongo import connect; return connect()

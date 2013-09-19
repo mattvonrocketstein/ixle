@@ -1,15 +1,42 @@
 {%extends "layout.html"%}
 
 {%block body%}
-<a href="{{couch_url}}"> {{couch_url}}</a>
-{%for setting in settings %}
-<div>
-  <h4><a href="{{setting.edit_url}}">{{setting.id}}</a></h4>
-  <iframe style="margin-left:10px;width:95%;height:300px;" name="framename"
-          id="myframe" src="{{setting.edit_url}}"></iframe>
-  <hr/>
-</div>
-{%endfor%}
+<script>{%include "javascript/base.js"%}</script>
+
+<table>
+  {%for setting in settings %}
+  <tr>
+    <td>{{setting.name}}</td>
+    <td>
+      <form method=GET id="setting_{{setting.name}}">
+        <input id=vsetting_{{setting.name}} type=text value="{{setting.value}}">
+        <input type=submit>
+      </form>
+      <script>
+        $('#setting_{{setting.name}}').submit(function(){
+        var pdata = { name:'{{setting.name}}',
+                      value:$('#vsetting_{{setting.name}}').attr('value')};
+        $.ajax({
+        url: '{{this_url}}',
+        type: "POST",
+        data: pdata,
+        dataType: "html",
+        beforeSend: function(){
+        flash('sending data.. '+json2string(pdata))
+        },
+        error: function(){flash('error saving.. check console');},
+        success: function() {
+        flash('finished storing data.  (reload the page to see updates)')
+        $('#loading').hide();
+        }
+        });
+        return false; //prevent default submission.
+        });
+      </script>
+    </td>
+  </tr>
+  {%endfor%}
+</table>
 
 
 
