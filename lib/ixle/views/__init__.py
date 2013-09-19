@@ -142,7 +142,8 @@ class SettingsView(View):
 
     def main(self):
         from ixle.dsettings import dynamic_settings, DB_NAME
-        settings = dynamic_settings().values()
+        tmp = dynamic_settings()
+        settings = tmp.values()
         for doc in settings:
             doc.edit_url = self.settings.server.document_url(DB_NAME, doc.id)
         return self.render(
