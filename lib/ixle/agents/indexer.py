@@ -15,7 +15,7 @@ class Indexer(IxleAgent):
         mentioned in db
     """
     requires_path = True
-    provides = 'fname fext _id'.split()
+    provides = 'fname fext path'.split()
     nickname = 'index'
 
     @wrap_kbi
@@ -23,42 +23,44 @@ class Indexer(IxleAgent):
         self.index()
 
     def callback(self, id=None, **kargs):
-        print self.is_ignored(id), id
-        return
         if self.is_ignored(id):
-            #report('ignoring')
             return
         assert id is not None, 'this callback takes an id'
         abs_path = id
         rel_name = abs_path.split(sep)[-1]
         extension = splitext(rel_name)
-        item = Item(fname=rel_name.decode('utf-8'),
-                    fext=extension,
-                    _id=abs_path.decode('utf-8'))
-        success = self.save(item, quiet=True)
-        if not success and self.force:
-            report('force-saving.. might be nasty')
-            del self.database[item.id]
-            report("overwriting data: " + item.fname)
-            self.save(item)
-        elif success:
+        data = dict(fext=extension,path=abs_path)
+        # abs_path.decode('utf-8'))
+        try:
+            item = Item.objects.get(path=data['path'])
+        except Item.DoesNotExist:
+            item = Item(**data)
+            item.save()
             report("fresh data: " + item.fname)
+        else:
+            err = 'item already exists and "force" was not specified'
+            assert self.force, err
+            #report("overwriting data: " + item.fname)
+            self.record['overwrote'] += 1
+            item.delete()
+            item = Item(**data)
+        result = self.save(item)
+        return result
 
     def index(self):
         report('running index for ' + self.path)
-        print
         count = 0
         stuff = list(os.walk(self.path))
         num_files = len(stuff)
         pbar = self.get_progressbar(num_files)
-#ProgressBar(widgets=PBAR_WIDGETS, maxval=num_files).start()
+        #ProgressBar(widgets=PBAR_WIDGETS, maxval=num_files).start()
         for i in range(num_files):
             root, _dir, files = stuff[i]
             pbar.update(i)
             for rel_name in files:
-                print rel_name
+                fname = opj(root, rel_name)
                 count += 1
-                self.callback(id=opj(root, rel_name))
+                self.callback(id=fname)
         pbar.finish()
         report.console.draw_line()
         report('total files: ' + str(count))

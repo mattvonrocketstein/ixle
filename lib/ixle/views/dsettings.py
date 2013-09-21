@@ -12,7 +12,7 @@ class SettingsView(View):
         name = self['name']
         assert name
         value = self['value']
-        value = None if value=='None' else value
+        value = None if value in ['None',''] else value
         from ixle.schema import DSetting
         setting = DSetting.objects.get(name=name)
         assert setting

@@ -4,7 +4,7 @@
 import mutagen
 from report import report
 
-from ixle.query import javascript
+#from ixle.query import javascript
 from .base import ItemIterator
 
 from hachoir_metadata import metadata

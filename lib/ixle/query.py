@@ -3,7 +3,7 @@
 from ixle.util import yield_items_from_rows
 from ixle.python import dirname, ope, opj
 from jinja2 import FileSystemLoader, Environment
-
+raise Exception,'deprecated'
 couch_js_dir = opj(dirname(__file__), 'templates', 'couch_js')
 assert ope(couch_js_dir)
 LOADER = FileSystemLoader(couch_js_dir)

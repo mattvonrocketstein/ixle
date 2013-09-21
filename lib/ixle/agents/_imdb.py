@@ -7,7 +7,7 @@ import demjson
 from report import report
 
 from ixle.heuristics import is_movie
-from ixle.query import javascript
+#from ixle.query import javascript
 from ixle.agents.base import ItemIterator
 from ixle import heuristics
 
