@@ -1,4 +1,4 @@
-{% block body %}
+{#% block body %#}
 
 <table style="margin-left:10px;width:100%">
   <tr>
@@ -14,7 +14,7 @@
   {%for item in items%}
   <tr>
     <td><small>
-        <a href="javascript:show_detail({{item.id|escapejs}})">{{item.fname}}</a>
+        <a href="javascript:show_detail({{item.path|escapejs}})">{{item.path}}</a>
     </small></td>
     <td NOWRAP> <small>{{item.t_seen|naturaltime}}</small></td>
     <td NOWRAP> <small>{{item.t_mod|naturaltime}}</small></td>
@@ -57,4 +57,4 @@
 <script>
   {%include "javascript/show_detail.js"%}
 </script>
-{% endblock %}
+{#% endblock %#}

@@ -13,7 +13,7 @@ class Detail(View):
         k = self['_']
         if not k:
             return self.flask.render_template('not_found.html')
-        item = Item.load(self.db, k)
+        item = Item.objects.get(path=k)
         if item is None:
             return self.flask.render_template('not_found.html', filename=k)
         return item
