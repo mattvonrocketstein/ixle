@@ -3,7 +3,7 @@
 from ixle.views.search import Search
 from corkscrew.views import BluePrint
 from report import report
-from ixle.query import javascript
+#from ixle.query import javascript
 from ixle.schema import Item
 
 class Browser(Search):
