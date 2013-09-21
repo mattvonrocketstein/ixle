@@ -31,23 +31,25 @@ class Janitor(ItemIterator, DestructionMixin):
         return super(Janitor, self).__call__(*args, **kargs)
 
     def is_blacklisted(self, key):
-        from ixle.dsettings import FnameBlackList
+        from ixle.schema import DSetting
         blacklist = getattr(self, '_blacklist_cache', None)
         if blacklist is None:
             report('no cache found.. recomputing blacklist setting')
-            blacklist_setting = FnameBlackList.get_or_create()
+            # ?TODO: move this type of thing to DSetting.initialize()
+            blacklist_setting, created = DSetting.objects.get_or_create(
+                name='file_name_blacklist',
+                defaults = dict(value='[]'))
             self._blacklist_cache = blacklist_setting.decode()
             return self.is_blacklisted(key)
         return ops(key)[-1] in blacklist
 
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
-            print fname
+            report("{0} should be ignored, deleting it.".format(fname))
             self.delete_record(fname)
         if self.is_blacklisted(fname):
             self.delete_file(key=fname)
             self.delete_record(key=fname)
-        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
 
 class StaleChecker(KeyIterator, DestructionMixin):
     """ looks thru the database, checking for

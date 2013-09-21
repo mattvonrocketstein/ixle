@@ -39,8 +39,8 @@ class Event(mDocument):
 
 class DSetting(mDocument):
     # _id:   absolute path to file (also the primary key)
-    name   = StringField()
-    value  = StringField()
+    name   = StringField(required=True)
+    value  = StringField(default='None')
 
     @classmethod
     def database(kls):
@@ -50,9 +50,11 @@ class DSetting(mDocument):
     def encode(self, v):
         self.value = json.dumps(v)
         self.save()
-        report("saved {0} for setting @ {1}".format(v,self))
+        report("saved {0} for setting @ {1}".format(v, self))
 
     def decode(self):
+        if not self.value or self.value=="null":
+            return None
         return self.value and json.loads(self.value)
 
     @classmethod
@@ -91,13 +93,23 @@ class Item(mDocument):
     file_type  = StringField()
     is_movie   = BooleanField()
 
+    @classmethod
+    def startswith(self, name):
+        #return self._get_collection().find(
+        #    {'path' : {'$regex':'^'+name}})
+        return self.objects(__raw__={'path' : {'$regex':'^'+name}})
+
+    @property
+    def fname(self): return self.unipath.components()[-1]
+
     @property
     def unipath(self):
+        assert self.path
         return Unipath.FSPath(self.path)
 
     @property
-    def dir(self):
-        return self.unipath.parent
+    def dir(self): return self.unipath.parent
+
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last seen by ixle
@@ -116,7 +128,7 @@ class Item(mDocument):
         """ NOTE: False here does not mean the file is gone..
                   it could be that it's simply not mounted
         """
-        return self.unpath.exists()
+        return self.unipath.exists()
 
     @property
     def just_name(self):

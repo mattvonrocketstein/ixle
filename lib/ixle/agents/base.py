@@ -9,21 +9,12 @@ from couchdb.http import ResourceConflict
 from report import report
 
 from ixle.schema import Item
-from ixle.query import javascript
+#from ixle.query import javascript
 from ixle.python import ope, abspath, now
 from ixle.exceptions import FileDoesntExist
 from .mixins import DestructionMixin, SaveMixin, ReportMixin
 
-def wrap_kbi(fxn):
-    def newf(*args, **kargs):
-        out = None
-        try:
-            out = fxn(*args, **kargs)
-        except KeyboardInterrupt:
-            report("Exiting.")
-        finally:
-            return out
-    return newf
+from ixle.util import wrap_kbi
 
 class IxleAgent(SaveMixin, ReportMixin):
 
@@ -54,14 +45,15 @@ class IxleAgent(SaveMixin, ReportMixin):
         from ixle.schema import Event
         e = Event(
             #reason="birthday::"+self.__class__.__name__
-            reason="birthday",
-            details={'agent':self.__class__.__name__}
+            reason = "birthday",
+            details = { 'agent' : self.__class__.__name__ }
             )
         e.save()
 
     def get_progressbar(self, N, label='Files: '):
         assert N>0,str(N)
-        from progressbar import Percentage,ProgressBar,Bar,RotatingMarker,ETA,FileTransferSpeed
+        from progressbar import (Percentage, ProgressBar,
+                                 Bar,RotatingMarker, ETA, FileTransferSpeed)
         PBAR_WIDGETS = [label,
                         Percentage(), ' ',
                         Bar(marker=RotatingMarker()),
@@ -105,11 +97,10 @@ class IxleAgent(SaveMixin, ReportMixin):
 class QueryDecidingAspect(object):
     # TODO: use template
     def _query_from_path(self):
-        return ("function(doc){"
-                "if(doc['_id'].match('""" + self.path + """'))"""
-                "{emit(doc['_id'], doc)}}")
+        return Item.startswith(self.path)
 
     def _query_from_fill(self):
+        raise Exception,'niy'
         assert self.covers_fields
         assert len(self.covers_fields)==1
         return javascript.find_empty(self.covers_fields[0])
@@ -129,15 +120,6 @@ class QueryDecidingAspect(object):
         else:
             q = None
             report("chose query: (everything)")
-        if q is not None:
-            q = [x for x in q.split('\n') if x.strip()]
-            q = '\n'.join(q)
-            report("chose query: ")
-            report(
-                report.highlight.javascript(q),
-                plain=True)
-
-            report.console.draw_line()
         return q
 
 class IxleDBAgent(QueryDecidingAspect, IxleAgent):
@@ -159,32 +141,35 @@ class IxleDBAgent(QueryDecidingAspect, IxleAgent):
     requires_path = False
 
     def __iter__(self):
-        q = self.query
         t1 = now()
-        report('starting query: ',q)
-        db = self.database
+        report('starting query: ')
+        q = self.query
+        t2 = now()
+        report('finished query ({0}s)'.format(t2-t1))
+        return q
+        """db = self.database
         if q is not None:
-            result = [[x.key, Item.wrap(x.doc)]
-                      for x in db.query(q, include_docs=True) if x.key ]
+            raise Exception,'what do with query'+q
+            #result = [ [x.key, Item.wrap(x.doc)]
+            #          for x in db.query(q, include_docs=True) if x.key ]
         else:
             result = [ [ x, Item.load(db, x)] \
                        for x in db ]
-        t2 = now()
-        report('finished query ({0}s)'.format(t2-t1))
-        return iter(result)
+        return iter(result)"""
 
     @wrap_kbi
     def __call__(self):
-        kis = list(iter(self))
+        kis = list(self)
         num_items = len(kis)
         if num_items:
             random_index = random.randint(0, num_items-1)
             report("WorkUnits: {0}".format(num_items))
             pbar = self.get_progressbar(
-                num_items, label=self.__class__.__name__+':')
+                num_items,
+                label=self.__class__.__name__+':')
             report.console.draw_line()
             DEBUG = getattr(self, 'DEBUG', False)
-            for index,(key, item) in enumerate(kis):
+            for index, (key, item) in enumerate([[x.path,x] for x in kis]):
                 cb_kargs = self._get_callback_args(key, item)
                 if False:
                     if index==1:
@@ -195,11 +180,13 @@ class IxleDBAgent(QueryDecidingAspect, IxleAgent):
                             argv=['-noconfirm_exit'])()
                     if index==random_index:
                         self.record['random_key'] = key
-                try:
-                    self.callback(**cb_kargs)
-                except Exception,e:
-                    self.report_error("ERROR IN CALLBACK:" + str(e))
-                    raise
+                #try:
+                self.callback(**cb_kargs)
+                #except Exception,e:
+                #    err="ERROR IN CALLBACK:" + str(e)
+                #    print err
+                #    self.report_error(err)
+                #    raise
                 self.record['count_processsed'] += 1
                 pbar.update(index)
             else:

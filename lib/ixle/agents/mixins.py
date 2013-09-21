@@ -36,11 +36,14 @@ class DestructionMixin(object):
         self.delete_record(key)
 
     def delete_item(self, item):
-        return self.delete_record(item.id)
+        item.delete()
+        self.record['records_deleted'] += 1
 
     def delete_record(self, key):
-        del self.database[key]
-        self.record['records_deleted'] += 1
+        from ixle.schema import Item
+        item = Item.objects.get(path=key)
+        return self.delete_item(item)
+
 
 
 class SaveMixin(object):
@@ -48,15 +51,9 @@ class SaveMixin(object):
     def save(self, item, quiet=False):
         """ """
         item.t_last_seen = now()
-        try:
-            item.store(self.database)
-            self.record['count_saved']+=1
-            return True
-        except ResourceConflict as err:
-            failure_type, failure_msg = err.args[0]
-            if not quiet:
-                report(' {0}: {1}'.format(failure_type, failure_msg))
-            return False
+        item.save() #store(self.database)
+        self.record['count_saved'] += 1
+        return True
 
 class ReportMixin(object):
 

@@ -12,6 +12,15 @@ from couchdb.client import ViewResults
 from report import report
 from ixle.python import ope
 from ixle.schema import Item
+from ixle._atexit import handle_exit
+
+def wrap_kbi(fxn):
+    def cleanup():
+        print "exiting.."
+    def newf(*args, **kargs):
+        with handle_exit(cleanup):
+            fxn(*args, **kargs)
+    return newf
 
 def conf():
     from ixle import settings
@@ -72,12 +81,7 @@ def get_heuristics():
 
 def yield_items_from_rows(fxn):
     """ """
-    def new_fxn(*args, **kargs):
-        view = fxn(*args,**kargs)
-        assert isinstance(view, ViewResults)
-        return imap( lambda row: Item.wrap(row.doc),
-                     iter(view))
-    return new_fxn
+    raise Exception,'deprecated'
 
 def modification_date(filename):
     """ """

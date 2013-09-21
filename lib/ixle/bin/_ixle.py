@@ -65,7 +65,8 @@ def entry():
             agent = kls(*args, **kargs)
             report('action/agent = ' + str([action, agent])+'\n')
             report('  w/ kargs=' + str(kargs))
-            sys.exit(agent())
+            results=agent()
+            sys.exit()
     else:
         # do whatever corkscrew would have done
         # (this makes sure that --shell still works)
