@@ -6,7 +6,8 @@ from report import report
 #from ixle.query import javascript
 from ixle.schema import Item
 
-page_size = 15
+per_page = 15
+from flask_mongoengine.pagination import Pagination
 
 class Search(View):
 
@@ -14,8 +15,8 @@ class Search(View):
     url = '/search'
     methods = 'get post'.upper().split()
 
-    def get_couch_query(self,search_query):
-        return javascript.key_search(search_query)
+    #def get_couch_query(self, search_query):
+    #    return javascript.key_search(search_query)
 
     @property
     def ajax(self):
@@ -25,22 +26,28 @@ class Search(View):
         search_query = self['_']
         page = int(self['p'] or 1)
         start = 0
-        end = page_size
-        num_results = 0
-        if self.ajax and search_query:
-            couch_query = self.get_couch_query(search_query)
-            start = page_size*(page-1)
-            end   = page_size * page
-            keys = (self.db%couch_query)[ start : end ]
-            num_results = len(keys)
-            items = [ Item.load(self.db, k) for k in keys ]
-        else:
-            items = None
+        #end = page_size
+
+        items = Item.contains(search_query)
+        pitems = Pagination(items, page, per_page)
+        items=pitems.items
+        num_results = pitems.total
+        num_pages = pitems.pages
+
+        #if self.ajax and search_query:
+            #couch_query = self.get_couch_query(search_query)
+            #start = page_size*(page-1)
+            #end   = page_size * page
+            #keys = (self.db%couch_query)[ start : end ]
+            #items = [ Item.load(self.db, k) for k in keys ]
+        #else:
+        #    items =
         return dict(_=search_query,
-                    p=page, is_dir='',
+                    pagination=pitems, is_dir='',
                     num_results=num_results,
                     query=search_query, items=items,
-                    start=start, end=end)
+                    #start=start, end=end
+                    )
 
     def main(self):
         ctx = self.get_ctx()
