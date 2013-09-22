@@ -11,7 +11,7 @@
 """
 import unipath
 from report import report
-from ixle import util, query
+from ixle import util
 from ixle.schema import Item
 from ixle.util import database, conf
 
@@ -24,12 +24,12 @@ def call_agent(agent_nick, item):
     class mymixin(object):
         def __iter__(self):
             # bypasses the normal query mechanism
-            return iter([[item.abspath, item]])
+            return iter([item])
 
     kls = type('Dynamic_API_From_Agent',
                (mymixin, kls),
                {})
-    agent = kls(path=item.id, settings=conf(), force=True,)
+    agent = kls(path=item.path, settings=conf(), force=True,)
     result = agent()
     report('called agent, got ' + str(result))
     if result is None:
@@ -38,9 +38,11 @@ def call_agent(agent_nick, item):
 
 def build_agent_method(name):
     def fxn(path):
-        item = path2item(path)
-        if item is None:
-            return dict(error='no item found: "{0}"'.format(path))
+        try:
+            item = Item.objects.get(path=path)
+        except Item.DoesNotExist:
+            report("error grabbing item with path="+str(path))
+            raise
         agent, result = call_agent(name, item)
         if not result: result = agent.record
         return dict(result)
@@ -58,10 +60,6 @@ renamer = build_agent_method('renamer')
 mimer = build_agent_method('mimer')
 slayer = build_agent_method('slayer')
 janitor = build_agent_method('janitor')
-
-def path2item(path):
-    db = database()
-    return Item.load(db, path)
 
 def unindex(path):
     from ixle.agents.unindex import Unindex

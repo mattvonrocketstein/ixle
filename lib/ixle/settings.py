@@ -59,6 +59,21 @@ class Settings(CorkscrewSettings, DSettingsMixin):
 
         return app
 
+    def pre_run(self):
+
+        port = int(self['mongo']['port'])
+        host = self['mongo']['host']
+        db = self['ixle']['db_name']
+        #mongoengine.connect(db,
+        #                    host=host,
+        #                    port=port)
+        self.app.config["MONGODB_SETTINGS"] = dict(
+            DB=db, HOST=host, PORT=port)
+
+        from flask.ext.mongoengine import MongoEngine
+        db = MongoEngine(self.app)
+        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+
     def shell_namespace(self):
         """ the namespace published to ipython
             when using 'ixle --shell'
@@ -72,16 +87,16 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         from ixle import agents
         from ixle import api
         from ixle import metadata
+        #dbfs=dbfs,
+        #dupes_db=self.dupes_db,
         return dict(re=re,
                     api=api,
                     agents=agents,
                     metadata=metadata.metadata,
                     util=util,
                     dsetting=DSetting,
-                    #dbfs=dbfs,
                     heuristics=heuristics,
                     item=Item, Item=Item,
-                    #dupes_db=self.dupes_db,
                     database=self.database)
 
     @property

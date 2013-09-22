@@ -57,7 +57,7 @@ class ImageTagger(GenericTagger):
     nickname = 'itagger'
 
     def tagger_callback(self,item=None,**kargs):
-        m = hachm(item.id)
+        m = hachm(item.path)
         if m:
             m=dict(m)
         else: m={}
@@ -75,10 +75,12 @@ class MusicTagger(GenericTagger):
     def tagger_callback(self, item=None, **kargs):
         if any([self.force, not item.tags]):
             report(item.fname)
+            from mutagen.flac import FLACNoHeaderError
+            from mutagen.mp3 import HeaderNotFoundError
             try:
-                f = mutagen.File(item.abspath, easy=True)
-            except (EOFError, mutagen.flac.FLACNoHeaderError,
-                    mutagen.mp3.HeaderNotFoundError), e:
+                f = mutagen.File(item.path, easy=True)
+            except (EOFError, FLACNoHeaderError,
+                    HeaderNotFoundError), e:
                 self.report_error("error decoding: "+str(e))
                 return
             if f is not None:
