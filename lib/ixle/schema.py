@@ -77,7 +77,7 @@ class Item(mDocument):
     # fext:  just the extension.  (for "foo.py", this is simply "py")
     path   = StringField(required=True)
     host   = StringField()
-    tags   = ListField(StringField())
+    tags   = DictField() #ListField(StringField())
     fext   = StringField()
 
     # output for these fields is retrieved from posix command line utilities.

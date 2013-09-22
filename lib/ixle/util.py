@@ -66,7 +66,7 @@ def get_api():
     d_action = _harvest(api, 'directory')
     p_action = _harvest(api, 'path')
     out={}
-    [ out.update(x) for x in [d_action,p_action] ]
+    [ out.update(x) for x in [d_action, p_action] ]
     return out
 
 def get_heuristics():

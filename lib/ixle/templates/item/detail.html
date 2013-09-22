@@ -1,5 +1,6 @@
 {%extends "layout.html"%}
 {%block main_menu %}
+
 <table width=100%>
   <tr>
     <td>
@@ -16,10 +17,12 @@
           </div-->
     </td>
     <td align=right>
-      <a href="file://{{item.abspath}}">link for file://</a><strong> | </strong>
-      <a href="{{this_url}}?_={{item.id}}">this url</a><strong> | </strong>
+      <a href="file://{{item.path}}">link for file://</a><strong> | </strong>
+      <a href="{{this_url}}?_={{item.path}}">this url</a><strong> | </strong>
       <div id=agents_widget></div>
-      <script>$(document).ready(function(){$('#agents_widget').load('/_agents', {'_':'{{item.id}}'})})</script>
+      <script>
+        $(document).ready(function(){$('#agents_widget').load('/_agents', {'_':'{{item.path}}'})})
+      </script>
     </td>
   </tr>
 </table><hr/>
@@ -35,7 +38,7 @@
       <td id=disconnection_notification>
         <small>
         <script>
-          $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{item.abspath}}'})});
+          $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{item.path}}'})});
         </script></small>
       </td>
     </tr>
@@ -128,7 +131,10 @@
   {#% include "item_detail_genre.html" %#}
 
 <hr/>
-  <strong>Tags:</strong> <small><a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a></small>
+  <strong>Tags:</strong>
+  <small>
+    <a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a>
+  </small>
   <div style="margin-top:5px;margin-left:15px;">
     <table>
       {% for k,v in item.tags.items()%}
@@ -144,15 +150,15 @@
   </div>
 </div>
 <script>
-  {%with abspath=item.abspath%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
+  {%with abspath=item.path%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
 </script>
 {% endblock %}
 
 
 {%block footer_right%}
-<a href="/delete?from=db&_={{item.id}}">
+<a href="/delete?from=db&_={{item.path}}">
   delete entry (from database)</a> <b>|</b>
 <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
 <a href=#>show file</a> (NIY)<b>|</b>
-<a href="/suggest?_={{item.abspath}}">suggest name</a> (NIY)
+<a href="/suggest?_={{item.path}}">suggest name</a> (NIY)
 {%endblock%}
