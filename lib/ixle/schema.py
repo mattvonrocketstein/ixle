@@ -99,6 +99,10 @@ class Item(mDocument):
         #    {'path' : {'$regex':'^'+name}})
         return self.objects(__raw__={'path' : {'$regex':'^'+name}})
 
+    @classmethod
+    def contains(self, s):
+        return self.objects(__raw__={'path' : {'$regex':s}})
+
     @property
     def fname(self): return self.unipath.components()[-1]
 
