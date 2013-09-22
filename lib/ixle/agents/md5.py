@@ -12,10 +12,10 @@ class Md5er(ItemIterator):
         report(item.fname)
         if not item.md5:
             if not item.exists():
-                self.complain_missing(item.abspath)
+                self.complain_missing(item.path)
                 return
             result = self.run_and_collect(
-                'md5sum "' + item.abspath + '"')
+                'md5sum "' + item.path + '"')
             try:
                 result = result.split()[0]
             except:

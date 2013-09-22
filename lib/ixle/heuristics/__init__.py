@@ -56,6 +56,7 @@ def is_code(item):
 
 def guess_genres(item):
     # should work on imdbd-movies that have been
+    #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     tmp = item.tags.get(
         'genres', # tagged movies
         item.tags.get('genre', []) # tagged audio

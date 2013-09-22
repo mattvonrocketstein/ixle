@@ -14,7 +14,7 @@ class Sizer(ItemIterator):
         # FIXME: use python
         if item.exists():
            tmp = self.run_and_collect(
-               'du "' + item.abspath + '" 2>/dev/null').strip().split()
+               'du "' + item.path + '" 2>/dev/null').strip().split()
            if tmp:
                return int(tmp[0])
         else:
@@ -22,11 +22,11 @@ class Sizer(ItemIterator):
 
     def callback(self, item=None, **kargs):
         if any([self.force, not item.size]):
-            report(item.abspath)
+            report(item.path)
             size = self.get_size(item)
             if size is not None:
                 item.size = size
-                self.report_status(str([size, item.fname]))
+                self.report_status(str([item.fname, size]))
                 self.save(item)
             else:
                 self.complain_missing()

@@ -14,14 +14,14 @@ class Mimer(ItemIterator):
     covers_fields = ['mime_type']
 
     def set_mime(self, item):
-        typ, encoding = guess_type(item.id)
+        typ, encoding = guess_type(item.path)
         if typ:
             report_if_verbose('set_mime: '+typ)
         else:
             typ = guess_mime(item)
             report_if_verbose('set_consult: ' + str(typ))
         item.mime_type = typ
-        self.report_status('{0} for {1}'.format(typ, item.id))
+        self.report_status('{0} for {1}'.format(typ, item.path))
         self.save(item)
 
     def callback(self, item=None, **kargs):
@@ -67,14 +67,14 @@ class Typer(ItemIterator):
                 elif 'image' in advice: typ = 'image'
                 else:
                     changed = False
-                    #print '-'*80,'\n'+'unknown file-type:', item.id
+                    #print '-'*80,'\n'+'unknown file-type:', item.path
                     #print item.mime_type, '::', item.file_magic
                     #print '-'*80
                     return
 
             item.file_type = typ
-            #print typ, item.id
+            #print typ, item.path
             if changed:
                 self.save(item)
         else:
-            report_if_verbose(item.id, item.file_type)
+            report_if_verbose(item.path, item.file_type)

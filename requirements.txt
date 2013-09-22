@@ -5,6 +5,7 @@
 # of lxml altogether though, you could try
 #   apt-get install python-lxml
 
+processing
 pymongo
 mongoengine
 configparser
@@ -14,6 +15,7 @@ pdfminer
 pep362==0.6.2
 unipath==1.0
 mutagen==1.21
+flask-mongoengine
 
 # unfortunately this may break pip w/
 # non-2.6 python versions.  if you're using 2.7,

@@ -13,13 +13,13 @@ class Filer(ItemIterator):
 
     def callback(self, item=None, **kargs):
         if any([self.force, not item.file_magic]):
-            if ope(item.abspath):
+            if ope(item.path):
                 # -b is "brief" option, meaning to not prepend filename
-                cmd = 'file -b "{0}"'.format(item.abspath)
+                cmd = 'file -b "{0}"'.format(item.path)
                 result = self.run_and_collect(cmd)
                 result = [ x.strip() for x in result.split(',') ]
                 result = [x for x in result if x]
                 item.file_magic = result
                 self.report_status('{0} gives: {1}'.format(
-                    item.id, result))
+                    item.path, result))
                 self.save(item)
