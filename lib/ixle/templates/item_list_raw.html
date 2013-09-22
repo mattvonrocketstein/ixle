@@ -31,26 +31,16 @@
   <tr>
     <td align=left>
       {%if query%}
-      <small>
-        {%if num_results%}
-        <a href="{{this_url}}?p={{p-1}}&_={{query}}">previous page</a>
-        <strong>|</strong>
-        <a href="{{this_url}}?p={{p+1}}&_={{query}}">next page</a>
-        {%endif%}
-      </small>
+      {% import 'ixle_macros.html' as macros %}
+      {{macros.render_pagination(pagination, '/search?_='+_)}}
       {%endif%}
     </td>
     <td colspan=0 align=right>
       {%if num_results%}
       <font color=red>
-        showing {{num_results}} result(s).
+        total result(s): {{num_results}}
       </font>
-      <strong>|</strong>
       {%endif%}
-      <font color=red>
-        page={{p}}, slice=({{start}}-{{end}})
-      </font>
-      <b>|</b>
     </td>
   </tr>
 </table>
