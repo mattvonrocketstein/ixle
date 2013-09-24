@@ -1,0 +1,29 @@
+<form method=POST id="form_{{nickname}}">
+  <table>
+    <tr>
+      {%for fieldname in remote_fields %}
+      <th>
+        <b>{{fieldname}}</b>
+      </th>
+      {%endfor%}
+      <th>control</th>
+    </tr>
+    <tr>
+      {%for fieldname in remote_fields %}
+      <td>
+        <input name="{{nickname}}_{{fieldname}}"
+               type=text value="{{remote[fieldname]}}">
+      </td>
+      {%endfor%}
+      <td>
+        <input type=submit>
+      </td>
+    </tr>
+  </table>
+</form>
+<script>
+  $('#form_{{nickname}}').submit(function(){
+    window.location = ('{{this_url}}?data=1&'+$(this).serialize());
+    return false; //prevent default submission.
+  });
+</script>

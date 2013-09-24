@@ -10,7 +10,7 @@ class APIView(Widget):
     url = '/api'
     returns_json = True
     def main(self):
-        path = self['_']
+        path   = self['_']
         action = self['action']
         assert path and action
         api = get_api()

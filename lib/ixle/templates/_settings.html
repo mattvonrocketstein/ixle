@@ -3,6 +3,8 @@
 {%block body%}
 <script>{%include "javascript/base.js"%}</script>
 
+<h3>Dynamic settings (from database)</h3>
+<hr/>
 <table>
   {%for setting in settings %}
   <tr>
@@ -37,7 +39,6 @@
   </tr>
   {%endfor%}
 </table>
-
-
-
+<hr/>
+<h3>Config (from .ini) </h3>
 {%endblock%}

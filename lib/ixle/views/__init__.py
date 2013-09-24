@@ -9,8 +9,6 @@ from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
 from corkscrew.views import ListViews, SettingsView
 
-from hammock.views.administration import CouchView
-
 from ixle.schema import Item, Event
 #from ixle.query import find_equal, find_empty
 
@@ -60,12 +58,7 @@ class Suggest(View):
         suggestions = []
         return self.render(suggestions=suggestions)
 from .events import Events
-
-class Nav(View):
-    url = '/_nav'
-    template = 'navigation.html'
-    def main(self):
-        return self.render()
+from .nav import Nav
 
 class Delete(View):
     blueprint = BluePrint('asdasdas','asdasdasd')
@@ -92,6 +85,7 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
     class GenericFiltrationView(View):
         #FIXME: inefficient, not paged..
         def filter(self):
+            from ixle.schema import Item
             # something like "avi"
             field_query = self['_']
             # both cases return a <Row>-iterator
@@ -99,7 +93,8 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
                 field_query = '(NULL)'
                 items = find_empty(self.db, self.ATTR_NAME)
             else:
-                items = find_equal(self.db, self.ATTR_NAME, field_query)
+                items = Item.objects.filter(
+                    **{self.ATTR_NAME:field_query})
             # get back a list of items
             #items = [Item.wrap(r.doc) for r in items]
             return self.render(label=self.label,
@@ -136,16 +131,17 @@ FileTypeView  = generate_attribute_filter_view('file_type',label='types')
 MovieView  = generate_attribute_filter_view('is_movie',label='is_movie')
 
 from ixle.views.api import APIView
+from ixle.views.remotes import RemotesView
 
 __views__= [
     # corkscrew standard views
-    CouchView, ListViews, Favicon, Login, Logout,
+    ListViews, Favicon, Login, Logout,
 
     #main ixle views
     SettingsView,
     AgentView, Spawn, Browser, Search, HomePage,
     FileTypeView, Fext, Detail, Events, MovieView,
-
+    RemotesView,
     _DB,
 
     # ajax slaves or simple redirection views
