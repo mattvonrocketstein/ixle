@@ -18,6 +18,8 @@ class View(CorkscrewView, SaveMixin):
     def render(self, *args, **kargs):
         if 'this_url' not in kargs:
             kargs.update(this_url=self.url)
+        if '_' not in kargs and self['_']:
+            kargs.update(_=self['_'])
         return super(View,self).render(*args, **kargs)
 
     @property

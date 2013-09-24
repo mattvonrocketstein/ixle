@@ -3,9 +3,13 @@
 
 from ixle.views.base import View
 
-class SettingsView(View):
+class CorkscrewSettingsView(View):
+    # TODO: abstract this back to corkscrew
     url = '/_settings'
     template = '_settings.html'
+    methods ='GET'.split()
+
+class SettingsView(CorkscrewSettingsView):
     methods = 'GET POST'.split()
 
     def handle_post(self):

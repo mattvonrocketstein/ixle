@@ -70,6 +70,27 @@ class DSetting(mDocument):
             himself.save()
             return himself
 
+class Remote(mDocument):
+    nickname = StringField(required=True)
+    hostname = StringField(required=True)
+    username = StringField(required=True)
+    password = StringField(required=True)
+    port     = IntField(default=22)
+    protocol = StringField(default='sshfs')
+
+    @classmethod
+    def all_mounts(self):
+        tmp = os.popen('mount -l -t fuse.sshfs').readlines()
+        tmp = [x.strip() for x in tmp]
+        return [x for x in tmp if x]
+    def exec_mount(self):
+        mountpoint='niy'
+        return mountpoint
+    @property
+    def is_mounted(self):
+        return False
+
+
 class Item(mDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
     # _id:   absolute path to file (also the primary key)

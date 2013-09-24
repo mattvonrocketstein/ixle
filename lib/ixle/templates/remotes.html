@@ -1,0 +1,57 @@
+{%extends "layout.html"%}
+
+{%block body%}
+<script>{%include "javascript/base.js"%}</script>
+{%if detail%}
+<b>Details for "{{detail.nickname}}"</b><hr/>
+<table>
+  <tr>
+    <td>mounted?</td>
+    <td>
+      {{detail.is_mounted}}
+    </td>
+  </tr>
+  <tr>
+    <td>control</td>
+    <td>
+      {%if not detail.is_mounted%}
+      <a href="{{this_url}}?detail={{detail.nickname}}&mount={{detail.nickname}}">mount it</a>
+      {%endif%}
+    </td>
+  </tr>
+    <tr>
+    <td>all mounts</td>
+    <td>{% for line in detail.all_mounts()%}{{line}}<br/>{%endfor%}</td>
+  </tr>
+</table>
+
+{%elif remotes%}
+<b>Remote hosts</b>
+<hr/>
+{%for remote in remotes %}
+<table width=100%>
+  <tr>
+    <td align=left>
+      <b><u>{{remote.nickname}}</b></u><br/>
+      <a href="{{this_url}}?detail={{remote.nickname}}">details</a>
+    </td>
+    <td align=right>
+      {%with nickname=remote.nickname%}
+      {%include "remotes_form.html"%}
+      {%endwith%}
+    </td>
+  </tr>
+</table>
+{%endfor%}
+{%endif%}
+
+{%if not detail%}
+<hr/><b>New remote host</b>
+{%with nickname="NEWENTRY"%}
+{%with remote=empty%}
+{%include "remotes_form.html"%}
+{%endwith%}
+{%endwith%}
+{%endif%}
+
+{%endblock%}

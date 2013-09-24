@@ -26,24 +26,22 @@
   </tr>
   {%endfor%}
 </table>
+{%if query or _ %}
+{% import 'ixle_macros.html' as macros %}
 <hr/>
 <table style="" width=100%>
   <tr>
     <td align=left>
-      {%if query%}
-      {% import 'ixle_macros.html' as macros %}
       {{macros.render_pagination(pagination, '/search?_='+_)}}
-      {%endif%}
     </td>
     <td colspan=0 align=right>
-      {%if num_results%}
       <font color=red>
         total result(s): {{num_results}}
       </font>
-      {%endif%}
     </td>
   </tr>
 </table>
+{%endif%}
 <script>
   {%include "javascript/show_detail.js"%}
 </script>
