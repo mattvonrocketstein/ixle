@@ -4,7 +4,7 @@ from report import report
 from ixle.views.base import View
 from ixle.schema import Item
 
-class Detail(View):
+class ItemDetail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
     template = 'item/detail.html'
@@ -52,6 +52,13 @@ class Detail(View):
         heuristics = {}
         for fxn_name, fxn in get_heuristics().items():
             heuristics[fxn_name] = fxn(item)
+
+        from ixle.agents import registry
+        from ixle.util import get_api
+        agents = list(set(registry.keys() + get_api().keys()))
+
         return self.render(item = item,
+                           agents=agents,
                            query = self['_'],
                            heuristics = heuristics)
+Detail=ItemDetail

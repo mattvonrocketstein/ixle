@@ -23,49 +23,57 @@
   {%if files%}
   <strong>Files:</strong> <small><i>(according to filesystem)</i></small>
   <div style="margin-left:15px;">
-       {%for short_name, apath in files.items()%}
-       <small>
-         <a href="javascript:show_detail({{apath|escapejs}})">{{short_name}}</a>
-       </small>
-       <strong>|</strong>
-       {%endfor%}
+    {%for short_name, apath in files.items()%}
+    <small>
+      <a href="javascript:show_detail({{apath|escapejs}})">{{short_name}}</a>
+    </small>
+    <strong>|</strong>
+    {%endfor%}
   </div>
   <hr/>
   {%endif%}
   {%if subddirs%}
   <strong>Subdirs::</strong>
   <div style="margin-left:15px;">
-       {%for name,fullpath in subddirs%}
-       <small>
-         <a href="/browser?_={{fullpath}}">{{name}}</a>
-       </small>
-       <strong>|</strong>
-       {%endfor%}
+    {%for name,fullpath in subddirs%}
+    <small>
+      <a href="/browser?_={{fullpath}}">{{name}}</a>
+    </small>
+    <strong>|</strong>
+    {%endfor%}
   </div>
   <hr/>
-{%endif%}
+  {%endif%}
 </div>
 {{super()}}
 {%endblock%}
 
 {%block footer_left%}
+{% import 'ixle_macros.html' as macros %}
+<script type="text/javascript">anylinkmenu.init("menuanchorclass")</script>
 
+
+<script>
+  var run_agent_types = [];
+  var frun_agent_types = [];
+  {%for agent in agent_types%}
+  run_agent_types.push(['{{agent}}',"/spawn?agent={{agent}}&path={{query}}"]);
+  frun_agent_types.push(['{{agent}}',"/spawn?force=1&agent={{agent}}&path={{query}}"]);
+  {%endfor%}
+</script>
 <table>
   <tr>
-    <td><strong>run:</strong></td>
     <td>
-      {%for agent in agent_types%}
-      <a href="/spawn?agent={{agent}}&path={{query}}">{{agent}}</a>
-      <strong>|</strong>
-      {%endfor%}
+      {%with uuid='run_agent_types', list_name='run_agent_types', name='apply agent'%}
+      {{macros.anylink(name,list_name,uuid)}}
+      {%endwith%}
     </td>
-  <tr>
-  <tr>
-    <td><strong>force-run:</strong></td>
+    <td>|
+    </td>
     <td>
-      {%for agent in agent_types%}
-      <a href="/spawn?force=1&agent={{agent}}&path={{query}}">{{agent}}</a>
-      <strong>|</strong>{%endfor%}
+      {%with uuid='frun_agent_types', list_name='frun_agent_types', name='force-apply agent'%}
+      {{macros.anylink(name,list_name,uuid)}}
+      {%endwith%}
     </td>
   <tr>
 </table>
