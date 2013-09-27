@@ -87,11 +87,13 @@ def guess_duration(item):
                 return datetime.timedelta( minutes=result )
 
 # used for determining file_type, layer 2 specificity
+document='document'
 FEXT_MAP = dict(
     part='partial-file',
     old='obsolete', bak='obsolete',
     gz='archive', zip='archive', rar='archive',
-    txt='document', doc='document', pdf='document',
+    txt=document, doc=document, pdf=document,
+    epub=document,mobi=document, # books
     m4a='audio', ogg='audio', flac='audio', aa='audio',
     idx='subtitles', sub='subtitles', srt='subtitles',
     db='database', sqlite='database', view='database', couch='database',

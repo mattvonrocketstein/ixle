@@ -60,7 +60,11 @@ class Indexer(IxleAgent):
             for rel_name in files:
                 fname = opj(root, rel_name)
                 count += 1
-                self.callback(id=fname)
+                try:
+                    self.callback(id=fname)
+                except UnicodeEncodeError,e:
+                    report('error in rel_name: '+str(e))
+                    continue
         pbar.finish()
         report.console.draw_line()
         report('total files: ' + str(count))
