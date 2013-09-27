@@ -31,7 +31,8 @@ class RemotesView(UpdatingView):
         if nickname=='NEWENTRY':
             if Remote.objects.filter(nickname=data['nickname']):
                 self.flash(
-                    'this isnt new: entry already exists with nickname {0}'.format(
+                    ('this isnt new: entry already exists'
+                     ' with nickname {0}').format(
                         data['nickname']))
                 return
             else:
@@ -39,7 +40,7 @@ class RemotesView(UpdatingView):
         else:
             obj = Remote.objects.get(nickname=nickname)
         assert obj
-        for k,v in data.items():
+        for k, v in data.items():
             if not v:
                 data.pop(k)
             elif isinstance(self._fields[k], mongoengine.fields.IntField):
@@ -56,21 +57,29 @@ class RemotesView(UpdatingView):
         return remote_fields
 
     def main(self):
-        detail = self['detail'] if self['detail'] else None
-        detail = Remote.objects.get(nickname=detail) if detail else None
-        if detail:
-            if self['mount']:
+        #detail = self['detail'] if self['detail'] else None
+        #detail = Remote.objects.get(nickname=detail) if detail else None
+        redirect = lambda:self.redirect(self.url)
+        if self['mount']:
+            detail = Remote.objects.get(nickname=self['mount'])
+            if detail.is_mounted:
+                self.flash("already mounted")
+            else:
                 mountpoint = detail.exec_mount()
                 self.flash('mounted @ {0}'.format(mountpoint))
-            if self['unmount']:
-                success = detail.exec_umount()
-                self.flash('unmount: {0}'.format(
-                    'success!' if success else 'failed.'))
+            return redirect()
+        if self['umount']:
+            detail = Remote.objects.get(nickname=self['umount'])
+            success = detail.exec_umount()
+            self.flash('unmount: {0}'.format(
+                'success!' if success else 'failed.'))
+            return redirect()
         elif self['data']: self.handle_post()
         remotes = Remote.objects.all()
         remote_fields = self._fields
         return self.render(
-            detail=detail,
+            #detail=detail,
             remote_fields=remote_fields,
+            all_mounts=Remote.all_mounts(),
             empty=object(),
             remotes=remotes)

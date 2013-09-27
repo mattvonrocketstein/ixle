@@ -1,39 +1,45 @@
 {%extends "layout.html"%}
 
 {%block body%}
-<script>{%include "javascript/base.js"%}</script>
-{%if detail%}
-<b>Details for "{{detail.nickname}}"</b><hr/>
-<table>
-  <tr>
-    <td>mounted?</td>
-    <td>
-      {{detail.is_mounted}}
-    </td>
-  </tr>
-  <tr>
-    <td>control</td>
-    <td>
-      {%if not detail.is_mounted%}
-      <a href="{{this_url}}?detail={{detail.nickname}}&mount={{detail.nickname}}">mount it</a>
-      {%endif%}
-    </td>
-  </tr>
-    <tr>
-    <td>all mounts</td>
-    <td>{% for line in detail.all_mounts()%}{{line}}<br/>{%endfor%}</td>
-  </tr>
-</table>
+<script type="text/javascript">anylinkmenu.init("menuanchorclass")</script>
 
-{%elif remotes%}
+
+<script>{%include "javascript/base.js"%}</script>
+<br/><strong>current mounts (fuse):</strong><hr/>
+<small>
+  {% for line in all_mounts%}{{line}}<br/>{%endfor%}
+</small>
+
 <b>Remote hosts</b>
 <hr/>
 {%for remote in remotes %}
+<script type="text/javascript">
+  //<![CDATA[
+var anylinkmenu{{loop.index}} = {divclass:'anylinkmenucols', inlinestyle:'', linktarget:'secwin'} //Third menu variable. Same precaution.
+anylinkmenu{{loop.index}}.cols={divclass:'column', inlinestyle:''} //menu.cols if defined creates columns of menu links segmented by keyword "efc"
+anylinkmenu{{loop.index}}.items=[
+
+    ["<b>Details for {{remote.nickname}}</b><hr/>", "#"],
+    ["mount-point: {{remote.mountpoint}}","#"],
+    ["mounted? {{remote.is_mounted}}", "#"],
+    ["search","/search?_={{remote.mount_point}}"],
+    {%if not remote.is_mounted%}
+    ["mount it","{{this_url}}?&mount={{remote.nickname}}"]
+    {%else%}
+    ["unmount it","{{this_url}}?&umount={{remote.nickname}}"]
+    {%endif%}
+]
+
+    //]]>
+</script>
+
 <table width=100%>
   <tr>
     <td align=left>
-      <b><u>{{remote.nickname}}</b></u><br/>
-      <a href="{{this_url}}?detail={{remote.nickname}}">details</a>
+      <a href="" class="menuanchorclass"
+         rel="anylinkmenu{{loop.index}}" rev="lr">
+        <b><u>{{remote.nickname}}</b></u><br/>
+      </a>
     </td>
     <td align=right>
       {%with nickname=remote.nickname%}
@@ -43,7 +49,6 @@
   </tr>
 </table>
 {%endfor%}
-{%endif%}
 
 {%if not detail%}
 <hr/><b>New remote host</b>
