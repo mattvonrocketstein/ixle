@@ -1,18 +1,19 @@
 """ ixle.python
 """
 import os
+from datetime import datetime
+
+now = datetime.now
 opj = os.path.join
 ops = os.path.split
 ope = os.path.exists
 walk = os.path.walk
 isdir = os.path.isdir
 sep = os.path.sep
+expanduser = os.path.expanduser
 dirname = os.path.dirname
 abspath = os.path.abspath
 corkscrew_views = []
-
-from datetime import datetime
-now = datetime.now
 
 def splitext(fname):
     _, ext = os.path.splitext(fname)

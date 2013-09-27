@@ -63,7 +63,7 @@ class MongoDB(Engine):
     def start_daemon(self):
         # TODO: allow local_ini override with -c option
         override_ini = self._get_tmp('conf')
-        tmp = self.engine_settings#['dbpath'] = '...'#path2couchpy
+        tmp = self.engine_settings
         tmp['mongo']['dbpath'] = os.path.sep.join(
             [ self.settings['ixle']['data_dir'],
             'data.mongo'])
