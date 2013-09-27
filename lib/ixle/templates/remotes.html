@@ -1,24 +1,18 @@
 {%extends "layout.html"%}
-
+{% import 'ixle_macros.html' as macros %}
 {%block body%}
 <script type="text/javascript">anylinkmenu.init("menuanchorclass")</script>
 
 
 <script>{%include "javascript/base.js"%}</script>
 <br/><strong>current mounts (fuse):</strong><hr/>
-<small>
-  {% for line in all_mounts%}{{line}}<br/>{%endfor%}
-</small>
+<small>{% for line in all_mounts%}{{line}}<br/>{%endfor%}</small>
 
-<b>Remote hosts</b>
-<hr/>
+<b>Remote hosts</b><hr/>
+
 {%for remote in remotes %}
-<script type="text/javascript">
-  //<![CDATA[
-var anylinkmenu{{loop.index}} = {divclass:'anylinkmenucols', inlinestyle:'', linktarget:'secwin'} //Third menu variable. Same precaution.
-anylinkmenu{{loop.index}}.cols={divclass:'column', inlinestyle:''} //menu.cols if defined creates columns of menu links segmented by keyword "efc"
-anylinkmenu{{loop.index}}.items=[
-
+<script>
+var zoo=[
     ["<b>Details for {{remote.nickname}}</b><hr/>", "#"],
     ["mount-point: {{remote.mountpoint}}","#"],
     ["mounted? {{remote.is_mounted}}", "#"],
@@ -28,18 +22,14 @@ anylinkmenu{{loop.index}}.items=[
     {%else%}
     ["unmount it","{{this_url}}?&umount={{remote.nickname}}"]
     {%endif%}
-]
-
-    //]]>
-</script>
+]</script>
 
 <table width=100%>
   <tr>
     <td align=left>
-      <a href="" class="menuanchorclass"
-         rel="anylinkmenu{{loop.index}}" rev="lr">
-        <b><u>{{remote.nickname}}</b></u><br/>
-      </a>
+      {%with uuid=loop.index, list_name='zoo', name=remote.nickname%}
+      {{macros.anylink(name,list_name,uuid)}}
+      {%endwith%}
     </td>
     <td align=right>
       {%with nickname=remote.nickname%}
@@ -48,6 +38,7 @@ anylinkmenu{{loop.index}}.items=[
     </td>
   </tr>
 </table>
+
 {%endfor%}
 
 {%if not detail%}

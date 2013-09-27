@@ -68,13 +68,13 @@ def unindex(path):
     return result or agent.record
 
 def typer(path):
-    item = path2item(path)
+    item = Item.objects.get(path=path)
     agent, result = call_agent('typer', item)
     return dict(status='ok')
 
 
 def moviefinder(path):
-    item = path2item(path)
+    item = Item.objects.get(path=path)
     agent, result = call_agent('moviefinder', item)
     return dict(status='ok')
 
