@@ -15,7 +15,7 @@ class UpdatingView(View):
         except mongoengine.ValidationError,e:
             msg = str(e)
         else:
-            msg='updated object successfully: {0}'.format(data)
+            msg = 'updated object successfully: {0}'.format(obj.nickname)
         self.flash(msg)
 
 class RemotesView(UpdatingView):

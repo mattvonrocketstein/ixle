@@ -1,12 +1,18 @@
 
+{% import 'ixle_macros.html' as macros %}
 {%block body%}
-
-{%for agent in agents%}
-<a href="javascript:post_to_api('{{agent.lower()}}')">
-  {{agent}}
-</a>
-<strong>|</strong>{%endfor%}
+<script>alert('dammit')</script>
+<script type="text/javascript" src="/static/js/anylink/anylinkmenu.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/js/anylink/anylinkmenu.css" />
+<script type="text/javascript">anylinkmenu.init("menuanchorclass")</script>
 <script>
-  {%include "javascript/post_to_api.js" %}
+  var agent_list=[
+  {%for agent in agents%}
+  ['{{agent}}',"javascript:post_to_api('{{agent.lower()}}')"]{%if not loop.last%},{%endif%}{%endfor%}
+  ];
 </script>
-  {%endblock%}
+{%with uuid='apply_agent', list_name='agent_list', name='apply agent'%}
+{{macros.anylink(name,list_name,398723)}}
+{%endwith%}
+<script>{%include "javascript/post_to_api.js" %}</script>
+{%endblock%}
