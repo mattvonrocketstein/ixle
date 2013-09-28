@@ -11,8 +11,6 @@ class Events(View):
     def main(self):
         if self['clear_all']:
             # TODO: ask
-            self.events_db.delete_all(really = True)
-        edb = Event.db()
-        records = [ Event.load(edb, k) \
-                    for k in edb.keys() ]
-        return self.render(items=records)
+            Event.objects.all().delete()
+            return self.redirect(self.url)
+        return self.render(items=Event.objects.all())

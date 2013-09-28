@@ -113,6 +113,7 @@ class Remote(mDocument):
 
         cmd_t = ('echo "{passwd}"|'
                  'sshfs -p {port} -o password_stdin'
+                 ' -o cache_timeout=3600'
                  ' -o idmap=user {user}@{host}:/ {target}')
         cmd = cmd_t.format(
             passwd=self.password,
@@ -190,8 +191,8 @@ class Item(mDocument):
     # t_last_seen: the date this was last seen by ixle
     # t_mod:       the last-modified date the first time this was seen
     # t_last_mod:  the last-modified date the last time this was seen
-    t_seen = DateTimeField()
-    t_last_seen = DateTimeField()
+    t_seen = DateTimeField(default=now)
+    t_last_seen = DateTimeField(default=now)
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
 
