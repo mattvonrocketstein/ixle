@@ -38,12 +38,14 @@ class Indexer(IxleAgent):
             item.save()
             report("fresh data: " + item.fname)
         else:
-            err = 'item already exists and "force" was not specified'
-            assert self.force, err
+            #err = 'item already exists and "force" was not specified'
+            #assert self.force, err
             #report("overwriting data: " + item.fname)
             self.record['overwrote'] += 1
-            item.delete()
-            item = Item(**data)
+            #item.delete()
+            #item = Item(**data)
+            for x in data.items():
+                setattr(item, *x)#item.update(**data)
         result = self.save(item)
         return result
 

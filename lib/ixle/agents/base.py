@@ -42,11 +42,17 @@ class IxleAgent(SaveMixin, ReportMixin):
             report('instantiated {0} with size {1} item-list'.format(
                 self,len(items)))
             self.__iter__ = lambda himself: ([i.id, i] for i in items)
+        self.record_invocation()
+
+    def record_invocation(self):
         from ixle.schema import Event
+        report("writing event for my birthday")
         e = Event(
             #reason="birthday::"+self.__class__.__name__
             reason = "birthday",
-            details = { 'agent' : self.__class__.__name__ }
+            details = dict(
+                agent=self.__class__.__name__,
+                path=self.path)
             )
         e.save()
 

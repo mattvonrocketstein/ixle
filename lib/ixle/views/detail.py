@@ -56,7 +56,7 @@ class ItemDetail(View):
         from ixle.agents import registry
         from ixle.util import get_api
         agents = list(set(registry.keys() + get_api().keys()))
-
+        agents.sort()
         return self.render(item = item,
                            agents=agents,
                            query = self['_'],
