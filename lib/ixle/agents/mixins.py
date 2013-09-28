@@ -50,7 +50,7 @@ class SaveMixin(object):
     # TODO: abstract
     def save(self, item, quiet=False):
         """ """
-        item.t_last_seen = now()
+        if not item.item.t_last_seen = now()
         item.save() #store(self.database)
         self.record['count_saved'] += 1
         return True
