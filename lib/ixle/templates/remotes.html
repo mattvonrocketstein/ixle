@@ -17,6 +17,7 @@ var zoo=[
     ["mount-point: {{remote.mountpoint}}","#"],
     ["mounted? {{remote.is_mounted}}", "#"],
     ["search","/search?_={{remote.mount_point}}"],
+    ["browse","/browser?_={{remote.mount_point}}"],
     {%if not remote.is_mounted%}
     ["mount it","{{this_url}}?&mount={{remote.nickname}}"]
     {%else%}
