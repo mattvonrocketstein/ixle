@@ -19,7 +19,7 @@
 //anylinkmenu.init("menuanchorclass");
 {%with uuid=uuid|default(name.replace(' ','_'))%}
          var anylinkmenu_{{uuid}} = {divclass:'anylinkmenucols',
-         inlinestyle:'', linktarget:'secwin'};
+         inlinestyle:'', linktarget:''};
          anylinkmenu_{{uuid}}.cols={
               divclass:'column', inlinestyle:''};
          anylinkmenu_{{uuid}}.items={{list_name}};

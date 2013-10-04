@@ -1,11 +1,9 @@
 {#% block body %#}
 
-<table style="margin-left:10px;width:100%">
+<table class=item_list style="margin-left:10px;width:100%">
   <tr>
     <td><b>fname</b></td>
-    <td><strong>first seen</strong></td>
-    <td NOWRAP><strong>earliest mod-date</strong></td>
-    <td><strong>last mod-date</strong></td>
+    <td><strong>timestamps</strong></td>
     <td><b>fextension</b></td>
     <td><b>ftype</b></td>
     <td><b>mime-type</b></td>
@@ -16,9 +14,11 @@
     <td><small>
         <a href="javascript:show_detail({{item.path|escapejs}})">{{item.path}}</a>
     </small></td>
-    <td NOWRAP> <small>{{item.t_seen|naturaltime}}</small></td>
-    <td NOWRAP> <small>{{item.t_mod|naturaltime}}</small></td>
-    <td NOWRAP> <small>{{item.t_last_mod|naturaltime}}</small></td>
+    <td NOWRAP>
+      <small>{{item.t_seen|naturaltime}}</small>
+      <small>{{item.t_mod|naturaltime}}</small>
+      <small>{{item.t_last_mod|naturaltime}}</small>
+    </td>
     <td NOWRAP><a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
     <td NOWRAP><small><a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a></small></td>
     <td NOWRAP><small>{{item.mime_type}}</small></td>
