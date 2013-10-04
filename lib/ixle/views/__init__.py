@@ -47,7 +47,7 @@ class _DB(View):
         return self.render(
             db=self.wrapper(db),
             db_name=self['_'],
-            dbs = [ self.wrapper(x) for x in self.settings.server])
+            dbs = [])# self.wrapper(x) for x in self.settings.server])
 
 class Suggest(View):
     url = '/suggest'
