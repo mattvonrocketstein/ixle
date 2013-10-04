@@ -1,7 +1,5 @@
 <html>
   <title>ixle{% block page_title %}{% endblock %}</title>
-  <link rel=stylesheet type="text/css"
-        href="{{ url_for('static', filename='style.css') }}">
   {%include "base_style_and_js.html" %}
   <body>
     <div class="page container" style="background:white">
@@ -43,7 +41,12 @@
 
     <script type="text/javascript">
       $(document).ready(function() {
-      $('#main_navigation').load('/_nav?next=' + window.location.pathname);
+      $(".item_list tr:odd").addClass("odd");
+      $('#main_navigation').load('/_nav?next=' + window.location.pathname,
+      function(){
+      console.debug('nav load complete.. init anylink');
+      anylinkmenu.trueinit("menuanchorclass");
+      })
       });
     </script>
   </body>
