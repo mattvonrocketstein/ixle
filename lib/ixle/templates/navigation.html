@@ -10,20 +10,27 @@
   ['newest',"/newest"],
   ['events',"/events"]
   ];
+  var list_nav_ixle2 = [
+  ['databases','/_db'],
+  ['settings','/_settings'],
+  ['remotes','/remotes']
+  ];
 </script>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <table class=rounded-corner>
-    <thead><tr>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<table style="margin-left:15px;" border=1 class=rounded-corner>
+  <thead><tr>
       <th> <a href="/">home</a> </th>
       <th>
-        {%with list_name='list_nav_ixle', name='find'%}
+        {%with list_name='list_nav_ixle', name='find stuff'%}
         {{macros.anylink(name, list_name)}}
         {%endwith%}
-        </th>
+      </th>
       <th>
-        <a href="/_db">ixle databases </a> |
-        <a href="/_settings">ixle settings</a> |
-        <a href="/remotes">manage remote hosts</a> |
-        </th></tr></thead></table>
-
+        {%with list_name='list_nav_ixle2', name='db and settings'%}
+        {{macros.anylink(name, list_name)}}
+        {%endwith%}
+      </th>
+    </tr>
+  </thead>
+</table>
 {%endblock%}
