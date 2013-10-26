@@ -17,11 +17,46 @@ import datetime
 from report import report
 from ixle.heuristics.movies import *
 from ixle.util import smart_split
+from ixle.heuristics.data import CODE_EXTS
+
+r_xx_min = re.compile('\d+ min')
+
+# used for determining file_type, layer 1 specificity
+r_crypto = [re.compile(_) for _ in
+            ['.* private key.*',
+             '.* public key.*',]]
+r_text  = [ re.compile(_) for _ in
+            ['.* text'] ]
+r_video = [ re.compile(_) for _ in
+            ['AVI', 'Flash Video', 'video: .*'] ]
+r_audio = [ re.compile(_) for _ in
+            ['Audio file.*','Microsoft ASF','MPEG ADTS'] ]
+r_image = [ re.compile(_) for _ in
+            ['JPEG .*', 'GIF .*','PNG .*'] ]
+
+# used for determining file_type, layer 2 specificity
+document = 'document'
+FEXT_MAP = dict(
+    part='partial-file',
+    old='obsolete', bak='obsolete',
+    gz='archive', zip='archive', rar='archive',
+    txt=document, doc=document, pdf=document,
+    epub=document,mobi=document, # books
+    m4a='audio', ogg='audio', flac='audio', aa='audio',
+    idx='subtitles', sub='subtitles', srt='subtitles',
+    db='database', sqlite='database', view='database', couch='database',
+    js='code', py='code',
+    pub='crypto',
+    exe='windows-executable',
+    flv='video',
+    m4v='video', wma='windows-media',)
 
 # used in guessing mime-type
 MIME_MAP = dict(part='data',
-                aa='audio', couch='data',
-                view='data', sqlite='data',
+                aa='audio',
+                couch='data',
+                view='data',
+                sqlite='data',
                 srt='text')
 
 def more_clean(item):
@@ -50,13 +85,16 @@ def more_clean(item):
     #for x in 'xvid'result = result.
     return result
 
+
 def is_code(item):
-    return all([item.fext in 'py js'.split(),
-                item.file_type=='text'])
+    if item.fext not in CODE_EXTS:
+        return False
+    if item.file_type and item.file_type!='text':
+        return False
+    return True
 
 def guess_genres(item):
-    # should work on imdbd-movies that have been
-    #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+    # should work on imdbd-movies that have already been tagged
     tmp = item.tags.get(
         'genres', # tagged movies
         item.tags.get('genre', []) # tagged audio
@@ -72,9 +110,6 @@ def guess_mime(item):
         tmp = tmp[ : tmp.find('/')]
     return tmp
 
-
-r_xx_min = re.compile('\d+ min')
-
 def guess_duration(item):
     # should work on imdbd-movies and songs
     if item.tags:
@@ -86,39 +121,8 @@ def guess_duration(item):
                 result = int(match.group().split()[0])
                 return datetime.timedelta( minutes=result )
 
-# used for determining file_type, layer 2 specificity
-document='document'
-FEXT_MAP = dict(
-    part='partial-file',
-    old='obsolete', bak='obsolete',
-    gz='archive', zip='archive', rar='archive',
-    txt=document, doc=document, pdf=document,
-    epub=document,mobi=document, # books
-    m4a='audio', ogg='audio', flac='audio', aa='audio',
-    idx='subtitles', sub='subtitles', srt='subtitles',
-    db='database', sqlite='database', view='database', couch='database',
-    js='code', py='code',
-    pub='crypto',
-    exe='windows-executable',
-    flv='video',
-    m4v='video', wma='windows-media',)
-
-# used for determining file_type, layer 1 specificity
-r_crypto = [re.compile(_) for _ in
-            ['.* private key.*',
-             '.* public key.*',]]
-r_text  = [ re.compile(_) for _ in
-            ['.* text'] ]
-r_video = [ re.compile(_) for _ in
-            ['AVI', 'Flash Video', 'video: .*'] ]
-r_audio = [ re.compile(_) for _ in
-            ['Audio file.*','Microsoft ASF','MPEG ADTS'] ]
-r_image = [ re.compile(_) for _ in
-            ['JPEG .*', 'GIF .*','PNG .*'] ]
-
-
 def _generic(item, r_list):
-    # NOTE: assumes file_magic already ready
+    # NOTE: assumes file_magic already ready already
     if item.file_magic:
         for x in item.file_magic:
             for y in r_list:

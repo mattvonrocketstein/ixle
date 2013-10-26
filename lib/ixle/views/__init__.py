@@ -82,24 +82,29 @@ class Delete(View):
 
 def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
     """ """
-    class GenericFiltrationView(View):
+    from ixle.views.search import ItemListView
+    class GenericFiltrationView(ItemListView):
         #FIXME: inefficient, not paged..
+        def get_queryset(self):
+            assert self['_']
+            return Item.objects.filter(
+                    **{self.ATTR_NAME:self['_']})
+
         def filter(self):
             from ixle.schema import Item
             # something like "avi"
             field_query = self['_']
             # both cases return a <Row>-iterator
             if field_query == 'None':
-                field_query = '(NULL)'
-                items = find_empty(self.db, self.ATTR_NAME)
+                raise Exception,'niy'
             else:
                 items = Item.objects.filter(
                     **{self.ATTR_NAME:field_query})
-            # get back a list of items
-            #items = [Item.wrap(r.doc) for r in items]
             return self.render(label=self.label,
-                               items=items,
-                               query=field_query)
+                               **self.get_ctx()
+                               #items=items,
+                               #query=field_query,
+                               )
 
         @use_local_template
         def index(self):

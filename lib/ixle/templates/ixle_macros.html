@@ -13,6 +13,9 @@
   {%- endfor %}
 </div>
 {% endmacro %}
+{%macro id_calc_link(agent) %}
+<a href="javascript:post_to_api('{{agent}}')";>calculate</a>
+{%endmacro%}
 
 {%macro anylink(name, list_name, uuid)%}
 <script type="text/javascript">//<![CDATA[
@@ -26,7 +29,7 @@
          //]]>
 </script>
 <a href="" class="menuanchorclass"
-   rel="anylinkmenu_{{uuid|default(name.replace(' ','_'))}}" rev="lr">
+   rel="anylinkmenu_{{uuid|default(name.replace(' ','_'))}}[click]" rev="up">
   <b><u>{{name}}</b></u><br/>
 </a>
 {%endwith%}
