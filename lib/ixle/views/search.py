@@ -1,13 +1,13 @@
 """ ixle.views.search """
 
 from .base import View
-from corkscrew.views import BluePrint
 from report import report
 from ixle.schema import Item
 
 from ixle.pages import per_page, Pagination
 
 class ItemListView(View):
+
     @property
     def ajax(self):
         return self['ajax']
@@ -48,4 +48,3 @@ class Search(ItemListView):
 
     def get_queryset(self):
         return Item.contains(self['_'])
-
