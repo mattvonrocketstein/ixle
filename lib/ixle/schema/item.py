@@ -55,17 +55,18 @@ class Item(mDocument):
 
 
     # t_seen:      the date this was first seen by ixle
-    # t_last_seen: the date this was last seen by ixle
+    # t_last_seen: the date this was last saved by ixle
     # t_mod:       the last-modified date the first time this was seen
     # t_last_mod:  the last-modified date the last time this was seen
     t_seen = DateTimeField()
     t_last_seen = DateTimeField()
+    # http://stackoverflow.com/questions/237079/how-to-get-file-creation-modification-date-times-in-python
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
 
     def exists(self):
-        """ NOTE: False here does not mean the file is gone..
-                  it could be that it's simply not mounted
+        """ NOTE: False here does not mean the file is deleted or
+                   moved! it could be that it's simply not mounted
         """
         return self.unipath.exists()
 

@@ -1,6 +1,6 @@
 {%extends "layout.html"%}
+{% import 'ixle_macros.html' as macros %}
 {%block main_menu %}
-
 <table width=100%>
   <tr>
     <td>
@@ -12,28 +12,22 @@
       <strong>
         {{item.fname}}
       </strong><br/>
-      <!--div style="margin-left:10px">
-          stuff stuff stuff
-          </div-->
     </td>
     <td align=right>
       <a href="file://{{item.path}}">link for file://</a><strong> | </strong>
       <a href="{{this_url}}?_={{item.path}}">this url</a><strong> | </strong>
       <div id=agents_widget>
         {%with _=item.path%}
-
-{% import 'ixle_macros.html' as macros %}
-<script type="text/javascript">anylinkmenu.init("menuanchorclass")</script>
-<script>
-  var agent_list=[
-  {%for agent in agents%}
-  ['{{agent}}',"javascript:post_to_api('{{agent.lower()}}')"]{%if not loop.last%},{%endif%}{%endfor%}
-  ];
-</script>
-{%with uuid='apply_agent', list_name='agent_list', name='apply agent'%}
-{{macros.anylink(name,list_name,398723)}}
-{%endwith%}
-<script>{%include "javascript/post_to_api.js" %}</script>
+        <script>
+          var agent_list=[
+          {%for agent in agents%}
+          ['{{agent}}',"javascript:post_to_api('{{agent.lower()}}')"]{%if not loop.last%},{%endif%}{%endfor%}
+          ];
+        </script>
+        {%with uuid='apply_agent', list_name='agent_list', name='apply agent'%}
+        {{macros.anylink(name,list_name,398723)}}
+        {%endwith%}
+        <script>{%include "javascript/post_to_api.js" %}</script>
         {%endwith%}
       </div>
     </td>
@@ -46,12 +40,12 @@
 <div id=block_body style="margin-left:10px;">
   <table>
     <tr>
-      <td><strong>File Information:<a href=#></strong>
+      <td><strong>File Information:<a href=#></a></strong>
       </td>
       <td id=disconnection_notification>
         <small>
-        <script>
-          $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{item.path}}'})});
+          <script>
+            $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{item.path}}'})});
         </script></small>
       </td>
     </tr>
@@ -59,36 +53,49 @@
   <table style="margin-left:15px;width:100%">
     <tr>
       <td><strong><small>size</small></strong></td>
-      <td style="padding-left:10px">
-        <small><a href="/fext?_={{item.fext}}">
+      <td>
+        <small>
+          {%if item.size==None %}
+          {{macros.id_calc_link('sizer')}}
+          {%else%}
           {%if item.size_mb > 1%}
           {{item.size_mb}} MB
           {%else%}
           {{item.size}}
           {%endif%}
-        </a><small>
+          {%endif%}
+          <small>
       </td>
     </tr>
     <tr>
       <td><b>file extension</b></td>
-            <td style="padding-left:10px">
+      <td>
         <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
     </tr>
     <tr>
       <td><b>mime-type</b></td>
-       <td style="padding-left:10px"><small>{{item.mime_type}}</small></td>
+      <td><small>{{item.mime_type}}</small></td>
     </tr>
     <tr>
       <td><b>file type</b></td>
-      <td style="padding-left:10px"><small>{{item.file_type}}</small></td>
+      <td>
+        <small>
+          {% if item.file_type==None%}
+          {{macros.id_calc_link('typer')}}
+          {%else%}
+          <a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a>
+          {%endif%}
+        </small>
+      </td>
+
     </tr>
     <tr>
       <td><b>file magic</b></td>
-      <td style="padding-left:10px"><small>{{' '.join(item.file_magic)}}</small></td>
+      <td><small>{{' '.join(item.file_magic)}}</small></td>
     </tr>
     <tr>
       <td><b>t_mod</b></td>
-       <td>{{item.t_mod|naturaltime}}</td>
+      <td>{{item.t_mod|naturaltime}}</td>
     </tr>
     <tr>
       <td><b>t_last_mod</b></td>
@@ -119,7 +126,7 @@
         <td><small><small>{{result}}</small></small></td>
       </tr>
       {%endif%}
-    {%endfor%}
+      {%endfor%}
       <tr>
         <td><strong>
             <small>negative answers for:</small></strong></td>
@@ -143,23 +150,23 @@
 
   {#% include "item_detail_genre.html" %#}
 
-<hr/>
+  <hr/>
   <strong>Tags:</strong>
   <small>
-    <a href="{{this_url}}?_={{item.id}}&reset_tags=1">reset</a>
+    <a href="{{this_url}}?_={{item.path}}&reset_tags=1">reset</a>
   </small>
   <div style="margin-top:5px;margin-left:15px;">
     <table>
       {% for k,v in item.tags.items()%}
-    <tr>
-      <td>
-        <strong><small>{{k}}</small></strong>
-      </td>
-      <td>
-        <small><small>{{v}}</small></small>
-      </td>
-    </tr>
-    {%endfor%}</table>
+      <tr>
+        <td>
+          <strong><small>{{k}}</small></strong>
+        </td>
+        <td>
+          <small><small>{{v}}</small></small>
+        </td>
+      </tr>
+      {%endfor%}</table>
   </div>
 </div>
 <script>
