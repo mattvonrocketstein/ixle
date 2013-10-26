@@ -1,15 +1,13 @@
 """ ixle.schema.item
 """
-
-import os
-
 import unipath
 
 from mongoengine import Document as mDocument
-from ixle.python import now
 from mongoengine import (StringField, BooleanField,
                          ListField, DateTimeField,
                          DictField, IntField)
+
+from ixle.python import now, splitext
 
 class Item(mDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
@@ -65,10 +63,6 @@ class Item(mDocument):
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
 
-    #def database(self):
-    #    from ixle import settings
-    #    return settings.Settings().database
-
     def exists(self):
         """ NOTE: False here does not mean the file is gone..
                   it could be that it's simply not mounted
@@ -77,7 +71,7 @@ class Item(mDocument):
 
     @property
     def just_name(self):
-        return os.path.splitext(self.fname)[0]
+        return splitext(self.fname)[0]
 
     @property
     def size_mb(self):
