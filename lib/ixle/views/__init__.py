@@ -132,6 +132,7 @@ MovieView  = generate_attribute_filter_view('is_movie',label='is_movie')
 
 from ixle.views.api import APIView
 from ixle.views.remotes import RemotesView
+from ixle.views.newest import Newest
 
 __views__= [
     # corkscrew standard views
@@ -139,7 +140,9 @@ __views__= [
 
     #main ixle views
     SettingsView,
-    AgentView, Spawn, Browser, Search, HomePage,
+    AgentView, Spawn, Browser,
+    Search, Newest,
+    HomePage,
     FileTypeView, Fext, Detail, Events, MovieView,
     RemotesView,
     _DB,
