@@ -45,11 +45,12 @@ class DestructionMixin(object):
         return self.delete_item(item)
 
 
-
+from ixle.python import now
 class SaveMixin(object):
     # TODO: abstract
     def save(self, item, quiet=False):
         """ """
+        item.t_last_seen = now()
         item.save()
         self.record['count_saved'] += 1
         return True
