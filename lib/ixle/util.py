@@ -43,7 +43,7 @@ def database():
     """ get a handle for the main database object """
     return conf().database
 
-def _harvest(modyool, arg_pattern):
+def _harvest(modyool, arg_pattern=None):
     """ retrieve functions from module iff they have
         exactly 1 argument and that argument==arg_pattern
     """
@@ -56,8 +56,11 @@ def _harvest(modyool, arg_pattern):
         if callable(obj) and inspect.isfunction(obj):
             func_sig = pep362.Signature(obj)
             parameter_dict = func_sig._parameters
-            if len(parameter_dict)==1 and \
-               arg_pattern in parameter_dict:
+            if arg_pattern is not None:
+                if len(parameter_dict)==1 and \
+                       arg_pattern in parameter_dict:
+                    matches.append(obj)
+            else:
                 matches.append(obj)
     return dict([m.__name__, m] for m in matches)
 

@@ -72,7 +72,7 @@ class Item(mDocument):
 
     @property
     def just_name(self):
-        return splitext(self.fname)[0]
+        return self.fname[:-len(self.fname.ext)]
 
     @property
     def size_mb(self):

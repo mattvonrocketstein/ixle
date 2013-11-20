@@ -17,7 +17,10 @@ import datetime
 from report import report
 from ixle.heuristics.movies import *
 from ixle.util import smart_split
+from ixle.python import ope
 from ixle.heuristics.data import CODE_EXTS
+from .util import _generic
+from .nlp import freq_dist
 
 r_xx_min = re.compile('\d+ min')
 
@@ -58,6 +61,7 @@ MIME_MAP = dict(part='data',
                 view='data',
                 sqlite='data',
                 srt='text')
+
 
 def more_clean(item):
     # split on all kinds of nonalpha-numeric junk
@@ -121,13 +125,6 @@ def guess_duration(item):
                 result = int(match.group().split()[0])
                 return datetime.timedelta( minutes=result )
 
-def _generic(item, r_list):
-    # NOTE: assumes file_magic already ready already
-    if item.file_magic:
-        for x in item.file_magic:
-            for y in r_list:
-                if y.match(x):
-                    return True
 def is_crypto(item):  return _generic(item, r_crypto)
 def is_text(item):  return _generic(item, r_text)
 def is_video(item):
