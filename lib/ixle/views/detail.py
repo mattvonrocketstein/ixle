@@ -3,6 +3,17 @@
 from report import report
 from ixle.views.base import View
 from ixle.schema import Item
+from ixle.util import get_heuristics
+
+def run_heuristics(item):
+    from ixle.heuristics.base import Heuristic
+    results = {}
+    for fxn_name, fxn in get_heuristics().items():
+        result = fxn(item)
+        if isinstance(result, Heuristic):
+            result = result()
+        results[fxn_name] = result
+    return results
 
 class ItemDetail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
@@ -19,6 +30,7 @@ class ItemDetail(View):
         return item
 
     def main(self):
+
         item = self.get_current_item()
         if not isinstance(item, Item): # not_found
             return item
@@ -48,11 +60,7 @@ class ItemDetail(View):
             self.flash('saved item: ' + str(self.record))
             return self.redirect(self.url+'?_='+self['_'])
 
-        from ixle.util import get_heuristics
-        heuristics = {}
-        for fxn_name, fxn in get_heuristics().items():
-            heuristics[fxn_name] = fxn(item)
-
+        hresults = run_heuristics(item)
         from ixle.agents import registry
         from ixle.util import get_api
         agents = list(set(registry.keys() + get_api().keys()))
@@ -60,5 +68,5 @@ class ItemDetail(View):
         return self.render(item = item,
                            agents=agents,
                            query = self['_'],
-                           heuristics = heuristics)
+                           heuristics = hresults)
 Detail=ItemDetail

@@ -43,25 +43,28 @@ def database():
     """ get a handle for the main database object """
     return conf().database
 
-def _harvest(modyool, arg_pattern=None):
+def _harvest(modyool, arg_pattern=None, test=None):
     """ retrieve functions from module iff they have
         exactly 1 argument and that argument==arg_pattern
     """
+    if not test:
+        def test(obj):
+            if callable(obj) and inspect.isfunction(obj):
+                func_sig = pep362.Signature(obj)
+                parameter_dict = func_sig._parameters
+                if arg_pattern is not None:
+                    if all([len(parameter_dict)==1,
+                            arg_pattern in parameter_dict]):
+                        return True
+                return True
     names = set(dir(modyool)) - set(dir(__builtins__))
     matches = []
     count=0
     for name in names:
         count+=1
         obj = getattr(modyool, name)
-        if callable(obj) and inspect.isfunction(obj):
-            func_sig = pep362.Signature(obj)
-            parameter_dict = func_sig._parameters
-            if arg_pattern is not None:
-                if len(parameter_dict)==1 and \
-                       arg_pattern in parameter_dict:
-                    matches.append(obj)
-            else:
-                matches.append(obj)
+        if test(obj):
+            matches.append(obj)
     return dict([m.__name__, m] for m in matches)
 
 def get_api():
@@ -80,11 +83,10 @@ def get_heuristics():
         returns a dictionary of { fxn_name : fxn }
     """
     from ixle import heuristics
-    return _harvest(heuristics, 'item')
-
-def yield_items_from_rows(fxn):
-    """ """
-    raise Exception,'deprecated'
+    def is_heuristic(obj):
+        return not getattr(obj,'__name__',None)=='Heuristic' and \
+               getattr(obj, 'is_heuristic', False)
+    return _harvest(heuristics, test=is_heuristic)
 
 def modification_date(filename):
     """ """

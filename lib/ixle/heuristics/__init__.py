@@ -21,6 +21,7 @@ from ixle.python import ope
 from ixle.heuristics.data import CODE_EXTS
 from .util import _generic
 from .nlp import freq_dist
+from .base import H, Heuristic
 
 r_xx_min = re.compile('\d+ min')
 
@@ -28,8 +29,6 @@ r_xx_min = re.compile('\d+ min')
 r_crypto = [re.compile(_) for _ in
             ['.* private key.*',
              '.* public key.*',]]
-r_text  = [ re.compile(_) for _ in
-            ['.* text'] ]
 r_video = [ re.compile(_) for _ in
             ['AVI', 'Flash Video', 'video: .*'] ]
 r_audio = [ re.compile(_) for _ in
@@ -62,34 +61,39 @@ MIME_MAP = dict(part='data',
                 sqlite='data',
                 srt='text')
 
+class more_clean(Heuristic):
+    def run(self):
+        item = self.item
 
-def more_clean(item):
-    # split on all kinds of nonalpha-numeric junk
-    bits = smart_split(item.just_name.lower())
+        # split on all kinds of nonalpha-numeric junk
+        bits = smart_split(item.just_name.lower())
 
-    # kill common junk that's found in torrent files, etc
-    for x in 'cam dvdrip brrip eng xvid'.split():
-        if x in bits: bits.remove(x)
-    #remove 1080p, x264, etc
-    bits2=[]
-    for x in bits:
-        if not any([
-            re.compile('[a-zA-Z]\d+').match(x),
-            re.compile('\d+[a-zA-Z]').match(x)]):
-            bits2.append(x)
-    bits = bits2
-    result = '.'.join(['_'.join(bits),
-                       item.fext or ''])
-    # if original filename does not start with '_', neither
-    # should the result.  (this happens with files like "[1]-foo-bar.mp3")
-    one = re.compile('_+').match(item.fname)
-    two = re.compile('_+').match(result)
-    if not one and two:
-        result = result[two.span()[-1]:]
-    #for x in 'xvid'result = result.
-    return result
+        # kill common junk that's found in torrent files, etc
+        for x in 'cam dvdrip brrip eng xvid'.split():
+            if x in bits: bits.remove(x)
+        #remove 1080p, x264, etc
+        bits2=[]
+        for x in bits:
+            if not any([
+                re.compile('[a-zA-Z]\d+').match(x),
+                re.compile('\d+[a-zA-Z]').match(x)]):
+                bits2.append(x)
+        bits = bits2
+        result = '.'.join(['_'.join(bits),
+                           item.fext or ''])
+        # if original filename does not start with '_', neither
+        # should the result.  (this happens with files like "[1]-foo-bar.mp3")
+        one = re.compile('_+').match(item.fname)
+        two = re.compile('_+').match(result)
+        if not one and two:
+            result = result[two.span()[-1]:]
+        #for x in 'xvid'result = result.
+        if result == item.fname:
+            return self.NotApplicable("already clean")
 
+        return result
 
+@H
 def is_code(item):
     if item.fext not in CODE_EXTS:
         return False
@@ -97,16 +101,19 @@ def is_code(item):
         return False
     return True
 
-def guess_genres(item):
-    # should work on imdbd-movies that have already been tagged
-    tmp = item.tags.get(
-        'genres', # tagged movies
-        item.tags.get('genre', []) # tagged audio
-        )
-    if not isinstance(tmp, list):
-        tmp=[tmp]
-    return tmp
-
+class guess_genres(Heuristic):
+    is_heuristic=True
+    apply_when = ['has_tags']
+    def run(self):
+        # should work on imdbd-movies that have already been tagged
+        tmp = item.tags.get(
+            'genres', # tagged movies
+            item.tags.get('genre', []) # tagged audio
+            )
+        if not isinstance(tmp, list):
+            tmp=[tmp]
+        return tmp
+@H
 def guess_mime(item):
     tmp = MIME_MAP.get(item.fext, None) or \
           item.mime_type
@@ -114,6 +121,7 @@ def guess_mime(item):
         tmp = tmp[ : tmp.find('/')]
     return tmp
 
+@H
 def guess_duration(item):
     # should work on imdbd-movies and songs
     if item.tags:
@@ -124,16 +132,35 @@ def guess_duration(item):
             if match:
                 result = int(match.group().split()[0])
                 return datetime.timedelta( minutes=result )
-
+@H
+def has_tags(item): return bool(item.tags)
+@H
 def is_crypto(item):  return _generic(item, r_crypto)
-def is_text(item):  return _generic(item, r_text)
+
+@H
+def has_file_magic(item): return item.file_magic
+
+class is_text(Heuristic):
+    r_text  = [ re.compile(_) for _ in
+                ['.* text'] ]
+    apply_when = ['has_file_magic']
+
+    def run(self):
+        return _generic(self.item, self.r_text)
+@H
 def is_video(item):
     return _generic(item, r_video) or \
                (FEXT_MAP.get(item.fext,None)=='video')
 
+@H
 def is_audio(item): return _generic(item, r_audio)
+@H
 def is_image(item): return _generic(item, r_image)
 
+@H
+def item_exists(item): return item.exists()
+
+@H
 def is_tagged(item):
     """ """
     if item.tags: return True
