@@ -7,8 +7,14 @@ from collections import OrderedDict
 import nltk
 
 from ixle.python import ope
+from .base import H, Heuristic
+from ixle.schema import Item
+from peak.util.imports import lazyModule
+heuristics = lazyModule('ixle.heuristics')
 
-def freq_dist(item):
+
+
+class freq_dist(Heuristic):
     """ this heuristic returns a dictionary of {token:frequency}
         for this item whenever
 
@@ -31,14 +37,14 @@ def freq_dist(item):
           with no arguments and a gui will open.  click
           "All Packages", and find things from there.
     """
-    from ixle.heuristics import is_text
-    if not all([item.exists(), is_text(item)]):
-        return {}
-    fdist = nltk.FreqDist()
-    with open(item.path) as f:
-        tmp=f.read()
-        for sent in nltk.sent_tokenize(tmp.lower()):
-            for word in nltk.wordpunct_tokenize(sent):
-                fdist.inc(word)
-    fdist = OrderedDict(fdist.items())
-    return fdist
+    apply_when = ['item_exists', 'is_text']
+
+    def run(self):
+        fdist = nltk.FreqDist()
+        with open(self.item.path) as f:
+            tmp=f.read()
+            for sent in nltk.sent_tokenize(tmp.lower()):
+                for word in nltk.wordpunct_tokenize(sent):
+                    fdist.inc(word)
+        fdist = OrderedDict(fdist.items())
+        return fdist
