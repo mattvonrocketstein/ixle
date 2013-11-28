@@ -18,7 +18,9 @@ class Mimer(ItemIterator):
         if typ:
             report_if_verbose('set_mime: '+typ)
         else:
-            typ = guess_mime(item)
+            heuristic =guess_mime(item)
+            answer = heuristic()
+            typ = answer.obj
             report_if_verbose('set_consult: ' + str(typ))
         item.mime_type = typ
         self.report_status('{0} for {1}'.format(typ, item.path))
