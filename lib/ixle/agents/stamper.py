@@ -12,13 +12,14 @@ class Stamper(ItemIterator):
 
     nickname = 'stamper'
     covers_fields = ['t_mod']
+
     def callback(self, item=None, **kargs):
         # t_seen:      the date this was first seen by ixle
         # t_mod:       the last-modified date the first time this was seen
         # t_last_mod:  the last-modified date the last time this was seen
         now = datetime.now()
-        mod_date = modification_date(item.id)
-        report_if_verbose(item.id)
+        mod_date = modification_date(item.path)
+        report_if_verbose(item.path)
         if any([self.force, mod_date]):
             item.t_last_mod = mod_date
         if any([self.force, not item.t_seen]):
