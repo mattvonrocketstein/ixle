@@ -94,7 +94,7 @@ def modification_date(filename):
         t = os.path.getmtime(filename)
         return datetime.datetime.fromtimestamp(t)
     else:
-        report('cant get mod_date: '+filename)
+        pass #report('cant get mod_date: '+str(filename))
 
 R_SPLIT_DELIM = re.compile('[\W_]+')
 def smart_split(x):
