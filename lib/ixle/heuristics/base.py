@@ -8,14 +8,17 @@ class DumbWrapper(object):
         self.obj = obj
 
     def __getattr__(self, x):
-        return getattr(obj, x)
+        return getattr(self.obj, x)
 
 class Answer(DumbWrapper):
     def __str__(self):
         return "(Answer: {0})".format(str(self.obj))
+    def __nonzero__(self):
+        return bool(self.obj)
+    __repr__ = __str__
 
 class NotApplicable(DumbWrapper):
-    def __bool__(self): return False
+    def __nonzero__(self): return False
     def __str__(self):
         return "(NotApplicable: {0})".format(str(self.obj))
 
@@ -31,7 +34,7 @@ class Heuristic(object):
         for x in self.apply_when:
             h = util.get_heuristics()[x]
             result = h(self.item)
-            if isinstance(result,Heuristic):
+            if isinstance(result, Heuristic):
                 result = result()
             if not bool(result):
                 return NotApplicable("{0} is False".format(x))
