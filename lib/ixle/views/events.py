@@ -13,4 +13,4 @@ class Events(View):
             # TODO: ask
             Event.objects.all().delete()
             return self.redirect(self.url)
-        return self.render(items=Event.objects.all())
+        return self.render(items=Event.objects.all().order_by("-stamp"))
