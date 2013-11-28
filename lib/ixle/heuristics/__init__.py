@@ -90,48 +90,56 @@ class more_clean(Heuristic):
         #for x in 'xvid'result = result.
         if result == item.fname:
             return self.NotApplicable("already clean")
-
         return result
 
-@H
-def is_code(item):
-    if item.fext not in CODE_EXTS:
-        return False
-    if item.file_type and item.file_type!='text':
-        return False
-    return True
+class is_code(Heuristic):
+    is_heuristic = True
+    apply_when = []
+    def run(self):
+        if self.item.fext not in CODE_EXTS:
+            return False
+        if self.item.file_type and self.item.file_type!='text':
+            return False
+        return True
 
 class guess_genres(Heuristic):
-    is_heuristic=True
+    is_heuristic = True
     apply_when = ['has_tags']
     def run(self):
         # should work on imdbd-movies that have already been tagged
-        tmp = item.tags.get(
+        tmp = self.item.tags.get(
             'genres', # tagged movies
-            item.tags.get('genre', []) # tagged audio
+            self.item.tags.get('genre', []) # tagged audio
             )
         if not isinstance(tmp, list):
             tmp=[tmp]
         return tmp
-@H
-def guess_mime(item):
-    tmp = MIME_MAP.get(item.fext, None) or \
-          item.mime_type
-    if tmp and '/' in tmp:
-        tmp = tmp[ : tmp.find('/')]
-    return tmp
 
-@H
-def guess_duration(item):
-    # should work on imdbd-movies and songs
-    if item.tags:
-        runtime = item.tags.get('runtime', None) # imdb tags
-        if runtime is not None:
-            runtime = runtime[0]
-            match = r_xx_min.match(runtime)
-            if match:
-                result = int(match.group().split()[0])
-                return datetime.timedelta( minutes=result )
+class guess_mime(Heuristic):
+    is_heuristic = True
+    apply_when = []
+    def run(self):
+        tmp = MIME_MAP.get(self.item.fext, None) or \
+              self.item.mime_type
+        if tmp and '/' in tmp:
+            tmp = tmp[ : tmp.find('/')]
+        return tmp
+
+
+class guess_duration(Heuristic):
+    is_heuristic = True
+    apply_when   = ["has_tags"]
+
+    def run(self):
+        # should work on imdbd-movies and songs
+        if item.tags:
+            runtime = item.tags.get('runtime', None) # imdb tags
+            if runtime is not None:
+                runtime = runtime[0]
+                match = r_xx_min.match(runtime)
+                if match:
+                    result = int(match.group().split()[0])
+                    return datetime.timedelta( minutes=result )
 @H
 def has_tags(item): return bool(item.tags)
 @H
@@ -150,7 +158,7 @@ class is_text(Heuristic):
 @H
 def is_video(item):
     return _generic(item, r_video) or \
-               (FEXT_MAP.get(item.fext,None)=='video')
+           (FEXT_MAP.get(item.fext,None)=='video')
 
 @H
 def is_audio(item): return _generic(item, r_audio)
