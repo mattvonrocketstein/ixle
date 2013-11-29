@@ -5,6 +5,8 @@ from report import report
 from ixle.schema import Item
 
 from ixle.pages import per_page, Pagination
+from werkzeug.wrappers import Response
+
 
 class ItemListView(View):
 
@@ -35,6 +37,9 @@ class ItemListView(View):
 
     def main(self):
         ctx = self.get_ctx()
+        if isinstance(ctx, Response):
+            # hack: might be a redirect instead of context
+            return ctx
         if not self.ajax:
             return self.render(**ctx)
         else:

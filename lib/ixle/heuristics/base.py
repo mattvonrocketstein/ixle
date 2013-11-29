@@ -12,9 +12,13 @@ class DumbWrapper(object):
 
 class Answer(DumbWrapper):
     def __str__(self):
-        return "(Answer: {0})".format(str(self.obj))
+        return "({0}: {1})".format(
+            self.__class__.__name__,
+            str(self.obj))
+
     def __nonzero__(self):
         return bool(self.obj)
+
     __repr__ = __str__
 
 class NotApplicable(DumbWrapper):
@@ -22,15 +26,31 @@ class NotApplicable(DumbWrapper):
     def __str__(self):
         return "(NotApplicable: {0})".format(str(self.obj))
 
+class NegativeAnswer(Answer):
+    def __init__(self, explanation="no reason given"):
+        assert isinstance(explanation, basestring)
+        self.obj = False
+        self.explanation = explanation
+
+    def __str__(self):
+        return "({0}: {1})".format(
+            self.__class__.__name__,
+            str(self.explanation))
+
 class Heuristic(object):
     apply_when = []
+    require = []
     is_heuristic = True
     NotApplicable = NotApplicable
+    NegativeAnswer = NegativeAnswer
 
     def __init__(self, item):
         self.item = item
 
     def __call__(self):
+        for x in self.require:
+            if not getattr(self.item, x):
+                return NotApplicable("pre-req data not set: "+x)
         for x in self.apply_when:
             h = util.get_heuristics()[x]
             result = h(self.item)

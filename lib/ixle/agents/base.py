@@ -106,10 +106,13 @@ class QueryDecidingAspect(object):
         return Item.startswith(self.path)
 
     def _query_from_fill(self):
-        raise Exception,'niy'
         assert self.covers_fields
         assert len(self.covers_fields)==1
-        return javascript.find_empty(self.covers_fields[0])
+        fieldname = self.covers_fields[0]
+        field = Item._fields[fieldname]
+        default = field.default
+        result = Item.objects.filter(**{fieldname:default})
+        return result
 
     def _query_override(self):
         return None

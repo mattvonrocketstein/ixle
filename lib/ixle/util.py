@@ -71,7 +71,7 @@ def get_api():
     from ixle import api
     d_action = _harvest(api, 'directory')
     p_action = _harvest(api, 'path')
-    out={}
+    out = {}
     [ out.update(x) for x in [d_action, p_action] ]
     return out
 

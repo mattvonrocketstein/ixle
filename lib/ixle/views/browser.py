@@ -1,5 +1,8 @@
 """ ixle.views.browser
 """
+import os
+from ixle.python import ope, opj
+from ixle.agents import registry
 from ixle.views.search import Search
 from corkscrew.views import BluePrint
 from report import report
@@ -8,14 +11,15 @@ from ixle.python import expanduser
 
 class Browser(Search):
 
-    blueprint = BluePrint(__name__, __name__)
+    #blueprint = BluePrint(__name__, __name__)
     url = '/browser'
     template = 'browser.html'
 
+    def get_queryset(self):
+        q = self['_']
+        return Item.startswith(q)
+
     def get_ctx(self):
-        import os
-        from ixle.python import ope, opj
-        from ixle.agents import registry
         ctx = super(Browser, self).get_ctx()
         qstring = self['_']
         if not qstring:
@@ -32,7 +36,3 @@ class Browser(Search):
                    is_dir='yes', files=files,
                    agent_types = registry.keys())
         return ctx
-
-    def get_couch_query(self, search_query):
-        raise Exception, 'niy'
-        return javascript.key_startswith(search_query)

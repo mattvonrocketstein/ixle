@@ -30,7 +30,6 @@ class ItemDetail(View):
         return item
 
     def main(self):
-
         item = self.get_current_item()
         if not isinstance(item, Item): # not_found
             return item
@@ -40,9 +39,10 @@ class ItemDetail(View):
         reset_requests = [ x[len('reset_'):] \
                            for x in self.request.values.keys() \
                            if x.startswith('reset_') ]
+        from ixle.agents import registry
         if reset_requests:
             # TODO: do this with api
-            from ixle.agents import registry
+
             for field in reset_requests:
                 setattr(item, field, None)
                 for agent_kls in registry.values():
@@ -61,7 +61,7 @@ class ItemDetail(View):
             return self.redirect(self.url+'?_='+self['_'])
 
         hresults = run_heuristics(item)
-        from ixle.agents import registry
+
         from ixle.util import get_api
         agents = list(set(registry.keys() + get_api().keys()))
         agents.sort()

@@ -3,8 +3,7 @@
 
 import mutagen
 from report import report
-
-#from ixle.query import javascript
+from ixle.schema import Item
 from .base import ItemIterator
 
 from hachoir_metadata import metadata
@@ -14,6 +13,19 @@ from pprint import pprint
 from hachoir_metadata import metadata
 from hachoir_core.cmd_line import unicodeFilename
 from hachoir_parser import createParser
+def clean_tags(tags):
+    """ the asf stuff below may apply to 'wma' files """
+    for k,v in tags.items():
+        if type(v) in [mutagen.asf.ASFDWordAttribute]:
+            tags[k] = int(v)
+        if type(v) in [mutagen.asf.ASFGUIDAttribute,
+                       mutagen.asf.ASFByteArrayAttribute,
+                       mutagen.asf.ASFQWordAttribute,
+                       ]:
+            tags.pop(k)
+        if type(v) in [mutagen.asf.ASFUnicodeAttribute]:
+            tags[k] = unicode(v)
+    return tags
 
 def hachm(filename):
     # using this example http://archive.org/details/WorkToFishtestwmv
@@ -69,8 +81,7 @@ class MusicTagger(GenericTagger):
 
     def _query_override(self):
         if not self.path:
-            return javascript.find_equal(fieldname='fext',
-                                         value='mp3')
+            return Item.objects.filter(fext__in=['mp3'])
 
     def tagger_callback(self, item=None, **kargs):
         if any([self.force, not item.tags]):
@@ -101,6 +112,7 @@ class MusicTagger(GenericTagger):
                 else:
                     self.report_status("got tags, but they were empty.")
                 if item.tags:
+                    item.tags=clean_tags(item.tags)
                     self.save(item)
             else:
                 self.report_status(

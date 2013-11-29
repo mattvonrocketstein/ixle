@@ -1,0 +1,27 @@
+{%extends "item_list.html"%}
+
+{%block main_menu %}
+<h3>Renaming: <strong>{{_}}</strong></h3>
+<hr/>
+{%if is_dir %}
+This is a directory!
+{%else%}
+this is a file!
+{%endif%}
+<hr/>
+<form method=POST action="{{this_url}}" >
+  <table style="width:100%">
+    <tr>
+      <td style="width:5%">
+        <input type=submit value="rename">
+        <input type=hidden name="old_name" value="{{_}}">
+        <input type=hidden name="_" value="{{_}}">
+      </td>
+      <td style="width:95%">
+        <input name="new_name" value="{{_}}" type="text" style="width:100%">
+      </td>
+    </tr>
+  </table>
+</form>
+&nbsp;&nbsp;&nbsp;
+{%endblock%}

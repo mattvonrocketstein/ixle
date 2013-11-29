@@ -2,15 +2,15 @@
 
     IMPORTANT:
 
-      heuristics operate on Item objects, and have no side-effects.
-      in general they determine "best-guesses" for questions like
-      "is the file represented by this Item a movie?".  heuristics
-      should be small and fairly fast (md5'ing a file is not considered
-      fast).
+        heuristics operate on Item objects, and have no side-effects.
+        in general they determine "best-guesses" for questions like
+        "is the file represented by this Item a movie?".  heuristics
+        should be small and fairly fast (md5'ing a file is not considered
+        fast).
 
-      rather than doing some cumbersome registration procedure for heuristics,
-      all heuristics will be mined out of this file based on whether they are
-      callable and whether the first argument's name is "item".
+        rather than doing some cumbersome registration procedure for heuristics,
+        all heuristics will be mined out of this file based on whether they are
+        callable and whether the first argument's name is "item".
 """
 import re
 import datetime
@@ -104,7 +104,7 @@ class is_code(Heuristic):
 
 class guess_genres(Heuristic):
     is_heuristic = True
-    apply_when = ['has_tags']
+    apply_when = ['is_tagged']
     def run(self):
         # should work on imdbd-movies that have already been tagged
         tmp = self.item.tags.get(
@@ -128,20 +128,26 @@ class guess_mime(Heuristic):
 
 class guess_duration(Heuristic):
     is_heuristic = True
-    apply_when   = ["has_tags"]
+    apply_when   = ["is_tagged"]
+    def _from_mutagen(self):
+        duration = self.item.tags.get('duration')
+        if duration is not None:
+            duration = duration.split('_')
+            return ' '.join(duration)
+
+    def _from_imdb(self):
+        runtime = self.item.tags.get('runtime', None)
+        if runtime is not None:
+            runtime = runtime[0]
+            match = r_xx_min.match(runtime)
+            if match:
+                result = int(match.group().split()[0])
+                return datetime.timedelta( minutes=result )
 
     def run(self):
         # should work on imdbd-movies and songs
-        if item.tags:
-            runtime = item.tags.get('runtime', None) # imdb tags
-            if runtime is not None:
-                runtime = runtime[0]
-                match = r_xx_min.match(runtime)
-                if match:
-                    result = int(match.group().split()[0])
-                    return datetime.timedelta( minutes=result )
-@H
-def has_tags(item): return bool(item.tags)
+        return self._from_imdb() or self._from_mutagen()
+
 @H
 def is_crypto(item):  return _generic(item, r_crypto)
 
