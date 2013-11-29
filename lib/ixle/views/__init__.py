@@ -10,7 +10,6 @@ from corkscrew.util import use_local_template
 from corkscrew.views import ListViews, SettingsView
 
 from ixle.schema import Item, Event
-#from ixle.query import find_equal, find_empty
 
 from .base import View
 from .search import Search

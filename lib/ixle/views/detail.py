@@ -39,7 +39,6 @@ class ItemDetail(View):
         reset_requests = [ x[len('reset_'):] \
                            for x in self.request.values.keys() \
                            if x.startswith('reset_') ]
-        from ixle.agents import registry
         if reset_requests:
             # TODO: do this with api
 
@@ -63,10 +62,8 @@ class ItemDetail(View):
         hresults = run_heuristics(item)
 
         from ixle.util import get_api
-        agents = list(set(registry.keys() + get_api().keys()))
-        agents.sort()
         return self.render(item = item,
-                           agents=agents,
+                           #agents=agents,
                            query = self['_'],
                            heuristics = hresults)
 Detail=ItemDetail

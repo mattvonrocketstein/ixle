@@ -49,34 +49,6 @@
 {%endblock%}
 
 {%block footer_left%}
-{% import 'ixle_macros.html' as macros %}
-<script type="text/javascript">anylinkmenu.init("menuanchorclass")</script>
-
-
-<script>
-  var run_agent_types = [];
-  var frun_agent_types = [];
-  {%for agent in agent_types%}
-  run_agent_types.push(['{{agent}}',"/spawn?agent={{agent}}&path={{query}}"]);
-  frun_agent_types.push(['{{agent}}',"/spawn?force=1&agent={{agent}}&path={{query}}"]);
-  {%endfor%}
-</script>
-<table>
-  <tr>
-    <td>
-      {%with uuid='run_agent_types', list_name='run_agent_types', name='apply agent'%}
-      {{macros.anylink(name,list_name,uuid)}}
-      {%endwith%}
-    </td>
-    <td>|
-    </td>
-    <td>
-      {%with uuid='frun_agent_types', list_name='frun_agent_types', name='force-apply agent'%}
-      {{macros.anylink(name,list_name,uuid)}}
-      {%endwith%}
-    </td>
-  <tr>
-</table>
 
 <script>
   {%with abspath=query%}{%include "javascript/dir_view_widget.js"%}{%endwith%}

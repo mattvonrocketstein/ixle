@@ -34,5 +34,5 @@ class Browser(Search):
         files = dict([x for x in contents if os.path.isfile(x[1])])
         ctx.update(subddirs=subddirs,
                    is_dir='yes', files=files,
-                   agent_types = registry.keys())
+                   agents = registry.keys())
         return ctx

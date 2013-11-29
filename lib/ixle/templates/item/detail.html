@@ -1,5 +1,5 @@
-{%extends "layout.html"%}
 {% import 'ixle_macros.html' as macros %}
+{%extends "layout.html"%}
 {%block main_menu %}
 <table width=100%>
   <tr>
@@ -24,25 +24,6 @@
             <a href="{{this_url}}?_={{item.path}}">thisUrl</a>
             <strong> | </strong>
             <a href="/rename?_={{_}}">rename</a>
-          </td>
-
-        </tr>
-        <tr>
-          <td>
-            <div id=agents_widget>
-              {%with _=item.path%}
-              <script>
-                var agent_list=[
-                {%for agent in agents%}
-                ['{{agent}}',"javascript:post_to_api('{{agent.lower()}}')"]{%if not loop.last%},{%endif%}{%endfor%}
-                ];
-              </script>
-              {%with uuid='apply_agent', list_name='agent_list', name='apply agent to file'%}
-              {{macros.anylink(name,list_name,398723)}}
-              {%endwith%}
-              <script>{%include "javascript/post_to_api.js" %}</script>
-              {%endwith%}
-            </div>
           </td>
         </tr>
       </table>

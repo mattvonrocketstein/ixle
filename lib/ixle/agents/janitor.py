@@ -65,13 +65,13 @@ class StaleChecker(KeyIterator, DestructionMixin):
             report(
                 'finished with dry run.  if you really '
                 'want to kill this stuff, pass --force')
-        report('processed {0} records, total'.format(self.record['count_processsed']))
+        report('processed {0} records, total'.format(self.record['count_processed']))
         report('wiped {0} stale records'.format(self.record['records_deleted']))
 
 
 
     def callback(self,item=None, fname=None, **kargs):
-        self.record['count_processsed'] += 1
+        self.record['count_processed'] += 1
         if not ope(fname):
             print fname
             if self.force:

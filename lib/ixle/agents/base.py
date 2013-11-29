@@ -9,7 +9,6 @@ from couchdb.http import ResourceConflict
 from report import report
 
 from ixle.schema import Item
-#from ixle.query import javascript
 from ixle.python import ope, abspath, now
 from ixle.exceptions import FileDoesntExist
 from .mixins import DestructionMixin, SaveMixin, ReportMixin
@@ -159,15 +158,6 @@ class IxleDBAgent(QueryDecidingAspect, IxleAgent):
         t2 = now()
         report('finished query ({0}s)'.format(t2-t1))
         return q
-        """db = self.database
-        if q is not None:
-            raise Exception,'what do with query'+q
-            #result = [ [x.key, Item.wrap(x.doc)]
-            #          for x in db.query(q, include_docs=True) if x.key ]
-        else:
-            result = [ [ x, Item.load(db, x)] \
-                       for x in db ]
-        return iter(result)"""
 
     def __call__(self):
         kis = list(self)
@@ -182,23 +172,8 @@ class IxleDBAgent(QueryDecidingAspect, IxleAgent):
             DEBUG = getattr(self, 'DEBUG', False)
             for index, (key, item) in enumerate([[x.path,x] for x in kis]):
                 cb_kargs = self._get_callback_args(key, item)
-                if False:
-                    if index==1:
-                        print ('\n\nfirst item, halting because DEBUG=True.'
-                               '  enjoy a shell...')
-                        from IPython import Shell;
-                        Shell.IPShellEmbed(
-                            argv=['-noconfirm_exit'])()
-                    if index==random_index:
-                        self.record['random_key'] = key
-                #try:
                 self.callback(**cb_kargs)
-                #except Exception,e:
-                #    err="ERROR IN CALLBACK:" + str(e)
-                #    print err
-                #    self.report_error(err)
-                #    raise
-                self.record['count_processsed'] += 1
+                self.record['count_processed'] += 1
                 pbar.update(index)
             else:
                 pass #report('list-iter was empty!')

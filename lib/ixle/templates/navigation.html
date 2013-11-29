@@ -1,7 +1,5 @@
-
 {% import 'ixle_macros.html' as macros %}
 {%block body%}
-
 <script>
   var list_nav_ixle_find = [
   ['search',"/search"],
@@ -18,8 +16,7 @@
   ['configure database','/_db'],
   ['configure ixle settings','/_settings'],
   ['configure remote mounts','/remotes']
-  ];
-</script>
+  ];</script>
 &nbsp;&nbsp;&nbsp;&nbsp;
 <table style="margin-left:15px;" border=1 class=rounded-corner>
   <thead><tr>
@@ -39,7 +36,29 @@
         {{macros.anylink(name, list_name)}}
         {%endwith%}
       </th>
+
+      {%if _%}
+      <th>
+        <script>
+          var agent_list = [
+          {%for agent in agents%}
+          ['{{agent}}',"javascript:post_to_api('{{agent.lower()}}')"]{%if not loop.last%},{%endif%}{%endfor%}
+          ];
+        </script>
+        {%with uuid='apply_agent', list_name='agent_list', name='apply agent'%}
+        {{macros.anylink(name,list_name,398723)}}
+        {%endwith%}
+      </th>
+      {%endif%}
+
     </tr>
   </thead>
 </table>
+<script>
+  {%include "javascript/post_to_api.js" %}
+  $(document).ready(function(){
+  setTimeout(function(){
+  console.debug('cawling');
+  anylinkmenu.trueinit("menuanchorclass");}),3000});
+</script>
 {%endblock%}
