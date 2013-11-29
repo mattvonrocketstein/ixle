@@ -14,6 +14,32 @@ from ixle.python import ope
 from ixle.schema import Item
 from ixle._atexit import handle_exit
 
+def field_name_to_agents(field_name):
+    from ixle.agents import registry
+    agents = registry.values()
+    agents = [ a for a in agents if \
+               field_name in getattr(a, 'covers_fields',[]) ]
+    return agents
+
+def field_name_to_agent(field_name):
+    result = field_name_to_agents(field_name)
+    err='only one agent should cover field "{0}", found {1}'
+    assert len(result)==1,err.format(field_name, result)
+    return result[0]
+
+def agent_cover():
+    """ returns { ItemFieldName: AgentWhichCoversIt}
+    """
+    fields = Item._fields.copy()
+    for ignored in 'host id'.split(): fields.pop(ignored)
+    out = [ [ fname,
+              field_name_to_agent(fname)] \
+            for fname in fields]
+    out = dict(out)
+    return out
+
+    return out
+
 def wrap_kbi(fxn):
     def cleanup():
         print "exiting.."

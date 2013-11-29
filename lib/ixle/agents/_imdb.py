@@ -43,9 +43,11 @@ class MovieFinder(ItemIterator):
     nickname = 'moviefinder'
     covers_fields = ['is_movie']
     def callback(self, item=None, **kargs):
-        item.is_movie = heuristics.is_movie(item) or False
+        out = heuristics.is_movie(item)
+        item.is_movie = out() or False
         if item.is_movie:
-            report('found movie: '+item.fname)
+            report('found movie: ' + item.fname)
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         self.save(item)
 
 class IMDBer(ItemIterator):
@@ -57,10 +59,9 @@ class IMDBer(ItemIterator):
         #assert not self.path, 'i cant use a path'
 
     def _query_override(self):
-        # 2 versions:
+        raise Exception,'niy'
+    # 2 versions:
         #  could rely on is_movie=True or just file_type='video'
-        return javascript.get_template('imdb.js').render(
-            path=self.path)
 
     def callback(self, item=None, **kargs):
         if item.is_movie is None:

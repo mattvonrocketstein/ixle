@@ -16,6 +16,7 @@ from ._imdb import IMDBer, MovieFinder
 from .body import Body
 #from .renamer import Renamer
 from .slayer import Slayer
+from .elaborate import Elaborate
 
 class AgentRegistry(dict):
     def register(self,name,kls):
@@ -25,6 +26,7 @@ class AgentRegistry(dict):
 registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
+  Elaborate,
   #heuristic record-rewriters
   MovieFinder, IMDBer,
   # filesystem-modifiers / heuristics record-rewriters

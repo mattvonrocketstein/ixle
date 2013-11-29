@@ -11,7 +11,7 @@ from .base import ItemIterator
 class Stamper(ItemIterator):
 
     nickname = 'stamper'
-    covers_fields = ['t_mod']
+    covers_fields = ['t_mod', 't_last_mod', 't_seen', 't_last_seen']
 
     def callback(self, item=None, **kargs):
         # t_seen:      the date this was first seen by ixle
