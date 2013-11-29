@@ -50,7 +50,8 @@ class MovieFinder(ItemIterator):
 
 class IMDBer(ItemIterator):
     nickname = 'imdb'
-    covers_fields = ['tags']
+    #fix generictagger first
+    #covers_fields = ['tags']
     def __init__(self, *args, **kargs):
         super(IMDBer,self).__init__(*args, **kargs)
         self.moviefinder = self.subagent(MovieFinder)

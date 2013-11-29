@@ -15,9 +15,11 @@ from hachoir_parser import createParser
 
 def clean_tags(tags):
     """ the asf stuff below may apply to 'wma' files """
+    tags.pop('IsVBR',None) # a list of ASFBools for who knows what
     for k,v in tags.items():
         if type(v) in [mutagen.asf.ASFDWordAttribute]:
             tags[k] = int(v)
+        #if type(v) in [ mutagen.asf.ASFBoolAttribute]:
         if type(v) in [mutagen.asf.ASFGUIDAttribute,
                        mutagen.asf.ASFByteArrayAttribute,
                        mutagen.asf.ASFQWordAttribute,
@@ -44,7 +46,8 @@ def hachm(filename):
     # Turn the tags into a defaultdict
     metalist = metadata.extractMetadata(parser).exportPlaintext()
     meta = defaultdict(defaultdict)
-
+    if not metalist:
+        return meta
     for item in metalist[1:]:
         item = [x.strip() for x in item.split('-') if x.strip()][0]
         item = [ x.strip().lower().replace(' ','_') for x in item.split(':') ]

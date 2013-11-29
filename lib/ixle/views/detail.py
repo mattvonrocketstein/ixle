@@ -1,8 +1,11 @@
-""" ixle.views.detail """
+""" ixle.views.detail
+"""
 
 from report import report
-from ixle.views.base import View
+
 from ixle.schema import Item
+from ixle.agents import registry
+from ixle.views.base import View
 from ixle.util import get_heuristics
 
 def run_heuristics(item):

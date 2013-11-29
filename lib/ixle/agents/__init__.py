@@ -10,7 +10,7 @@ from .typer import Typer, Mimer
 from .events import Events
 from .md5 import Md5er
 from .indexer import Indexer
-from .tagger import MusicTagger, ImageTagger
+from .tagger import MusicTagger, ImageTagger, GenericTagger
 from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .body import Body
@@ -41,5 +41,6 @@ registry = AgentRegistry()
   # the index stands alone
   Indexer,
   # adaptive-taggers
-  ImageTagger, MusicTagger
+  ImageTagger, MusicTagger,
+  GenericTagger,
   ]

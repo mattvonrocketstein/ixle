@@ -158,24 +158,27 @@ class is_text(Heuristic):
     def run(self):
         return self.item.mime_type.startswith('text') or \
                _generic(self.item, self.r_text)
-@H
-def is_video(item):
-    return _generic(item, r_video) or \
-           (FEXT_MAP.get(item.fext,None)=='video')
 
-@H
-def is_audio(item): return _generic(item, r_audio)
-@H
-def is_image(item): return _generic(item, r_image)
+class is_video(Heuristic):
+    def run(self):
+        return _generic(self.item, r_video) or \
+               (FEXT_MAP.get(self.item.fext,None)=='video')
+
+class is_audio(Heuristic):
+    def run(self):
+        return _generic(self.item, r_audio)
+
+class is_image(Heuristic):
+    def run(self):
+        return _generic(self.item, r_image)
 
 @H
 def item_exists(item): return item.exists()
 
-@H
-def is_tagged(item):
-    """ """
-    if item.tags: return True
-    if item.file_magic:
-        for entry in item.file_magic:
-            if 'ID3' in entry:
-                return True
+class is_tagged(Heuristic):
+    def run(self):
+        if self.item.tags: return True
+        if self.item.file_magic:
+            for entry in self.item.file_magic:
+                if 'ID3' in entry:
+                    return True
