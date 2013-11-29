@@ -45,7 +45,7 @@ class Janitor(ItemIterator, DestructionMixin):
 
     def callback(self, item=None, fname=None, **kargs):
         if self.is_ignored(fname):
-            report("{0} should be ignored, deleting it.".format(fname))
+            #report("{0} should be ignored, deleting it.".format(fname))
             self.delete_record(fname)
         if self.is_blacklisted(fname):
             self.delete_file(key=fname)

@@ -35,7 +35,7 @@ class Indexer(IxleAgent):
             item = Item.objects.get(path=data['path'])
         except Item.DoesNotExist:
             item = Item(**data)
-            item.save()
+            self.save(item)
             report("fresh data: " + item.fname)
         else:
             #err = 'item already exists and "force" was not specified'
@@ -55,7 +55,6 @@ class Indexer(IxleAgent):
         stuff = list(os.walk(self.path))
         num_files = len(stuff)
         pbar = self.get_progressbar(num_files)
-        #ProgressBar(widgets=PBAR_WIDGETS, maxval=num_files).start()
         for i in range(num_files):
             root, _dir, files = stuff[i]
             pbar.update(i)

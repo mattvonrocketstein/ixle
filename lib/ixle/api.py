@@ -15,6 +15,17 @@ from ixle import util
 from ixle.schema import Item
 from ixle.util import database, conf
 
+def fill(field_name):
+    from ixle.agents import registry
+    agents = registry.values()
+    agents = [a for a in agents if field_name in getattr(a,'covers_fields',[])]
+    agent = agents[0]
+    agent_obj = agent(settings=conf(), fill=True)
+    result = dict(used_agent=agent.__name__,
+                  status='ok')
+    result.update(**agent_obj())
+    return result
+
 def call_agent(agent_nick, item):
     """ helper method for when you want to
         turn agents into api methods
@@ -48,6 +59,12 @@ def build_agent_method(name):
         return dict(result)
     fxn.__name__ = name
     return fxn
+
+def indexer(path):
+    from ixle.agents.indexer import Indexer
+    agent = Indexer(path=path,settings=conf())
+    result = agent()
+    return result or dict(status='ok')
 
 stale = build_agent_method('stale')
 itagger = build_agent_method('itagger')
@@ -84,7 +101,7 @@ def kill_directory(directory):
     assert path.exists(),(
         'to kill it, the path needs to exist.  '
         'if you just want these items out of the database, '
-        'use untrack_directory')
+        'use the unindexer')
     assert path.isdir(),'input is not a directory.'
     count = 0
     for item in query.key_startswith(

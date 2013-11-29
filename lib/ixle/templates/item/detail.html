@@ -138,6 +138,17 @@
           {%endfor%}
         </td>
       </tr>
+      <tr>
+        <td><strong>
+            <small>Not-Applicable:</small></strong></td>
+        <td>
+          {% for fxn_name,result in heuristics.items() %}
+          {%if isinstance(result, NotApplicable)%}
+          <small>{{fxn_name}}</small> <strong>|</strong>
+          {%endif%}
+          {%endfor%}
+        </td>
+      </tr>
     </table>
   </div>
 

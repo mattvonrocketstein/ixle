@@ -8,9 +8,9 @@
     <td align=right>
       {%include "widgets/fs_disconnect_notification.html"%}
       <small>
-        <a href=#>index directory</a> |
+        <a href="javascript:post_to_api('indexer', {action:'indexer',_:'{{_}}'})"">index directory</a> |
         <a href="javascript:post_to_api('unindex')">unindex directory</a> |
-        <a href="javascript:interstitial_api_call('rename_dir')">rename dir recursively</a>
+        <a href="/rename?_={{_}}">rename dir recursively</a>
         <!--a href="/api?action=kill_directory&_={{query}}">kill directory</a-->
       </small>
     </td>

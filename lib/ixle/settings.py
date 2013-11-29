@@ -28,29 +28,32 @@ class DSettingsMixin(object):
         tmp = self._dynamic['random_sample_size'].value or 10
         return int(tmp)
 
-
     @property
     def ignore_globs(self):
         """ pulls the 'ignore_patterns' setting out of couchdb """
         tmp = self._dynamic['ignore_patterns'].value or ''
         return [ x for x in tmp.split(',') if x ]
 
+
+from ixle.heuristics.base import NotApplicable
 class Settings(CorkscrewSettings, DSettingsMixin):
 
     default_file = 'ixle.ini'
-
-    env_filters = dict(
-        # TODO: move this into corkscrew
+    jinja_filters = dict(
         naturaltime=humanize.naturaltime,
-        escapejs=escapejs)
+        escapejs=escapejs
+    )
+    jinja_globals = dict(
+        isinstance=isinstance,
+        bool=bool,
+        NotApplicable=NotApplicable,
+        )
 
     def __repr__(self):
         return '<ixle.settings.Settings>'
 
     def _get_app(self):
         app = super(Settings,self)._get_app()
-        for name,fxn in self.env_filters.items():
-            app.jinja_env.filters[name] = fxn
 
         from flask import Blueprint
         from flask.ext.silk import Silk
@@ -60,7 +63,6 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         return app
 
     def pre_run(self):
-
         port = int(self['mongo']['port'])
         host = self['mongo']['host']
         db = self['ixle']['db_name']
@@ -150,6 +152,6 @@ class TestSettings(Settings):
     @classmethod
     def get_parser(kls):
         parser = Settings.get_parser()
-        parser.add_option('-s',dest='asd',default='')
+        #parser.add_option('-s', dest='asd', default='')
         #parser.parse_args = lambda: args,kargs
         return parser

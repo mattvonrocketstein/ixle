@@ -3,13 +3,16 @@
 {%block body%}
 
 <script>
-  var list_nav_ixle = [
+  var list_nav_ixle_find = [
   ['search',"/search"],
   ['browse',"/browser"],
   ['filter by fext',"/fext"],
   ['filter by file_type',"/file_type"],
   ['filter by newest',"/newest"],
   ['show events',"/events"]
+  ];
+  var list_nav_ixle_do = [
+  ['fill in data by field',"/fill"]
   ];
   var list_nav_ixle2 = [
   ['configure database','/_db'],
@@ -22,7 +25,12 @@
   <thead><tr>
       <th> <a href="/">home</a> </th>
       <th>
-        {%with list_name='list_nav_ixle', name='find stuff'%}
+        {%with list_name='list_nav_ixle_find', name='find stuff'%}
+        {{macros.anylink(name, list_name)}}
+        {%endwith%}
+      </th>
+      <th>
+        {%with list_name='list_nav_ixle_do', name='do stuff'%}
         {{macros.anylink(name, list_name)}}
         {%endwith%}
       </th>

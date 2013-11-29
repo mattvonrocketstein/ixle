@@ -7,8 +7,10 @@ from report import report
 from ixle.python import now
 from ixle.schema import Item
 from ixle.util import smart_split, no_alphabet
+from .base import Heuristic
 
 MOVIE_CUT_OFF_SIZE_IN_MB = 400
+r_season_1_episode_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
 
 def if_movie(fxn):
     def new_fxn(item):
@@ -54,7 +56,6 @@ def guess_movie_name(item):
         guess = ' '.join(pop_junk(after_year))
     return guess
 
-r_season_1_episode_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
 def is_movie(item):
     """ answer whether this is perhaps a movie.
         "movie" is distinct from "video".. we want
@@ -66,16 +67,21 @@ def is_movie(item):
     # clue: item is new in the database.. don't guess yet
     # clue: torrented tv shows that contain stuff S1E3 in the filename
     # clue: movies are pretty big
-    if not item.file_type:
-        return False
-    if item.file_type!='video':
-        return False
-    if not item.size:
-        return False
-    if item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
-        return False
-    if r_season_1_episode_1.match(item.fname):
-        return False
     if no_alphabet(item.just_name):
         return False
     return True
+
+class is_movie(Heuristic):
+    apply_when = ["is_video"]
+    require = ['size']
+
+    def run(self):
+        if 'video' not in self.item.mime_type:
+            return self.NegativeAnswer(
+                "mime_type doesn't mention video")
+        if self.item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
+            return self.NegativeAnswer(
+                "size < {0}".format(MOVIE_CUT_OFF_SIZE_IN_MB))
+        if r_season_1_episode_1.match(self.item.fname):
+            return False
+        return True

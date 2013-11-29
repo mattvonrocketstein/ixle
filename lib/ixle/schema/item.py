@@ -25,17 +25,16 @@ class Item(mDocument):
     # this way are probably better than anything in python's stdlib..
 
     md5        = StringField()            # via md5sum(1)
-    size       = IntField()         # via du(1)
+    size       = IntField()               # via du(1)
     file_magic = ListField(StringField(),
-                           default=[])  # via file(1)
+                           default=[])    # via file(1)
     mime_type  = StringField()            # via mimetypes module
     file_type  = StringField()
     is_movie   = BooleanField()
 
     @classmethod
     def startswith(self, name):
-        #return self._get_collection().find(
-        #    {'path' : {'$regex':'^'+name}})
+        name = name.replace('(', '\(').replace(')','\)')
         return self.objects(__raw__={'path' : {'$regex':'^'+name}})
 
     @classmethod
@@ -43,7 +42,8 @@ class Item(mDocument):
         return self.objects(__raw__={'path' : {'$regex':s}})
 
     @property
-    def fname(self): return self.unipath.components()[-1]
+    def fname(self):
+        return self.unipath.components()[-1]
 
     @property
     def unipath(self):
@@ -63,6 +63,9 @@ class Item(mDocument):
     # http://stackoverflow.com/questions/237079/how-to-get-file-creation-modification-date-times-in-python
     t_mod = DateTimeField()
     t_last_mod = DateTimeField()
+
+    def detail_url(self):
+        return '/detail?_=' + self.path
 
     def exists(self):
         """ NOTE: False here does not mean the file is deleted or

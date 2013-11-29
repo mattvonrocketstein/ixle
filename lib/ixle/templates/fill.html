@@ -1,0 +1,19 @@
+{%extends "layout.html"%}
+{% import 'ixle_macros.html' as macros %}
+{%block main_menu %}
+
+<script>
+  var fill_field_list = [
+  {%for name,agent_kls in agents.items()%}
+  ['{{agent_kls.covers_fields}} (via {{name}})',
+   "javascript:post_to_api('fill',{'action':'fill', _:'{{agent_kls.covers_fields[0]}}'})"]{%if not loop.last%},{%endif%}{%endfor%}
+  ];
+</script>
+{%with uuid='fill_field', list_name='fill_field_list', name='select field to fill'%}
+{{macros.anylink(name, list_name, 398723)}}
+{%endwith%}
+<script>
+  {%include "javascript/post_to_api.js" %}
+</script>
+
+{%endblock%}

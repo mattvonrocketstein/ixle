@@ -12,14 +12,15 @@ class APIView(Widget):
     def main(self):
         path   = self['_']
         action = self['action']
-        assert path and action
+        # almost every api needs a path, except for
+        # "fill()" which only needs a fieldname
+        # assert path and action
         api = get_api()
         try:
             ackshun = api[action]
         except KeyError:
             error = 'no api-action found with name "{0}"'.format(action)
             self.flash(error)
-            #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
             return dict(
                 error=("APIView can't find an "
                        "api-action called {0}").format(action))
