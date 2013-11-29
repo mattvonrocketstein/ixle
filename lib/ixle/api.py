@@ -13,14 +13,15 @@ import unipath
 from report import report
 from ixle import util
 from ixle.schema import Item
-from ixle.util import database, conf
+from ixle.util import database, conf, field_name_to_agent
 
-def fill(field_name):
-    from ixle.agents import registry
-    agents = registry.values()
-    agents = [a for a in agents if field_name in getattr(a,'covers_fields',[])]
-    agent = agents[0]
-    agent_obj = agent(settings=conf(), fill=True)
+def fill(field_name, path=None):
+    fill_all = path is None
+    agent = field_name_to_agent(field_name)
+    agent_obj = agent(
+        path=path, settings=conf(), fill=fill_all,
+        wrap_kbi=False #ugh hack
+        )
     result = dict(used_agent=agent.__name__,
                   status='ok')
     result.update(**agent_obj())

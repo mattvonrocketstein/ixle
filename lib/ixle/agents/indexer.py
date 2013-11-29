@@ -15,7 +15,7 @@ class Indexer(IxleAgent):
         mentioned in db
     """
     requires_path = True
-    provides = 'fname fext path'.split()
+    covers_fields = 'fname fext path'.split()
     nickname = 'index'
 
     @wrap_kbi

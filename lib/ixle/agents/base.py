@@ -22,8 +22,11 @@ class IxleAgent(SaveMixin, ReportMixin):
 
     def __init__(self, path=None, settings=None,
                  items=[], fill=None,
-                 force=False, **kargs):
+                 force=False, wrap_exit=True,
+                 **kargs):
         """ fill+path determine self.query """
+        if wrap_exit:
+            self.__call__ = wrap_kbi(self.__call__)
         settings._engine.get_server() # HACK: ensure we're initialized
         self.record = defaultdict(lambda: 0)
         if self.requires_path:
@@ -166,7 +169,6 @@ class IxleDBAgent(QueryDecidingAspect, IxleAgent):
                        for x in db ]
         return iter(result)"""
 
-    @wrap_kbi
     def __call__(self):
         kis = list(self)
         num_items = len(kis)
