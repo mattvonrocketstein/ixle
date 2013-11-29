@@ -93,13 +93,11 @@ class more_clean(Heuristic):
         return result
 
 class is_code(Heuristic):
-    is_heuristic = True
     apply_when = []
+    requires = ["file_type"]
     def run(self):
         if self.item.fext not in CODE_EXTS:
-            return False
-        if self.item.file_type and self.item.file_type!='text':
-            return False
+            return self.NegativeAnswer("{0} not in CODE_EXTS")
         return True
 
 class guess_genres(Heuristic):
@@ -148,16 +146,18 @@ class guess_duration(Heuristic):
         # should work on imdbd-movies and songs
         return self._from_imdb() or self._from_mutagen()
 
-@H
-def is_crypto(item):  return _generic(item, r_crypto)
+class is_crypto(Heuristic):
+    def run(self):
+        return _generic(self.item, r_crypto)
 
 class is_text(Heuristic):
     r_text  = [ re.compile(_) for _ in
                 ['.* text'] ]
-    require = ['file_magic']
+    require = ['file_magic', 'mime_type']
 
     def run(self):
-        return _generic(self.item, self.r_text)
+        return self.item.mime_type.startswith('text') or \
+               _generic(self.item, self.r_text)
 @H
 def is_video(item):
     return _generic(item, r_video) or \

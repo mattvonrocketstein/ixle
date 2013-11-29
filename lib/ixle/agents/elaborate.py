@@ -6,7 +6,9 @@ from .base import ItemIterator
 from ixle.schema import Item
 from ixle import util
 from ixle import api
+
 report = util.report
+
 class Elaborate(ItemIterator):
     nickname = 'elaborate'
 
@@ -18,7 +20,7 @@ class Elaborate(ItemIterator):
             if not getattr(item, field_name):
                 report("elaborating '{0}' in {1}".format(
                     field_name, item.fname))
-                agent_obj = api.call_agent(agent.nickname, item)
+                agent_obj = util.call_agent_on_item(agent.nickname, item)
                 #self.save(item)
         return
 
