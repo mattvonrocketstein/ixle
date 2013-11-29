@@ -20,7 +20,7 @@ from ixle.util import smart_split
 from ixle.python import ope
 from ixle.heuristics.data import CODE_EXTS
 from .util import _generic
-from .nlp import freq_dist
+from .nlp import freq_dist, vocabulary
 from .base import H, Heuristic
 
 r_xx_min = re.compile('\d+ min')
@@ -151,13 +151,10 @@ class guess_duration(Heuristic):
 @H
 def is_crypto(item):  return _generic(item, r_crypto)
 
-@H
-def has_file_magic(item): return item.file_magic
-
 class is_text(Heuristic):
     r_text  = [ re.compile(_) for _ in
                 ['.* text'] ]
-    apply_when = ['has_file_magic']
+    require = ['file_magic']
 
     def run(self):
         return _generic(self.item, self.r_text)

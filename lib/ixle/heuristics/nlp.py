@@ -10,6 +10,7 @@ from ixle.python import ope
 from .base import H, Heuristic
 from ixle.schema import Item
 from peak.util.imports import lazyModule
+
 heuristics = lazyModule('ixle.heuristics')
 
 
@@ -45,6 +46,12 @@ class freq_dist(Heuristic):
             tmp=f.read()
             for sent in nltk.sent_tokenize(tmp.lower()):
                 for word in nltk.wordpunct_tokenize(sent):
-                    fdist.inc(word)
+                    if word.isalnum():
+                        fdist.inc(word)
         fdist = OrderedDict(fdist.items())
         return fdist
+
+class vocabulary(Heuristic):
+    apply_when = ['freq_dist']
+    def run(self):
+        return len(heuristics.freq_dist(self.item)().obj)
