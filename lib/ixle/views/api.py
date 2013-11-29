@@ -10,7 +10,7 @@ class APIView(Widget):
     url = '/api'
     returns_json = True
     def main(self):
-        path   = self['_']
+        arg   = self['_']
         action = self['action']
         # almost every api needs a path, except for
         # "fill()" which only needs a fieldname
@@ -24,9 +24,9 @@ class APIView(Widget):
             return dict(
                 error=("APIView can't find an "
                        "api-action called {0}").format(action))
-        print 'calling api with: ', ackshun, path
+        print 'calling api with: ', ackshun, arg
         try:
-            status = ackshun(path)
+            status = ackshun(arg)
         except Exception,e:
             import sys, traceback
             err_data = traceback.format_exc()
@@ -37,8 +37,8 @@ class APIView(Widget):
         #    report('encountered error running api command')
         #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         #    status = str([ action, e ])
-        self.flash('ran {0} on \'{1}\''.format(action, path))
+        self.flash('ran {0} on \'{1}\''.format(action, arg))
         #status = 'status: {0}'.format(status)
         #self.flash(status)
-        print 'api returning json:',status
+        print 'api returning json:', status
         return status

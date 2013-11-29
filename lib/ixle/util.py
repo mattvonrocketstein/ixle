@@ -93,6 +93,35 @@ def _harvest(modyool, arg_pattern=None, test=None):
             matches.append(obj)
     return dict([m.__name__, m] for m in matches)
 
+def call_agent_on_item(agent_nick, item):
+    """ helper method for when you want to
+        turn agents into api methods
+    """
+    kls = get_agent_by_name(agent_nick)
+    class mymixin(object):
+        def __iter__(self):
+            # bypasses the normal query mechanism
+            return iter([item])
+
+    kls = type('Dynamic_API_From_Agent',
+               (mymixin, kls),
+               {})
+    agent = kls(path=item.path, settings=conf(), force=True,)
+    result = agent()
+    report('called agent, got ' + str(result))
+    if result is None:
+        print 'got None-result from agent, should have been self.record.'
+    return agent, result
+
+def call_agent_on_dir(agent_nick, dirname):
+    kls = get_agent_by_name(agent_nick)
+    agent_obj = kls(path=dirname, settings=conf())
+    result = agent()
+    if result is None:
+        raise Exception, ('got None-result from agent, '
+                          'should have been self.record.')
+    return agent, result
+
 def get_api():
     from ixle import api
     d_action = _harvest(api, 'directory')
@@ -100,6 +129,10 @@ def get_api():
     out = {}
     [ out.update(x) for x in [d_action, p_action] ]
     return out
+
+def get_agent_by_name(name):
+    from ixle.agents import registry
+    return registry[name]
 
 def get_heuristics():
     """ mines heuristic functions out of ixle.heuristics.

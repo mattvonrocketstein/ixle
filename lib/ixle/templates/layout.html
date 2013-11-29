@@ -42,11 +42,13 @@
     <script type="text/javascript">
       $(document).ready(function() {
       $(".item_list tr:odd").addClass("odd");
-      $('#main_navigation').load('/_nav?next=' + window.location.pathname,
-      function(){
-      console.debug('nav load complete.. init anylink');
-      anylinkmenu.trueinit("menuanchorclass");
-      })
+      $('#main_navigation').load('/_nav',{_:'{{_}}'},
+      function(){});
+
+      //window.setTimeout(function(){
+      //console.debug('timer up.. init anylink');
+      //anylinkmenu.trueinit("menuanchorclass");}, 3500);
+
       });
     </script>
   </body>

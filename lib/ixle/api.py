@@ -13,7 +13,10 @@ import unipath
 from report import report
 from ixle import util
 from ixle.schema import Item
+from ixle.python import isdir
+from ixle import util
 from ixle.util import database, conf, field_name_to_agent
+
 
 def fill(field_name, path=None):
     fill_all = path is None
@@ -27,35 +30,18 @@ def fill(field_name, path=None):
     result.update(**agent_obj())
     return result
 
-def call_agent(agent_nick, item):
-    """ helper method for when you want to
-        turn agents into api methods
-    """
-    from ixle.agents import registry
-    kls = registry[agent_nick]
-    class mymixin(object):
-        def __iter__(self):
-            # bypasses the normal query mechanism
-            return iter([item])
-
-    kls = type('Dynamic_API_From_Agent',
-               (mymixin, kls),
-               {})
-    agent = kls(path=item.path, settings=conf(), force=True,)
-    result = agent()
-    report('called agent, got ' + str(result))
-    if result is None:
-        print 'got None-result from agent, should have been self.record.'
-    return agent, result
-
 def build_agent_method(name):
     def fxn(path):
         try:
             item = Item.objects.get(path=path)
         except Item.DoesNotExist:
-            report("error grabbing item with path="+str(path))
-            raise
-        agent, result = call_agent(name, item)
+            if isdir(path):
+                agent,result = util.call_agent_on_dir(name, path)
+            else:
+                report("error grabbing item with path="+str(path))
+                raise
+        else:
+            agent, result = util.call_agent_on_item(name, item)
         if not result: result = agent.record
         return dict(result)
     fxn.__name__ = name
@@ -67,9 +53,11 @@ def indexer(path):
     result = agent()
     return result or dict(status='ok')
 
+elaborate = build_agent_method('elaborate')
 stale = build_agent_method('stale')
 itagger = build_agent_method('itagger')
 imdb = build_agent_method('imdb')
+md5 = build_agent_method('md5')
 moviefinder = build_agent_method('moviefinder')
 mtagger = build_agent_method('mtagger')
 sizer = build_agent_method('sizer')
@@ -87,13 +75,13 @@ def unindex(path):
 
 def typer(path):
     item = Item.objects.get(path=path)
-    agent, result = call_agent('typer', item)
+    agent, result = util.call_agent_on_item('typer', item)
     return dict(status='ok')
 
 
 def moviefinder(path):
     item = Item.objects.get(path=path)
-    agent, result = call_agent('moviefinder', item)
+    agent, result = util.call_agent_on_item('moviefinder', item)
     return dict(status='ok')
 
 def kill_directory(directory):

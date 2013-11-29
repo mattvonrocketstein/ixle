@@ -3,7 +3,6 @@
 from report import report
 from ixle.python import ope
 from .base import ItemIterator
-#from ixle.query import javascript
 
 class Filer(ItemIterator):
 
