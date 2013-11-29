@@ -5,13 +5,11 @@ import mutagen
 from report import report
 from ixle.schema import Item
 from ixle.agents.base import ItemIterator
-
+from ixle.util import get_heuristics, call_agent_on_item
 from .util import hachm, clean_tags
+from ixle import api
 
-class GenericTagger(ItemIterator):
-    covers_fields = ['tags']
-    DEBUG = True
-
+class AbstractTagger(ItemIterator):
     def callback(self, item=None, **kargs):
         from ixle.exceptions import FileDoesntExist
         if not item.exists():
@@ -20,7 +18,28 @@ class GenericTagger(ItemIterator):
             return dict(error=FileDoesntExist(err))
         return self.tagger_callback(item=item, **kargs)
 
-class ImageTagger(GenericTagger):
+class GenericTagger(AbstractTagger):
+    nickname='tagger'
+    covers_fields = ['tags']
+    DEBUG = True
+    heuristics = get_heuristics()
+    def _using(self, kls):
+        self.tagger_callback = lambda *args, **kargs: \
+                               call_agent_on_item(kls.nickname,
+                                                      self._item)
+        self.record['tagged_with_{0}'.format(kls.__name__)]+=1
+
+    def callback(self, item=None, **kargs):
+        self._item = item
+        if self.heuristics['is_image'](item)():
+            self._using(ImageTagger)
+        elif self.heuristics['is_audio'](item)():
+            self._using(MusicTagger)
+        else:
+            self.record['cannot_tag']+=1
+        super(GenericTagger, self).callback(item=item, **kargs)
+
+class ImageTagger(AbstractTagger):
     nickname = 'itagger'
     covers_fields = [] # only generictagger should do this..
     def tagger_callback(self,item=None,**kargs):
@@ -31,7 +50,7 @@ class ImageTagger(GenericTagger):
         item.tags = m
         self.save(item)
 
-class MusicTagger(GenericTagger):
+class MusicTagger(AbstractTagger):
     nickname = 'mtagger'
     covers_fields = [] # only generictagger should do this..
     def _query_override(self):
@@ -67,7 +86,7 @@ class MusicTagger(GenericTagger):
                 else:
                     self.report_status("got tags, but they were empty.")
                 if item.tags:
-                    item.tags=clean_tags(item.tags)
+                    item.tags = clean_tags(item.tags)
                     self.save(item)
             else:
                 self.report_status(
