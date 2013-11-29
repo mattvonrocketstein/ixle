@@ -116,15 +116,21 @@ def call_agent_on_item(agent_nick, item):
 def call_agent_on_dir(agent_nick, dirname):
     kls = get_agent_by_name(agent_nick)
     agent_obj = kls(path=dirname, settings=conf())
-    result = agent()
+    result = agent_obj()
     if result is None:
         raise Exception, ('got None-result from agent, '
                           'should have been self.record.')
-    return agent, result
+    return agent_obj, result
 
 def get_api():
+    def is_api(x):
+        return hasattr(x,'api_method')
     from ixle import api
-    d_action = _harvest(api, 'directory')
+    tmp = dict([[x, getattr(api,x)] for x in dir(api) \
+                if not x.startswith('_') and \
+                getattr(getattr(api,x),'is_api',False)])
+    return tmp
+    d_action = _harvest(api, test=is_api)
     p_action = _harvest(api, 'path')
     out = {}
     [ out.update(x) for x in [d_action, p_action] ]

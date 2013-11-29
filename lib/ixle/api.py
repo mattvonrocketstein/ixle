@@ -29,6 +29,7 @@ def fill(field_name, path=None):
                   status='ok')
     result.update(**agent_obj())
     return result
+fill.is_api=True
 
 def build_agent_method(name):
     def fxn(path):
@@ -45,6 +46,7 @@ def build_agent_method(name):
         if not result: result = agent.record
         return dict(result)
     fxn.__name__ = name
+    fxn.is_api = True
     return fxn
 
 def indexer(path):
@@ -52,6 +54,7 @@ def indexer(path):
     agent = Indexer(path=path,settings=conf())
     result = agent()
     return result or dict(status='ok')
+indexer.is_api=True
 
 elaborate = build_agent_method('elaborate')
 stale = build_agent_method('stale')
@@ -106,6 +109,7 @@ def blacklist(path):
         any files indexed with that name will be killed automatically,
         but an event will be recorded.
     """
+    raise 'NIY'
     item = path2item(path)
     fname = item.fname
     from ixle.schema import DSetting
@@ -117,5 +121,4 @@ def blacklist(path):
     if fname not in blacklist:
         blacklist.append(fname)
         z2.encode(blacklist)
-    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
     return janitor(path)

@@ -59,7 +59,6 @@ class Body(ItemIterator):
                 report('already handled')
         else:
             report(str(item.file_type))
-        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
 
     def set_attachment(self, item):
         contents = item2text(item)

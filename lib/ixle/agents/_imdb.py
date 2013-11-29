@@ -46,7 +46,6 @@ class MovieFinder(ItemIterator):
         item.is_movie = out() or False
         if item.is_movie:
             report('found movie: ' + item.fname)
-        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         self.save(item)
 
 class IMDBer(ItemIterator):
