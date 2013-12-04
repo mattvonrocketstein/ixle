@@ -16,28 +16,30 @@ class AbstractTagger(ItemIterator):
             err = 'item does not exist: ' + item.fname
             self.report_error(err)
             return dict(error=FileDoesntExist(err))
-        return self.tagger_callback(item=item, **kargs)
 
 class GenericTagger(AbstractTagger):
     nickname='tagger'
     covers_fields = ['tags']
     DEBUG = True
     heuristics = get_heuristics()
+
     def _using(self, kls):
-        self.tagger_callback = lambda *args, **kargs: \
-                               call_agent_on_item(kls.nickname,
-                                                      self._item)
-        self.record['tagged_with_{0}'.format(kls.__name__)]+=1
+        call_agent_on_item(kls.nickname, self._item)
+        self.record['tagged_with_{0}'.format(kls.__name__)] += 1
 
     def callback(self, item=None, **kargs):
-        self._item = item
-        if self.heuristics['is_image'](item)():
-            self._using(ImageTagger)
-        elif self.heuristics['is_audio'](item)():
-            self._using(MusicTagger)
+        sooper = super(GenericTagger, self).callback(item=item, **kargs)
+        if sooper:
+            return sooper
         else:
-            self.record['cannot_tag']+=1
-        super(GenericTagger, self).callback(item=item, **kargs)
+            self._item = item
+            if self.heuristics['is_image'](item)():
+                self._using(ImageTagger)
+            elif self.heuristics['is_audio'](item)():
+                self._using(MusicTagger)
+            else:
+                self.record['cannot_tag'] += 1
+
 
 class ImageTagger(AbstractTagger):
     nickname = 'itagger'
@@ -53,7 +55,9 @@ class ImageTagger(AbstractTagger):
 class MusicTagger(AbstractTagger):
     nickname = 'mtagger'
     covers_fields = [] # only generictagger should do this..
+
     def _query_override(self):
+        # deprecated?
         if not self.path:
             return Item.objects.filter(fext__in=['mp3'])
 

@@ -44,7 +44,8 @@ class ItemDetail(View):
                            if x.startswith('reset_') ]
         if reset_requests:
             # TODO: do this with api
-
+            raise Exception,'deprecated'
+            """
             for field in reset_requests:
                 setattr(item, field, None)
                 for agent_kls in registry.values():
@@ -58,10 +59,11 @@ class ItemDetail(View):
                         result = agent.callback(
                             item=item, key=item.id)
                         report('got: ' + str(agent.record))
+
             self.save(item)
             self.flash('saved item: ' + str(self.record))
             return self.redirect(self.url+'?_='+self['_'])
-
+            """
         hresults = run_heuristics(item)
 
         from ixle.util import get_api

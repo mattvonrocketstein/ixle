@@ -45,7 +45,6 @@ class DestructionMixin(object):
         return self.delete_item(item)
 
 
-from ixle.python import now
 class SaveMixin(object):
     # TODO: abstract
     def save(self, item, quiet=False):
