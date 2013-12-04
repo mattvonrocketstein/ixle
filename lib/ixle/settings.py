@@ -45,7 +45,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
     )
     jinja_globals = dict(
         isinstance=isinstance,
-        bool=bool,
+        bool=bool, sorted=sorted,
         NotApplicable=NotApplicable,
         )
 

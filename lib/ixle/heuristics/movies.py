@@ -22,16 +22,6 @@ def if_movie(fxn):
     new_fxn.__name__ = fxn.__name__
     return new_fxn
 
-@if_movie
-def guess_movie_year(item):
-    numbers = []
-    digits = re.compile('\d+')
-    for x in smart_split(item.just_name):
-        tmp = digits.match(x)
-        if tmp and tmp.group()==x: numbers.append(x)
-    numbers = [x for x in numbers if 1910 < int(x) < now().year ]
-    if numbers:
-        return numbers[0]
 
 
 @if_movie
@@ -85,3 +75,21 @@ class is_movie(Heuristic):
         if r_season_1_episode_1.match(self.item.fname):
             return False
         return True
+
+def _guess_movie_year(fname):
+    numbers = []
+    digits = re.compile('\d+')
+    bits = smart_split(fname)
+    for x in bits:
+        tmp = digits.match(x)
+        if tmp and tmp.group()==x:
+            numbers.append(x)
+    numbers = [x for x in numbers if 1910 < int(x) <= now().year ]
+
+    if numbers:
+        return numbers[0]
+
+class guess_movie_year(Heuristic):
+    apply_when = ['is_movie']
+    def run(self):
+        return _guess_movie_year(self.item.just_name)

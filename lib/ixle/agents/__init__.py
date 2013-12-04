@@ -17,7 +17,7 @@ from .body import Body
 #from .renamer import Renamer
 from .slayer import Slayer
 from .elaborate import Elaborate
-
+from .blacklist import BlacklistFext, BlacklistFname
 class AgentRegistry(dict):
     def register(self,name,kls):
         assert name not in self
@@ -43,4 +43,6 @@ registry = AgentRegistry()
   # adaptive-taggers
   ImageTagger, MusicTagger,
   GenericTagger,
+  BlacklistFname,
+  BlacklistFext,
   ]

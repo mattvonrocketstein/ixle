@@ -2,25 +2,14 @@
   <strong>Heuristics:</strong>
   <div style="margin-top:5px;margin-left:15px;">
     <table>
-      {% for fxn_name,result in heuristics.items() %}
-      {%if result%}
+      {% for fxn_name, result in sorted(heuristics.items()) %}
+      {#%if result or isinstance(result,NotApplicable) %#}
       <tr>
         <td><strong><small>{{fxn_name}}</small></strong></td>
         <td><small><small>{{result}}</small></small></td>
       </tr>
-      {%endif%}
+      {#%endif%#}
       {%endfor%}
-      <tr>
-        <td><strong>
-            <small>negative answers for:</small></strong></td>
-        <td>
-          {% for fxn_name,result in heuristics.items() %}
-          {%if result==None%}
-          <small>{{fxn_name}}</small> <strong>|</strong>
-          {%endif%}
-          {%endfor%}
-        </td>
-      </tr>
       <tr>
         <td><strong>
             <small>Not-Applicable:</small></strong></td>

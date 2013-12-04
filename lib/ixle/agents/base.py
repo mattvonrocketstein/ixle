@@ -30,8 +30,7 @@ class IxleAgent(SaveMixin, ReportMixin):
         self.record = defaultdict(lambda: 0)
         if self.requires_path:
            if not path or not ope(path):
-               if not path or not ope(path):
-                   raise FileDoesntExist(str(path))
+               raise FileDoesntExist(str(path))
         self.path = path and abspath(path)
         self.conf = settings
         self.force = force

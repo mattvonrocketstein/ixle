@@ -49,6 +49,8 @@ def build_agent_method(name):
     fxn.is_api = True
     return fxn
 
+## NOTE: these next 3 are all dbagents but not itemiterators.
+# the former cannot rely on build_agent_method
 def indexer(path):
     from ixle.agents.indexer import Indexer
     agent = Indexer(path=path,settings=conf())
@@ -56,6 +58,16 @@ def indexer(path):
     return result or dict(status='ok')
 indexer.is_api=True
 
+def _straight_up(agent_name):
+    def fxn(path):
+        agent_obj, result = util.call_agent_on_dir(agent_name, path)
+        return result
+    fxn.is_api = True
+    return fxn
+
+blacklist_fext = _straight_up('blacklist_fext')
+
+#build_agent_method('blacklist_fext')
 elaborate = build_agent_method('elaborate')
 stale = build_agent_method('stale')
 #itagger = build_agent_method('itagger')

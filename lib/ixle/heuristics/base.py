@@ -22,9 +22,19 @@ class Answer(DumbWrapper):
     __repr__ = __str__
 
 class NotApplicable(DumbWrapper):
-    def __nonzero__(self): return False
+    def __nonzero__(self):
+        return False
     def __str__(self):
         return "(NotApplicable: {0})".format(str(self.obj))
+    __repr__=__str__
+class Affirmative(Answer):
+    def __init__(self, explanation="no reason given"):
+        assert isinstance(explanation, basestring)
+        self.obj = True
+        self.explanation = explanation
+
+    def __nonzero__(self):
+        return True
 
 class NegativeAnswer(Answer):
     def __init__(self, explanation="no reason given"):
@@ -43,7 +53,8 @@ class Heuristic(object):
     is_heuristic = True
     NotApplicable = NotApplicable
     NegativeAnswer = NegativeAnswer
-
+    Affirmative = Affirmative
+    Answer=Answer
     def __init__(self, item):
         self.item = item
 

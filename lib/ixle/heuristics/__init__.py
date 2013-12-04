@@ -19,9 +19,16 @@ from ixle.heuristics.movies import *
 from ixle.util import smart_split
 from ixle.python import ope
 from ixle.heuristics.data import CODE_EXTS
-from .util import _generic
 from .nlp import freq_dist, vocabulary
 from .base import H, Heuristic
+
+def _generic(item, r_list):
+    # NOTE: assumes file_magic already ready already
+    if item.file_magic:
+        for x in item.file_magic:
+            for y in r_list:
+                if y.match(x):
+                    return True
 
 r_xx_min = re.compile('\d+ min')
 
@@ -29,8 +36,6 @@ r_xx_min = re.compile('\d+ min')
 r_crypto = [re.compile(_) for _ in
             ['.* private key.*',
              '.* public key.*',]]
-r_video = [ re.compile(_) for _ in
-            ['AVI', 'Flash Video', 'video: .*'] ]
 r_audio = [ re.compile(_) for _ in
             ['Audio file.*','Microsoft ASF','MPEG ADTS'] ]
 r_image = [ re.compile(_) for _ in
@@ -62,11 +67,24 @@ MIME_MAP = dict(part='data',
                 srt='text')
 
 class more_clean(Heuristic):
-    def run(self):
-        item = self.item
 
+    def run(self):
+        suggestions = []
+        basic = self.basic_clean()
+        suggestions.append(basic)
+        if basic:
+            movie_year = guess_movie_year(self.item)().obj
+            if movie_year:
+                tmp = smart_split(basic)
+                year = str(movie_year)
+                if year in tmp:
+                    tmp = '_'.join(tmp[:tmp.index(year)+1])
+                    suggestions.append(tmp)
+        return suggestions
+
+    def basic_clean(self):
         # split on all kinds of nonalpha-numeric junk
-        bits = smart_split(item.just_name.lower())
+        bits = smart_split(self.item.just_name.lower())
 
         # kill common junk that's found in torrent files, etc
         for x in 'cam dvdrip brrip eng xvid'.split():
@@ -80,15 +98,15 @@ class more_clean(Heuristic):
                 bits2.append(x)
         bits = bits2
         result = '.'.join(['_'.join(bits),
-                           item.fext or ''])
+                           self.item.fext or ''])
         # if original filename does not start with '_', neither
         # should the result.  (this happens with files like "[1]-foo-bar.mp3")
-        one = re.compile('_+').match(item.fname)
+        one = re.compile('_+').match(self.item.fname)
         two = re.compile('_+').match(result)
         if not one and two:
             result = result[two.span()[-1]:]
         #for x in 'xvid'result = result.
-        if result == item.fname:
+        if result == self.item.fname:
             return self.NotApplicable("already clean")
         return result
 
@@ -160,9 +178,15 @@ class is_text(Heuristic):
                _generic(self.item, self.r_text)
 
 class is_video(Heuristic):
+    r_video = [ re.compile(_) for _ in
+                ['AVI', 'Flash Video', 'video: .*'] ]
     def run(self):
-        return _generic(self.item, r_video) or \
-               (FEXT_MAP.get(self.item.fext,None)=='video')
+        if self.item.mime_type and self.item.mime_type.startswith('video'):
+            return self.Answer('mime_type match')
+        if _generic(self.item, self.r_video):
+            return self.Answer('file_magic hint')
+        if FEXT_MAP.get(self.item.fext,None)=='video':
+            return self.Answer('FEXT_MAP rule')
 
 class is_audio(Heuristic):
     def run(self):
