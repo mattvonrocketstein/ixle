@@ -57,6 +57,8 @@ class Heuristic(object):
     Answer=Answer
     def __init__(self, item):
         self.item = item
+    def __str__(self):
+        return "<H:{0}>".format(self.__class__.__name__)
 
     def __call__(self):
         for x in self.require:

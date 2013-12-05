@@ -14,8 +14,8 @@ def run_heuristics(item):
     for fxn_name, fxn in get_heuristics().items():
         result = fxn(item)
         if isinstance(result, Heuristic):
-            result = result()
-        results[fxn_name] = result
+            result1 = result()
+        results[result] = result1
     return results
 
 class ItemDetail(View):

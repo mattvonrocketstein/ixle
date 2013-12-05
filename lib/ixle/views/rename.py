@@ -21,7 +21,9 @@ class RenameView(ItemListView):
 
     def get_ctx(self, *args, **kargs):
         result=super(RenameView,self).get_ctx(*args, **kargs)
-        result.update(is_dir=isdir(self['_']))
+        result.update(
+            is_dir=isdir(self['_']),
+            suggestion=self['suggestion'])
         return result
 
     def get_queryset(self):
@@ -51,5 +53,5 @@ class RenameView(ItemListView):
                     return self.redirect('/browser?_='+new_name)
                 else:
                     return self.redirect(item.detail_url())
-        return super(RenameView,self).main()
+        return super(RenameView, self).main()
         #return self.render()
