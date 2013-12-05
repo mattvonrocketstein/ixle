@@ -12,15 +12,17 @@
         all heuristics will be mined out of this file based on whether they are
         callable and whether the first argument's name is "item".
 """
+
 import re
 import datetime
 from report import report
+from jinja2 import Template
 from ixle.heuristics.movies import *
 from ixle.util import smart_split
-from ixle.python import ope
+from ixle.python import ope, opj
 from ixle.heuristics.data import CODE_EXTS
 from .nlp import freq_dist, vocabulary
-from .base import H, Heuristic
+from .base import H, Heuristic, Answer
 
 def _generic(item, r_list):
     # NOTE: assumes file_magic already ready already
@@ -67,6 +69,17 @@ MIME_MAP = dict(part='data',
                 srt='text')
 
 class more_clean(Heuristic):
+    def render(self, answer):
+        out = []
+        for x in self._cached_result:
+            if isinstance(x, self.NotApplicable):
+                out.append(str(x))
+                continue
+            out.append('<a href="{0}">{1}</a>'.format(
+                    "/rename?_={0}&suggestion={1}".format(
+                        self.item.path,
+                        opj(self.item.dir,x)),x))
+        return "<br/>".join(out)
 
     def run(self):
         suggestions = []
@@ -79,8 +92,10 @@ class more_clean(Heuristic):
                 year = str(movie_year)
                 if year in tmp:
                     tmp = '_'.join(tmp[:tmp.index(year)+1])
+                    tmp+='.'+self.item.fext
                     suggestions.append(tmp)
-        return suggestions
+        self._cached_result = list(set(suggestions))
+        return self._cached_result
 
     def basic_clean(self):
         # split on all kinds of nonalpha-numeric junk

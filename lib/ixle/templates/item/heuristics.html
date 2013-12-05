@@ -2,11 +2,17 @@
   <strong>Heuristics:</strong>
   <div style="margin-top:5px;margin-left:15px;">
     <table>
-      {% for fxn_name, result in sorted(heuristics.items()) %}
+      {% for heuristic, result in sorted(heuristics.items()) %}
       {#%if result or isinstance(result,NotApplicable) %#}
       <tr>
-        <td><strong><small>{{fxn_name}}</small></strong></td>
-        <td><small><small>{{result}}</small></small></td>
+        <td><strong><small>{{heuristic}}</small></strong></td>
+        <td>
+          {%if heuristic.render%}
+          {%autoescape off%}{{heuristic.render(result.obj)}}{%endautoescape%}
+          {%else%}
+          <small>{{result}}</small>
+          {%endif%}
+        </td>
       </tr>
       {#%endif%#}
       {%endfor%}
