@@ -8,20 +8,20 @@ class Md5er(ItemIterator):
     nickname = 'md5'
     covers_fields = ['md5']
     DEBUG = True
+
     def callback(self, item, fname=None, **kargs):
-        report(item.fname)
-        if not item.md5:
+        self.report(item.fname)
+        if any([self.force, not item.md5]):
             if not item.exists():
                 self.complain_missing(item.path)
                 return
-            result = self.run_and_collect(
-                'md5sum "' + item.path + '"')
             try:
+                result = self.run_and_collect(
+                    'md5sum "' + item.path + '"')
                 result = result.split()[0]
             except:
-                report('error collecting output from md5sum')
-                self.record['count_errors'] += 1
+                self.report_error('error collecting output from md5sum')
             else:
                 item.md5 = result
-                report(item.fname + '  ' + result)
+                #report(item.fname + '  ' + result)
                 self.save(item)

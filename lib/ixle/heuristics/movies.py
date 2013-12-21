@@ -63,7 +63,7 @@ def is_movie(item):
 
 class is_movie(Heuristic):
     apply_when = ["is_video"]
-    require = ['size']
+    require = ['file_size']
 
     def run(self):
         if 'video' not in self.item.mime_type:

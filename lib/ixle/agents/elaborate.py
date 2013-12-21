@@ -18,10 +18,10 @@ class Elaborate(ItemIterator):
     def callback(self, item, fname=None, **kargs):
         for field_name, agent in util.agent_cover().items():
             if not getattr(item, field_name):
-                report("elaborating '{0}' in {1}".format(
+                self.report("elaborating '{0}' in {1}".format(
                     field_name, item.fname))
-                agent_obj = util.call_agent_on_item(agent.nickname, item)
-                #self.save(item)
+                agent_obj = util.call_agent_on_item(
+                    agent.nickname, item, quiet=True)
         return
 
 #report_if(item.fname)
@@ -34,9 +34,8 @@ class Elaborate(ItemIterator):
             try:
                 result = result.split()[0]
             except:
-                report('error collecting output from md5sum')
-                self.record['count_errors'] += 1
+                self.report_error('error collecting output from md5sum')
             else:
                 item.md5 = result
-                report(item.fname + '  ' + result)
+                self.report(item.fname + '  ' + result)
                 self.save(item)

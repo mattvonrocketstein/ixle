@@ -110,19 +110,22 @@ def _harvest(modyool, arg_pattern=None, test=None):
             matches.append(obj)
     return dict([m.__name__, m] for m in matches)
 
-def call_agent_on_item(agent_nick, item):
+def call_agent_on_item(agent_nick, item, **kargs):
     """ helper method for when you want to
         turn agents into api methods
     """
+    settings = conf()
+    for k,v in kargs.items():
+        # ugh hack
+        setattr(settings, k, v)
     kls = get_agent_by_name(agent_nick)
     class mymixin(object):
         def __iter__(self):
-            # bypasses the normal query mechanism
+            # bypass the normal query mechanism
             return iter([item])
 
     kls = type('Dynamic_API_From_Agent',
-               (mymixin, kls),
-               {})
+               (mymixin, kls), {})
     agent = kls(path=item.path, settings=conf(), force=True,)
     result = agent()
     report('called agent, got ' + str(result))

@@ -25,7 +25,7 @@ class Item(mDocument):
     # this way are probably better than anything in python's stdlib..
 
     md5        = StringField()            # via md5sum(1)
-    size       = IntField()               # via du(1)
+    file_size       = IntField()               # via du(1)
     file_magic = ListField(StringField(),
                            default=[])    # via file(1)
     mime_type  = StringField()            # via mimetypes module
@@ -35,7 +35,7 @@ class Item(mDocument):
     @classmethod
     def startswith(self, name):
         name = name.replace('(', '\(').replace(')','\)')
-        return self.objects(__raw__={'path' : {'$regex':'^'+name}})
+        return self.objects(__raw__={ 'path' : {'$regex':'^'+name} })
 
     @classmethod
     def contains(self, s):
@@ -80,7 +80,7 @@ class Item(mDocument):
     @property
     def size_mb(self):
         """ get approx size in megabytes """
-        return self.size and self.size*1.0/1024
+        return self.file_size and self.file_size*1.0/1024
 
     @property
     def dirname(self):

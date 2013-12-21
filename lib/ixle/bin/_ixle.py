@@ -24,6 +24,7 @@ def entry():
     engine = settings._engine
     opts, clargs = settings.get_parser().parse_args()
     action, args, kargs = None, tuple(), dict()
+    settings.quiet = opts.quiet
     if clargs:
         assert len(clargs)==1, 'only know how to parse one clarg'
         path = abspath(clargs.pop())
