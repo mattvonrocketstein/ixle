@@ -14,6 +14,23 @@ from ixle.python import ope
 from ixle.schema import Item
 from ixle._atexit import handle_exit
 
+def get_mounts_by_type(mtype):
+    import os
+    tmp = os.popen('mount -l -t {0}'.format(mtype))
+    tmp = tmp.readlines()
+    tmp = [x.strip() for x in tmp if x.strip()]
+    tmp2 = []
+    for line in tmp:
+        mdata = dict(line=line)
+        line = line.split(' on ')
+        name = line.pop(0)
+        line = ''.join(line)
+        line = line.split(' type ')
+        mount_point = line.pop(0)
+        mdata.update(name=name, mount_point=mount_point)
+        tmp2.append(mdata)
+    return tmp2
+
 def field_name_to_agents(field_name):
     from ixle.agents import registry
     agents = registry.values()

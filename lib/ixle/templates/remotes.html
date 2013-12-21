@@ -7,25 +7,41 @@
 
 
 <script>{%include "javascript/base.js"%}</script>
-<br/><strong>current mounts (fuse):</strong><hr/>
-<small>{% for line in all_mounts%}{{line}}<br/>{%endfor%}</small>
-
-<b>Remote hosts</b><hr/>
+<h3>Mount points of interest (FS)</h3>
+<div style="margin-left:10px">
+  {% for mtype,mount_data in special_mounts.items()%}
+<strong>{{mtype}}:</strong>
+<div style="margin-left:10px">
+  {%for mount in mount_data%}
+   <a href="/browser?_={{mount.mount_point}}">{{mount.name}}</a>
+  (<small><small><small>{{mount.line}}</small></small></small>)
+  <br/>
+  {%else%}
+  nothing to show!
+  {%endfor%}
+</div>
+</small>
+<hr/>
+{%endfor%}
+</div>
+<h3>Remote hosts (DB)</h3>
 
 {%for remote in remotes %}
 <script>
-var zoo=[
-    ["<b>Details for {{remote.nickname}}</b><hr/>", "#"],
-    ["mount-point: {{remote.mountpoint}}","#"],
-    ["mounted? {{remote.is_mounted}}", "#"],
-    ["search","/search?_={{remote.mount_point}}"],
-    ["browse","/browser?_={{remote.mount_point}}"],
-    {%if not remote.is_mounted%}
-    ["mount it","{{this_url}}?&mount={{remote.nickname}}"]
-    {%else%}
-    ["unmount it","{{this_url}}?&umount={{remote.nickname}}"]
-    {%endif%}
-]</script>
+  var zoo = [
+  ["<b>Details for {{remote.nickname}}</b><hr/>", "#"],
+  ["mount-point: {{remote.mountpoint}}","#noaction"],
+  ["mounted? {{remote.is_mounted}}", "#noaction"],
+  ["search","/search?_={{remote.mount_point}}"],
+  ["browse","/browser?_={{remote.mount_point}}"],
+  ["delete it","{{this_url}}?&delete_remote={{remote.nickname}}"],
+  {%if not remote.is_mounted%}
+  ["mount it","{{this_url}}?&mount={{remote.nickname}}"]
+  {%else%}
+  ["unmount it","{{this_url}}?&umount={{remote.nickname}}"]
+  {%endif%}
+
+  ]</script>
 
 <table width=100%>
   <tr>

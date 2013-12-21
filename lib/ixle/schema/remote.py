@@ -13,6 +13,8 @@ from ixle.python import opj, expanduser
 from mongoengine import (StringField,
                          IntField)
 
+from ixle.util import get_mounts_by_type
+
 class Remote(mDocument):
     nickname = StringField(required=True)
     hostname = StringField(required=True)
@@ -23,9 +25,7 @@ class Remote(mDocument):
 
     @classmethod
     def all_mounts(self):
-        tmp = os.popen('mount -l -t fuse.sshfs').readlines()
-        tmp = [x.strip() for x in tmp]
-        return [x for x in tmp if x]
+        return get_mounts_by_type('fuse.sshfs')
 
     @property
     def mount_dir(self):

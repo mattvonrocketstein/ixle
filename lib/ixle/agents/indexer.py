@@ -36,7 +36,7 @@ class Indexer(IxleAgent):
         except Item.DoesNotExist:
             item = Item(**data)
             self.save(item)
-            report("fresh data: " + item.fname)
+            #report("fresh data: " + item.fname)
         else:
             #err = 'item already exists and "force" was not specified'
             #assert self.force, err

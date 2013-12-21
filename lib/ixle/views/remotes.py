@@ -3,6 +3,9 @@
 import mongoengine
 from ixle.views.base import View
 from ixle.schema import Remote
+from ixle.util import get_mounts_by_type
+
+mtypes_of_interest = ['vboxsf', 'fuse.sshfs']
 
 class UpdatingView(View):
     def _update(self, obj, data):
@@ -19,6 +22,7 @@ class UpdatingView(View):
         self.flash(msg)
 
 class RemotesView(UpdatingView):
+    """ TODO: change name """
     url      = '/remotes'
     template = 'remotes.html'
     methods  = 'GET POST'.split()
@@ -68,6 +72,12 @@ class RemotesView(UpdatingView):
                 mountpoint = detail.exec_mount()
                 self.flash('mounted @ {0}'.format(mountpoint))
             return redirect()
+
+        if self['delete_remote']:
+            detail = Remote.objects.get(nickname=self['delete_remote'])
+            detail.delete()
+            return redirect()
+
         if self['umount']:
             detail = Remote.objects.get(nickname=self['umount'])
             success = detail.exec_umount()
@@ -77,9 +87,14 @@ class RemotesView(UpdatingView):
         elif self['data']: self.handle_post()
         remotes = Remote.objects.all()
         remote_fields = self._fields
+
+        mounts = [ [mtype,get_mounts_by_type(mtype)] for mtype in \
+                   mtypes_of_interest ]
+        mounts = dict(mounts)
         return self.render(
             #detail=detail,
             remote_fields=remote_fields,
             all_mounts=Remote.all_mounts(),
+            special_mounts = mounts,
             empty=object(),
             remotes=remotes)
