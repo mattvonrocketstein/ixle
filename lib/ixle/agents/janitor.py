@@ -68,11 +68,9 @@ class StaleChecker(KeyIterator, DestructionMixin):
         report('processed {0} records, total'.format(self.record['count_processed']))
         report('wiped {0} stale records'.format(self.record['records_deleted']))
 
-
-
     def callback(self,item=None, fname=None, **kargs):
         self.record['count_processed'] += 1
         if not ope(fname):
-            print fname
+            self.report(fname)
             if self.force:
                 self.delete_record(fname)

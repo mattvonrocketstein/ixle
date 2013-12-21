@@ -56,8 +56,13 @@ class SaveMixin(object):
 
 class ReportMixin(object):
 
+    def report(self, *args, **kargs):
+        if self.conf.quiet: return
+        report(*args, **kargs)
+
     def complain_missing(self, apath=None):
-        report('file missing. gone? not mounted?')
+        self.report('file missing. gone? not mounted?')
+        self.record['files_missing']+=1
 
     def report_error(self, *args, **kargs):
         self.record['error_count'] += 1

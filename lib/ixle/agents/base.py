@@ -128,7 +128,7 @@ class QueryDecidingAspect(object):
         elif self.fill:
             q = self._query_from_fill()
         else:
-            q = None
+            q = Item.objects.all()
             report("chose query: (everything)")
         return q
 
@@ -171,8 +171,12 @@ class IxleDBAgent(QueryDecidingAspect, IxleAgent):
             DEBUG = getattr(self, 'DEBUG', False)
             for index, (key, item) in enumerate([[x.path,x] for x in kis]):
                 cb_kargs = self._get_callback_args(key, item)
-                self.callback(**cb_kargs)
-                self.record['count_processed'] += 1
+                try:
+                    self.callback(**cb_kargs)
+                except Exception,e:
+                    self.report_error(str(e))
+                else:
+                    self.record['count_processed'] += 1
                 pbar.update(index)
             else:
                 pass #report('list-iter was empty!')

@@ -8,7 +8,7 @@ class Sizer(ItemIterator):
 
     nickname = 'sizer'
     requires_path = False
-    covers_fields = ['size']
+    covers_fields = ['file_size']
 
     def get_size(self, item):
         # FIXME: use python
@@ -21,11 +21,11 @@ class Sizer(ItemIterator):
             self.record['count_errors'] += 1
 
     def callback(self, item=None, **kargs):
-        if any([self.force, not item.size]):
-            report(item.path)
+        if any([self.force, not item.file_size]):
+            self.report(item.path)
             size = self.get_size(item)
             if size is not None:
-                item.size = size
+                item.file_size = size
                 self.report_status(str([item.fname, size]))
                 self.save(item)
             else:

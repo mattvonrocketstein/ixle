@@ -37,7 +37,7 @@ class DSettingsMixin(object):
 
 from ixle.heuristics.base import NotApplicable
 class Settings(CorkscrewSettings, DSettingsMixin):
-
+    quiet = False
     default_file = 'ixle.ini'
     jinja_filters = dict(
         naturaltime=humanize.naturaltime,
@@ -137,7 +137,8 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         parser.add_option('--action', dest='action',default='',
                           help='action [{0}]'.format(
                               '|'.join(registry.keys())))
-
+        parser.add_option('-q', '--quiet', dest='quiet',default=False,
+                          help='toggle verbosity off',action='store_true')
         parser.add_option('--api', dest='api',default='',
                           help='api <cmd>'),
         parser.add_option('--daemon',"-d", dest="daemon",
