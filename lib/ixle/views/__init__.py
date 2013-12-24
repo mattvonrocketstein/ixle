@@ -103,14 +103,12 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
             field_query = self['_']
             # both cases return a <Row>-iterator
             if field_query == 'None':
-                raise Exception,'niy'
+                raise Exception, 'niy'
             else:
                 items = Item.objects.filter(
                     **{self.ATTR_NAME:field_query})
             return self.render(label=self.label,
                                **self.get_ctx()
-                               #items=items,
-                               #query=field_query,
                                )
 
         @use_local_template
@@ -142,63 +140,50 @@ Fext = generate_attribute_filter_view('fext', label='extensions')
 FileTypeView  = generate_attribute_filter_view('file_type', label='types')
 MovieView  = generate_attribute_filter_view('is_movie', label='is_movie')
 
-
-class MyStdout(object):
-    registry = {}
-    def __init__(self, stdout):
-        self.stdout = stdout
-
-    def __getattr__(self, x): return getattr(self.stdout, x)
-
-    def write(self, data):
-        this = threading.current_thread()
-        if this in self.registry:
-            self.registry[this].put(data)
-        else:
-            self.stdout.write(data)
+from goulash.stdout import ThreadedStdout
 
 import time
 import sys, threading
 from Queue import Queue, Empty
+from ansi2html import Ansi2HTMLConverter
+from goulash.stdout import ThreadedStdout
+
+conv = Ansi2HTMLConverter()
+unansi = conv.convert
+fake = ThreadedStdout(sys.stdout)
+fake.install()
+
+
 class Chat(SijaxView):
 
     url = '/chat'
     template = "chat.html"
 
-    def comet_do_work_handler(self, obj_response, sleep_time):
-        def f():
-            from ixle.api import indexer
-            indexer('/home/vagrant/code/ixle/')
-        fake = MyStdout(sys.stdout)
-        t = threading.Thread(target=f, name='testing')
-        q = Queue()
-        fake.registry[t] = q
-        sys.stdout = fake
-        t.start()
+    def worker(self):
+        from ixle.api import indexer
+        indexer('/home/vagrant/code/ixle/')
+
+    def comet_handler(self, obj_response):
+        """ """
+        thr = threading.Thread(target=self.worker, name='testing')
+        q = fake.register(thr)
+        thr.start()
         nothing_written = 0
-        while t.is_alive():
-            try: zult = q.get(block=False)
-            except Empty: zult = ""
-            if zult.strip():
-                from ansi2html import Ansi2HTMLConverter
-                conv = Ansi2HTMLConverter()
-                zult = conv.convert(zult)
-                obj_response.html_append('#progress', zult)
+        while thr.is_alive():
+            zult = fake.read_for(thr).strip()
+            if zult:
+                obj_response.html_append('#comet_data', unansi(zult))
             else:
                 nothing_written += 1
-                if nothing_written > 3:
-                    obj_response.html_append('#progress', '...')
-                    yield obj_response
+                if nothing_written > 10:
+                    obj_response.html_append('#comet_data', '.')
                     nothing_written = 0
             yield obj_response
             time.sleep(.5)
 
     def main(self):
-        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         if self.is_sijax:
-            # The request looks like a valid Sijax request
-            # Let's register the handlers and tell Sijax to process it
-            self.sijax.register_comet_callback('do_work', self.comet_do_work_handler)
+            self.sijax.register_comet_callback('do_work', self.comet_handler)
             out = self.sijax.process_request()
             return out
         return self.render()
