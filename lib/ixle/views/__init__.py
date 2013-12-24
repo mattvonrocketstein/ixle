@@ -7,7 +7,7 @@ from report import report
 from corkscrew.views import Favicon, BluePrint
 from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
-from corkscrew.views import ListViews, SettingsView
+from corkscrew.views import ListViews, SettingsView, SijaxView
 
 from ixle.schema import Item, Event
 
@@ -20,6 +20,16 @@ from .detail import Detail
 from .browser import Browser
 from .dsettings import SettingsView#NIY
 from .home import HomePage
+
+from corkscrew.views import SijaxView
+from .events import Events
+from .nav import Nav
+from ixle.views.api import APIView
+from ixle.views.remotes import RemotesView
+from ixle.views.newest import Newest
+from ixle.views.fill import FillView
+from ixle.views.rename import RenameView
+
 
 class _DB(View):
     methods = 'GET POST'.split()
@@ -56,8 +66,6 @@ class Suggest(View):
         splits = '- .'
         suggestions = []
         return self.render(suggestions=suggestions)
-from .events import Events
-from .nav import Nav
 
 class Delete(View):
     blueprint = BluePrint('asdasdas','asdasdasd')
@@ -131,18 +139,74 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
                      template = 'filter_by_fext.html'))
 
 Fext = generate_attribute_filter_view('fext', label='extensions')
-FileTypeView  = generate_attribute_filter_view('file_type',label='types')
+FileTypeView  = generate_attribute_filter_view('file_type', label='types')
 MovieView  = generate_attribute_filter_view('is_movie', label='is_movie')
 
-from ixle.views.api import APIView
-from ixle.views.remotes import RemotesView
-from ixle.views.newest import Newest
-from ixle.views.fill import FillView
-from ixle.views.rename import RenameView
 
-__views__= [
+class MyStdout(object):
+    registry = {}
+    def __init__(self, stdout):
+        self.stdout = stdout
+
+    def __getattr__(self, x): return getattr(self.stdout, x)
+
+    def write(self, data):
+        this = threading.current_thread()
+        if this in self.registry:
+            self.registry[this].put(data)
+        else:
+            self.stdout.write(data)
+
+import time
+import sys, threading
+from Queue import Queue, Empty
+class Chat(SijaxView):
+
+    url = '/chat'
+    template = "chat.html"
+
+    def comet_do_work_handler(self, obj_response, sleep_time):
+        def f():
+            from ixle.api import indexer
+            indexer('/home/vagrant/code/ixle/')
+        fake = MyStdout(sys.stdout)
+        t = threading.Thread(target=f, name='testing')
+        q = Queue()
+        fake.registry[t] = q
+        sys.stdout = fake
+        t.start()
+        nothing_written = 0
+        while t.is_alive():
+            try: zult = q.get(block=False)
+            except Empty: zult = ""
+            if zult.strip():
+                from ansi2html import Ansi2HTMLConverter
+                conv = Ansi2HTMLConverter()
+                zult = conv.convert(zult)
+                obj_response.html_append('#progress', zult)
+            else:
+                nothing_written += 1
+                if nothing_written > 3:
+                    obj_response.html_append('#progress', '...')
+                    yield obj_response
+                    nothing_written = 0
+            yield obj_response
+            time.sleep(.5)
+
+    def main(self):
+        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+        if self.is_sijax:
+            # The request looks like a valid Sijax request
+            # Let's register the handlers and tell Sijax to process it
+            self.sijax.register_comet_callback('do_work', self.comet_do_work_handler)
+            out = self.sijax.process_request()
+            return out
+        return self.render()
+
+
+__views__ = [
     # corkscrew standard views
-    ListViews, Favicon, Login, Logout,
+    ListViews, Favicon, Login, Logout, Chat,
 
     #main ixle views
     SettingsView, FillView,
