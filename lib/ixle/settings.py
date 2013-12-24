@@ -1,11 +1,15 @@
 """ ixle.settings
 """
-import couchdb
-import warnings
-from corkscrew.settings import Settings as CorkscrewSettings
-
+import os
 import json
+
+import warnings
+
 import humanize
+from flask import Blueprint
+from flask.ext.silk import Silk
+
+from corkscrew.settings import Settings as CorkscrewSettings
 
 def escapejs(val):
     try:
@@ -30,7 +34,7 @@ class DSettingsMixin(object):
 
     @property
     def ignore_globs(self):
-        """ pulls the 'ignore_patterns' setting out of couchdb """
+        """ pulls the 'ignore_patterns' setting out of db """
         tmp = self._dynamic['ignore_patterns'].value or ''
         return [ x for x in tmp.split(',') if x ]
 
@@ -54,12 +58,12 @@ class Settings(CorkscrewSettings, DSettingsMixin):
 
     def _get_app(self):
         app = super(Settings,self)._get_app()
-
-        from flask import Blueprint
-        from flask.ext.silk import Silk
         blu = Blueprint(__name__, __name__)
         silk = Silk(blu, silk_path='/icons/')
-
+        app.config['SIJAX_STATIC_PATH'] = os.path.join(
+            app.static_folder, 'js', 'sijax')
+        app.config["SIJAX_JSON_URI"] = '/static/js/sijax/json2.js'
+        import flask_sijax; flask_sijax.Sijax(app)
         return app
 
     def pre_run(self):
@@ -128,9 +132,9 @@ class Settings(CorkscrewSettings, DSettingsMixin):
                           action='store_true',
                           help=('query for entries '
                                 'where FIELDNAME is not set'))
-        parser.add_option('--install', dest='install',
-                          default=False, action='store_true',
-                          help='boostrap ixle into running couchdb')
+        #parser.add_option('--install', dest='install',
+        #                  default=False, action='store_true',
+        #                  help='boostrap ixle into running couchdb')
         parser.add_option('--purge', dest='purge',
                           default=False, action='store_true',
                           help='purge all data from engine(DANGER!)')

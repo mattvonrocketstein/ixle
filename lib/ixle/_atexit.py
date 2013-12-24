@@ -10,7 +10,7 @@ from __future__ import with_statement
 import contextlib
 import signal
 import sys
-
+from ixle.util import report
 
 def _sigterm_handler(signum, frame):
     sys.exit(0)
@@ -44,8 +44,11 @@ def handle_exit(callback=None, append=False):
 
     if (old_handler != signal.SIG_DFL) and (old_handler != _sigterm_handler):
         if not append:
-            raise RuntimeError("there is already a handler registered for " \
-                               "SIGTERM: %r" % old_handler)
+            #raise RuntimeError("there is already a handler registered for " \
+            #                   "SIGTERM: %r" % old_handler)
+            report("there is already a handler registered for " \
+                   "SIGTERM: %r" % old_handler)
+            return
         def handler(signum, frame):
             try:
                 _sigterm_handler(signum, frame)

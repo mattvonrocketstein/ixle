@@ -5,6 +5,7 @@
 # of lxml altogether though, you could try
 #   apt-get install python-lxml
 
+ansi2html
 configparser
 flask-mongoengine
 mongoengine
