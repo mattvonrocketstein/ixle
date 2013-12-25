@@ -9,6 +9,7 @@ import humanize
 from flask import Blueprint
 from flask.ext.silk import Silk
 
+from ixle.heuristics.base import NotApplicable
 from corkscrew.settings import Settings as CorkscrewSettings
 
 def escapejs(val):
@@ -39,7 +40,6 @@ class DSettingsMixin(object):
         return [ x for x in tmp.split(',') if x ]
 
 
-from ixle.heuristics.base import NotApplicable
 class Settings(CorkscrewSettings, DSettingsMixin):
     quiet = False
     default_file = 'ixle.ini'
@@ -57,7 +57,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         return '<ixle.settings.Settings>'
 
     def _get_app(self):
-        app = super(Settings,self)._get_app()
+        app = super(Settings, self)._get_app()
         blu = Blueprint(__name__, __name__)
         silk = Silk(blu, silk_path='/icons/')
         app.config['SIJAX_STATIC_PATH'] = os.path.join(
@@ -89,12 +89,9 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         from ixle.schema import Item, DSetting, Remote
         from ixle import util
         from ixle import heuristics
-        #from ixle.fs import dbfs
         from ixle import agents
         from ixle import api
         from ixle import metadata
-        #dbfs=dbfs,
-        #dupes_db=self.dupes_db,
         return dict(re=re,
                     api=api,
                     agents=agents,
