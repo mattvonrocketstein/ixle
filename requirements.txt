@@ -5,7 +5,8 @@
 # of lxml altogether though, you could try
 #   apt-get install python-lxml
 
-goulash
+git+git://github.com/mattvonrocketstein/goulash.git#egg=goulash
+
 ansi2html
 configparser
 flask-mongoengine

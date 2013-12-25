@@ -7,7 +7,7 @@ from report import report
 from corkscrew.views import Favicon, BluePrint
 from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
-from corkscrew.views import ListViews, SettingsView, SijaxView
+from corkscrew.views import ListViews, SettingsView
 
 from ixle.schema import Item, Event
 
@@ -21,7 +21,6 @@ from .browser import Browser
 from .dsettings import SettingsView#NIY
 from .home import HomePage
 
-from corkscrew.views import SijaxView
 from .events import Events
 from .nav import Nav
 from ixle.views.api import APIView
@@ -144,73 +143,12 @@ import time
 import sys, threading
 from Queue import Queue, Empty
 from goulash.stdout import ThreadedStdout
-from goulash.ansi import Ansi2HTMLConverter
-
-fake = ThreadedStdout(sys.stdout)
-fake.install()
-
-
-class Chat(SijaxView):
-
-    url = '/chat'
-    template = "chat.html"
-    extra_scripts=[ '/static/js/sijax/sijax.js',
-                    '/static/js/sijax/sijax_comet.js' ]
-
-    def worker(self):
-        #from ixle.api import indexer
-        #indexer('/home/vagrant/code/ixle/')
-        import time
-        self.report('stuff')
-        print 1; time.sleep(1)
-        print 2; time.sleep(2)
-        print 3; time.sleep(1)
-        print 4; time.sleep(2)
-        report("print 5; time.sleep(2)")
-        report("print 6; time.sleep(2)")
-        print 7;
-        print 4;
-
-    def comet_handler(self, obj_response):
-        """ """
-        conv = Ansi2HTMLConverter(inline=False, escaped=False)
-        unansi = conv.convert
-        obj_response.html_append('#comet_data', conv.get_style())
-        thr = threading.Thread(target=self.worker, name='testing')
-        q = fake.register(thr)
-        thr.start()
-
-        hidebusy = lambda:obj_response.css('#loading_icon', 'display', 'none')
-        showbusy = lambda:obj_response.css('#loading_icon', 'display', 'block')
-
-        def read():
-            zult = fake.read_all(thr).replace('\n','<br/>')
-            if zult:
-                zult = unansi(zult)
-                obj_response.html_append('#comet_data', zult)
-                hidebusy()
-            else:
-                showbusy()
-
-        while thr.is_alive():
-            read()
-            yield obj_response
-            time.sleep(.5)
-        read()
-        hidebusy()
-        yield obj_response
-
-    def main(self):
-        if self.is_sijax:
-            self.sijax.register_comet_callback('do_work', self.comet_handler)
-            out = self.sijax.process_request()
-            return out
-        return self.render(javascript=self.sijax.get_js())
-
+from ixle.views.api import APIC
 
 __views__ = [
     # corkscrew standard views
-    ListViews, Favicon, Login, Logout, Chat,
+    ListViews, Favicon, Login, Logout,
+    APIC,
 
     #main ixle views
     SettingsView, FillView,
