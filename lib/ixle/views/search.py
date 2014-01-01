@@ -26,7 +26,7 @@ class ItemListView(View):
                     num_pages=num_pages,
                     items=items)
 
-    def get_ctx(self):
+    def get_ctx(self, **kargs):
         search_query = self['_']
         result = dict(_ = search_query,
                       ajax = self.ajax,

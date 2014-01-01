@@ -92,9 +92,10 @@ def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
     class GenericFiltrationView(ItemListView):
         #FIXME: inefficient, not paged..
         def get_queryset(self):
-            assert self['_']
-            return Item.objects.filter(
-                    **{self.ATTR_NAME:self['_']})
+            out = Item.objects.filter(
+                    **{self.ATTR_NAME:self['_']}) if self['_'] \
+                    else []
+            return out
 
         def filter(self):
             from ixle.schema import Item
