@@ -145,11 +145,12 @@ import sys, threading
 from Queue import Queue, Empty
 from goulash.stdout import ThreadedStdout
 from ixle.views.api import APIC
+from ixle.views.hx import Hx
 
 __views__ = [
     # corkscrew standard views
     ListViews, Favicon, Login, Logout,
-    APIC,
+    APIC, Hx,
 
     #main ixle views
     SettingsView, FillView,
