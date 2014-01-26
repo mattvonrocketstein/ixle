@@ -7,30 +7,12 @@ from ixle.schema import Item
 from ixle.agents import registry
 from ixle.views.base import View
 from ixle.util import get_heuristics
-
-def run_heuristics(item):
-    from ixle.heuristics.base import Heuristic
-    results = {}
-    for fxn_name, fxn in get_heuristics().items():
-        result = fxn(item)
-        if isinstance(result, Heuristic):
-            result1 = result()
-        results[result] = result1
-    return results
+from ixle.heuristics import run_heuristics
 
 class ItemDetail(View):
     """ TODO: does not handle filenames with a '#' in them correctly """
     url = '/detail'
     template = 'item/detail.html'
-
-    def get_current_item(self):
-        k = self['_']
-        if not k:
-            return self.flask.render_template('not_found.html')
-        item = Item.objects.get(path=k)
-        if item is None:
-            return self.flask.render_template('not_found.html', filename=k)
-        return item
 
     def main(self):
         item = self.get_current_item()

@@ -18,7 +18,11 @@ class Browser(Search):
     def get_queryset(self):
         q = self['_']
         return Item.startswith(q)
-
+    def main(self):
+        if not self['_']:
+            return self.redirect(self.url+'?_=~')
+        else:
+            return super(Browser, self).main()
     def get_ctx(self):
         ctx = super(Browser, self).get_ctx()
         qstring = self['_']

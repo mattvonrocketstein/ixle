@@ -27,6 +27,7 @@ class NotApplicable(DumbWrapper):
     def __str__(self):
         return "(NotApplicable: {0})".format(str(self.obj))
     __repr__=__str__
+
 class Affirmative(Answer):
     def __init__(self, explanation="no reason given"):
         assert isinstance(explanation, basestring)
@@ -48,17 +49,23 @@ class NegativeAnswer(Answer):
             str(self.explanation))
 
 class Heuristic(object):
-    apply_when = []
-    require = []
-    is_heuristic = True
-    NotApplicable = NotApplicable
+    apply_when     = []
+    require        = []
+    is_heuristic   = True
+    NotApplicable  = NotApplicable
     NegativeAnswer = NegativeAnswer
-    Affirmative = Affirmative
-    Answer=Answer
+    Affirmative    = Affirmative
+    Answer         = Answer
+
     def __init__(self, item):
         self.item = item
+
     def __str__(self):
-        return "<H:{0}>".format(self.__class__.__name__)
+        return "<H:{0}>".format(self.name)
+
+    @property
+    def name(self):
+        return self.__class__.__name__
 
     def __call__(self):
         for x in self.require:

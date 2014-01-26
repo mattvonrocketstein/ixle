@@ -23,6 +23,7 @@ from ixle.python import ope, opj
 from ixle.heuristics.data import CODE_EXTS
 from .nlp import freq_dist, vocabulary
 from .base import H, Heuristic, Answer
+from ixle.util import get_heuristics
 
 def _generic(item, r_list):
     # NOTE: assumes file_magic already ready already
@@ -211,8 +212,9 @@ class is_image(Heuristic):
     def run(self):
         return _generic(self.item, r_image)
 
-@H
-def item_exists(item): return item.exists()
+class item_exists(Heuristic):
+    def run(self):
+        return self.item.exists()
 
 class is_tagged(Heuristic):
     def run(self):
@@ -221,3 +223,17 @@ class is_tagged(Heuristic):
             for entry in self.item.file_magic:
                 if 'ID3' in entry:
                     return True
+
+def run_heuristic(hname, item):
+    h = get_heuristics()[hname](item)
+    return {h:h()}
+
+def run_heuristics(item):
+    results = {}
+    for fxn_name, fxn in get_heuristics().items():
+        results.update(run_heuristic(fxn_name,item))
+        #result = fxn(item)
+        #if isinstance(result, Heuristic):
+        #    result1 = result()
+        #results[result] = result1
+    return results
