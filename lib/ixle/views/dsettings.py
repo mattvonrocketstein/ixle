@@ -28,9 +28,11 @@ class SettingsView(CorkscrewSettingsView):
         if self['name']: self.handle_post()
         from ixle.dsettings import dynamic_settings, DB_NAME
         tmp = dynamic_settings()
-        settings = tmp.values()
-        for doc in settings:
+        dsettings = tmp.values()
+        for doc in dsettings:
             doc.edit_url = self.settings.server.document_url(
                 DB_NAME, doc.id)
         return self.render(
-            settings=settings)
+            dsettings=dsettings,
+            settings=self.settings,
+            )

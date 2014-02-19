@@ -1,6 +1,6 @@
 """ ixle.views.api
 """
-import json
+import time, json
 from .widgets import Widget
 from ixle.util import get_api
 from report import report
@@ -9,6 +9,7 @@ class APIView(Widget):
 
     url = '/api'
     returns_json = True
+
     def main(self):
         arg   = self['_']
         action = self['action']
@@ -50,7 +51,6 @@ class APIC(CometWorker):
     url = '/apic'
 
     def worker(self, **kargs):
-        import time
         arg   = kargs['_']
         action = kargs['action']
         # almost every api needs a path, except for

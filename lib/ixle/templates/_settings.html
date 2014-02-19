@@ -6,7 +6,7 @@
 <h3>Dynamic settings (from database)</h3>
 <hr/>
 <table>
-  {%for setting in settings %}
+  {%for setting in dsettings %}
   <tr>
     <td>{{setting.name}}</td>
     <td>
@@ -39,6 +39,27 @@
   </tr>
   {%endfor%}
 </table>
+<br/>
+<h3>Settings (from corkscrew) </h3>
 <hr/>
-<h3>Config (from .ini) </h3>
+<pre>{{settings.__dict__}}</pre>
+<div id=config_from_ini>
+
+  <script>
+    {%autoescape off%}
+    var ppTable = prettyPrint({{settings.__dict__|escapejs}});
+    {%endautoescape%}}
+    $(document).ready(function(){$('#config_from_ini').html(''+$(ppTable).html());})
+  </script>
+</div>
+<br/>
+<h3>Views (from corkscrew) </h3>
+<hr/>
+  <ul>
+    {%for view in settings._installed_views%}
+    <li>{{view.__name__}}
+      {%endfor%}
+  </ul>
+
+
 {%endblock%}

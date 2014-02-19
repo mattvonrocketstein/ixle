@@ -60,12 +60,12 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         app = super(Settings, self)._get_app()
         blu = Blueprint(__name__, __name__)
         silk = Silk(blu, silk_path='/icons/')
+        return app
+
         app.config['SIJAX_STATIC_PATH'] = os.path.join(
             app.static_folder, 'js', 'sijax')
         app.config["SIJAX_JSON_URI"] = '/static/js/sijax/json2.js'
         import flask_sijax; flask_sijax.Sijax(app)
-        return app
-
     def pre_run(self):
         port = int(self['mongo']['port'])
         host = self['mongo']['host']

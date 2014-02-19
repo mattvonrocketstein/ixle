@@ -8,6 +8,7 @@ from corkscrew.views import Favicon, BluePrint
 from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
 from corkscrew.views import ListViews, SettingsView
+from corkscrew.comet import SijaxDemo as CometDemo
 
 from ixle.schema import Item, Event
 
@@ -146,11 +147,14 @@ from Queue import Queue, Empty
 from goulash.stdout import ThreadedStdout
 from ixle.views.api import APIC
 from ixle.views.hx import Hx
+from ixle.views.file_viewer import Viewer
 
 __views__ = [
     # corkscrew standard views
     ListViews, Favicon, Login, Logout,
-    APIC, Hx,
+    APIC,
+    #CometDemo,
+    Hx, Viewer,
 
     #main ixle views
     SettingsView, FillView,

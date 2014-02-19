@@ -59,9 +59,10 @@ class Heuristic(object):
 
     def __init__(self, item):
         self.item = item
+        self.category = self.__class__.__module__.split('.')[-1]
 
     def __str__(self):
-        return "<H:{0}>".format(self.name)
+        return "<H({0})::{1}>".format(self.category, self.name)
 
     @property
     def name(self):

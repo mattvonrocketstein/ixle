@@ -7,6 +7,7 @@ from ixle.python import sep, ope
 from report import report
 
 from .base import View, BluePrint
+
 class Widget(View):
     methods = 'GET POST'.split()
 
