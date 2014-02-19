@@ -8,7 +8,6 @@ from ixle.agents import registry
 from ixle.views.base import View
 from ixle.util import get_heuristics
 from ixle.heuristics import run_heuristic
-from ixle.heuristics import run_heuristics
 
 class Hx(View):
     url      = '/hx'
@@ -22,5 +21,4 @@ class Hx(View):
         else:
             return self.render(
                 item=item,
-                hname=hname,
                 heuristics=run_heuristic(hname, item))

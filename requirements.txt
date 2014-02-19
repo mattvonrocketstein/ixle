@@ -5,11 +5,16 @@
 # of lxml altogether though, you could try
 #   apt-get install python-lxml
 
-git+git://github.com/mattvonrocketstein/goulash.git#egg=goulash
+# http://textblob.readthedocs.org/en/latest/quickstart.html
+textblob==0.8.3
+
+# https://pypi.python.org/pypi/simserver
+simserver==0.1.4
+numpy==1.8.0
 
 ansi2html
 configparser
-flask-mongoengine
+
 mongoengine
 mutagen==1.21
 nltk==2.0.4
@@ -30,13 +35,13 @@ importlib==1.0.2
 pygments==1.6
 humanize==0.4
 requests==1.2.3
+
 demjson==1.6
-flask==0.9
-Flask-AutoIndex
+
 # TODO: requires SQLAlchemy, ugh.  replace it
 imdbpy==4.9
+
 # TODO: can upgrade to .9 now i think?
-couchdb==0.8
 Importing==1.10
 tornado==3.0.2
 pytest==2.3.5
@@ -45,12 +50,22 @@ jinja2
 # required by jinja but not installed?
 markupsafe==0.18
 configparser
+
+# for extracting media metadata
 hachoir-metadata
 hachoir-core
 hachoir-parser
+
+
+
 # reporting, corkscrew, hammock
 git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
 git+git://github.com/mattvonrocketstein/hammock.git#egg=hammock
 git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew
+git+git://github.com/mattvonrocketstein/goulash.git#egg=goulash
+
+flask-mongoengine
+flask==0.9
+Flask-AutoIndex
 Flask-Silk
 Flask-AutoIndex

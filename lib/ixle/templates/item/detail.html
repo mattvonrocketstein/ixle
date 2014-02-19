@@ -1,5 +1,6 @@
 {% import 'ixle_macros.html' as macros %}
 {%extends "layout.html"%}
+
 {%block main_menu %}
 <table width=100%>
   <tr>
@@ -19,7 +20,7 @@
       <table>
         <tr>
           <td>
-            <a href="file://{{item.path}}">file://..</a>
+            <a href="/view?_{{item.path}}">view</a>
             <strong> | </strong>
             <a href="{{this_url}}?_={{item.path}}">thisUrl</a>
             <strong> | </strong>
@@ -150,7 +151,8 @@
 
 {%block footer_right%}
 <a href="/delete?from=db&_={{item.path}}">
-  delete entry (from database)</a> <b>|</b>
+  delete entry (from database)
+</a> <b>|</b>
 <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
 <a href=#>show file</a> (NIY)<b>|</b>
 <a href="/suggest?_={{item.path}}">suggest name</a> (NIY)
