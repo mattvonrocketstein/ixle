@@ -129,9 +129,6 @@ class Settings(CorkscrewSettings, DSettingsMixin):
                           action='store_true',
                           help=('query for entries '
                                 'where FIELDNAME is not set'))
-        #parser.add_option('--install', dest='install',
-        #                  default=False, action='store_true',
-        #                  help='boostrap ixle into running couchdb')
         parser.add_option('--purge', dest='purge',
                           default=False, action='store_true',
                           help='purge all data from engine(DANGER!)')
@@ -154,6 +151,4 @@ class TestSettings(Settings):
     @classmethod
     def get_parser(kls):
         parser = Settings.get_parser()
-        #parser.add_option('-s', dest='asd', default='')
-        #parser.parse_args = lambda: args,kargs
         return parser

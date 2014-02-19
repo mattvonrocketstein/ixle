@@ -10,7 +10,8 @@ from ixle.util import smart_split, no_alphabet
 from .base import Heuristic
 
 MOVIE_CUT_OFF_SIZE_IN_MB = 400
-r_season_1_episode_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
+TV_CUT_OFF_SIZE_IN_MB = 500
+R_SEASON_1_EPISODE_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
 
 def if_movie(fxn):
     def new_fxn(item):
@@ -46,20 +47,16 @@ def guess_movie_name(item):
         guess = ' '.join(pop_junk(after_year))
     return guess
 
-def is_movie(item):
-    """ answer whether this is perhaps a movie.
-        "movie" is distinct from "video".. we want
-        to guess whether this is a full length motion
-        picture.
-    """
-    # clue: item is new in the database.. don't guess yet
-    # clue: should be a video if it's going to be a movie..
-    # clue: item is new in the database.. don't guess yet
-    # clue: torrented tv shows that contain stuff S1E3 in the filename
-    # clue: movies are pretty big
-    if no_alphabet(item.just_name):
-        return False
-    return True
+class is_tv_show(Heuristic):
+    apply_when = ["is_video"]
+    require = ['file_size']
+
+    def run(self):
+        if R_SEASON_1_EPISODE_1.match(self.item.fname):
+            return self.Affirmative("matches season-X-episode-Y regex")
+        if TV_CUT_OFF_SIZE_IN_MB < self.item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
+            return self.Affirmative("size is about right")
+        return self.NegativeAnswer("no data")
 
 class is_movie(Heuristic):
     apply_when = ["is_video"]
@@ -72,7 +69,7 @@ class is_movie(Heuristic):
         if self.item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
             return self.NegativeAnswer(
                 "size < {0}".format(MOVIE_CUT_OFF_SIZE_IN_MB))
-        if r_season_1_episode_1.match(self.item.fname):
+        if R_SEASON_1_EPISODE_1.match(self.item.fname):
             return False
         return True
 

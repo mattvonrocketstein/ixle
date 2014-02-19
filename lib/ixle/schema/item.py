@@ -37,6 +37,9 @@ class Item(mDocument):
         name = name.replace('(', '\(').replace(')','\)')
         return self.objects(__raw__={ 'path' : {'$regex':'^'+name} })
 
+    def siblings_from_db(self):
+        return self.startswith(self.dir)
+
     @classmethod
     def contains(self, s):
         return self.objects(__raw__={'path' : {'$regex':s}})
