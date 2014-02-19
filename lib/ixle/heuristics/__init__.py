@@ -84,6 +84,9 @@ class more_clean(Heuristic):
 
     def run(self):
         suggestions = []
+        tmp = self.item.fname.lower().replace(' ','_')
+        if tmp!=self.item.fname:
+            suggestions.append(tmp)
         basic = self.basic_clean()
         suggestions.append(basic)
         if basic:
@@ -95,6 +98,7 @@ class more_clean(Heuristic):
                     tmp = '_'.join(tmp[:tmp.index(year)+1])
                     tmp+='.'+self.item.fext
                     suggestions.append(tmp)
+
         self._cached_result = list(set(suggestions))
         return self._cached_result
 
@@ -131,7 +135,8 @@ class is_code(Heuristic):
     requires = ["file_type"]
     def run(self):
         if self.item.fext not in CODE_EXTS:
-            return self.NegativeAnswer("{0} not in CODE_EXTS")
+            return self.NegativeAnswer(
+                "\"{0}\" not in CODE_EXTS".format(self.item.fext))
         return True
 
 class guess_genres(Heuristic):
@@ -203,6 +208,32 @@ class is_video(Heuristic):
             return self.Answer('file_magic hint')
         if FEXT_MAP.get(self.item.fext,None)=='video':
             return self.Answer('FEXT_MAP rule')
+
+def _guess_related_siblings(item):
+    matches = []
+    siblings = item.siblings_from_db()
+    tokens = smart_split(item.fname)
+    for bro in siblings:
+        if len(tokens[0]) > 3:
+            comparison = smart_split(bro.fname)
+            if comparison[0]==tokens[0]:
+                matches.append(bro)
+    return matches
+
+class ListAnswerMixin(object):
+    def render(self, result_list):
+        out = []
+        for x in result_list:
+            out.append(str(x)+"<br/>")
+        return ''.join(out)
+
+class guess_related_siblings(ListAnswerMixin, Heuristic):
+    """ """
+    def run(self):
+        matches = _guess_related_siblings(self.item)
+        return [item.fname for item in matches]
+
+
 
 class is_audio(Heuristic):
     def run(self):

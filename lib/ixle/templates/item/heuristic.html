@@ -3,7 +3,7 @@
       {% for heuristic, result in sorted(heuristics.items()) %}
       {#%if result or isinstance(result, NotApplicable) %#}
       <tr>
-        <td style="valign:top;"><strong><small>
+        <td valign=top><strong><small>
            <a href="/hx?hx={{heuristic.name}}&_={{_}}">{{heuristic}}</a>
         </small></strong></td>
         <td>
