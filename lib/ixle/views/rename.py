@@ -1,17 +1,15 @@
 """ ixle.views.rename
 """
 import shutil
-from ixle.views.search import ItemListView
 
 from report import report
+
+from ixle.views.search import ItemListView
 from ixle.schema import Item
 from ixle.python import isdir, ope
 from ixle.views.search import ItemListView
 from .base import View
-#Item.startswith('/home/vagrant/host/Downloads/The Holy Mountain (Uncut').count()
-#)')(1973) DVDRip (SiRiUs sHaRe)'
-# z=55; print q[:z]; print Item.startswith(q[:z]).count()
-# z=50; print q[:z]; print Item.startswith(q[:z]).count()
+
 
 class RenameView(ItemListView):
 
@@ -55,3 +53,13 @@ class RenameView(ItemListView):
                     return self.redirect(item.detail_url())
         return super(RenameView, self).main()
         #return self.render()
+
+class RepackageView(ItemListView):
+    template = 'repackage.html'
+    url      = '/repackage'
+    methods  = 'get post'.upper().split()
+    def main(self):
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+        return "3"
+    def get_queryset(self):
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
