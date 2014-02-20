@@ -1,9 +1,10 @@
+  <hr/>
+  <strong>Suggestions:</strong>
   <div style="margin-top:5px;margin-left:15px;">
     <table>
-      {% for heuristic, result in sorted(heuristics.items()) %}
-      {#%if result or isinstance(result, NotApplicable) %#}
+      {% for heuristic, result in sorted(heuristics.items()) if heuristic.suggestion_applicable%}
       <tr>
-        <td valign=top><strong><small>
+        <td style="vertical-align:top;"><strong><small>
            <a href="/hx?hx={{heuristic.name}}&_={{_}}">{{heuristic}}</a>
         </small></strong></td>
         <td>

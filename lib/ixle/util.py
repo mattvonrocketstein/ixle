@@ -14,6 +14,10 @@ from ixle.python import ope
 from ixle.schema import Item
 from ixle._atexit import handle_exit
 
+def sanitize_txt(x):
+    """ make text suitable for href linking, etc """
+    return '_'.join(smart_split(x.lower()))
+
 def get_mounts_by_type(mtype):
     import os
     tmp = os.popen('mount -l -t {0}'.format(mtype))

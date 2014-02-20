@@ -3,6 +3,13 @@
 
 from ixle import util
 
+class ListAnswerMixin(object):
+    def render(self, result_list):
+        out = []
+        for x in result_list:
+            out.append(str(x)+"<br/>")
+        return ''.join(out)
+
 class DumbWrapper(object):
     def __init__(self, obj):
         self.obj = obj

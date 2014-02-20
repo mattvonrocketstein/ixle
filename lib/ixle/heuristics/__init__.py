@@ -22,7 +22,7 @@ from ixle.util import smart_split
 from ixle.python import ope, opj
 from ixle.heuristics.data import CODE_EXTS
 from .nlp import freq_dist, vocabulary
-from .base import H, Heuristic, Answer
+from .base import H, Heuristic, Answer, ListAnswerMixin
 from ixle.util import get_heuristics
 
 def _generic(item, r_list):
@@ -209,31 +209,7 @@ class is_video(Heuristic):
         if FEXT_MAP.get(self.item.fext,None)=='video':
             return self.Answer('FEXT_MAP rule')
 
-def _guess_related_siblings(item):
-    matches = []
-    siblings = item.siblings_from_db()
-    tokens = smart_split(item.fname)
-    for bro in siblings:
-        if len(tokens[0]) > 3:
-            comparison = smart_split(bro.fname)
-            if comparison[0]==tokens[0]:
-                matches.append(bro)
-    return matches
-
-class ListAnswerMixin(object):
-    def render(self, result_list):
-        out = []
-        for x in result_list:
-            out.append(str(x)+"<br/>")
-        return ''.join(out)
-
-class guess_related_siblings(ListAnswerMixin, Heuristic):
-    """ """
-    def run(self):
-        matches = _guess_related_siblings(self.item)
-        return [item.fname for item in matches]
-
-
+from .siblings import guess_related_siblings
 
 class is_audio(Heuristic):
     def run(self):

@@ -29,6 +29,7 @@ from ixle.views.remotes import RemotesView
 from ixle.views.newest import Newest
 from ixle.views.fill import FillView
 from ixle.views.rename import RenameView
+from ixle.views.rename import RepackageView
 
 
 class _DB(View):
@@ -160,7 +161,7 @@ __views__ = [
     SettingsView, FillView,
     AgentView, Spawn, Browser,
     Search, Newest,
-    HomePage, RenameView,
+    HomePage, RenameView, RepackageView,
     FileTypeView, Fext, Detail, Events, MovieView,
     RemotesView,
     _DB,
