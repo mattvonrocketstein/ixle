@@ -12,6 +12,7 @@
           {%else%}
           <small>{{result}}</small>
           {%endif%}
+          {%if heuristic.suggestion%}
           {% with suggestion=heuristic.suggestion() %}
           <table style="border-top:1px solid black">
             <tr>
@@ -26,8 +27,10 @@
               </td>
             </tr>
           </table>
-
           {% endwith %}
+          {% else %}
+          no suggestion
+          {% endif %}
         </td>
       </tr>
       {#%endif%#}

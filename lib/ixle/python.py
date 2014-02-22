@@ -10,6 +10,7 @@ ope = os.path.exists
 walk = os.path.walk
 isdir = os.path.isdir
 sep = os.path.sep
+mkdir = os.mkdir
 expanduser = os.path.expanduser
 dirname = os.path.dirname
 abspath = os.path.abspath
