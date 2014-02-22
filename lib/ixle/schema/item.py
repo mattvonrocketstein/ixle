@@ -55,13 +55,18 @@ class Item(mDocument):
         return unipath.FSPath(self.path)
 
     @property
-    def dir(self): return self.unipath.parent
+    def dir(self):
+        """ """
+        return self.unipath.parent
 
     def move(self, new_path):
+        """ Item.move(new_path) effects a move
+            both in the filesystem and on the
+            database
+        """
         import shutil
         from ixle.python import ope
-        report("{0} \n     ->  {1}".format(
-            self.path, new_path))
+        report("{0} \n     ->  {1}".format(self.path, new_path))
         assert unipath.FSPath(new_path).parent.exists(),'destination dir does not exist yet'
         assert ope(self.path), "item not found, is drive mounted?"
         shutil.move(self.path, new_path)

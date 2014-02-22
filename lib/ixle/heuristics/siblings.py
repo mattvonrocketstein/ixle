@@ -55,7 +55,7 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
         if len(self.siblings) > 1:
             sample = self.siblings[0]
             for folder in self._suggest_folder_name:
-                if sample.path.endswith(folder):
+                if sample.unipath.parent.endswith(folder):
                     return False
             return True
 
