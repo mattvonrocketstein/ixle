@@ -17,7 +17,7 @@
   function(){
   json2html(post_data, 'post_data_display');
   $.each(post_data, function(i,item){
-  $('#repackage_form').append('<input type=text name="'+i+'" value="'+item+'">')
+  $('#repackage_form').append('<input type=hidden name="'+i+'" value="'+item+'">')
   });
   });
 </script>

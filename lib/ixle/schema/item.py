@@ -1,13 +1,14 @@
 """ ixle.schema.item
 """
 import unipath
-
+from report import report
 from mongoengine import Document as mDocument
 from mongoengine import (StringField, BooleanField,
                          ListField, DateTimeField,
                          DictField, IntField)
 
 from ixle.python import now, splitext
+
 
 class Item(mDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
@@ -56,6 +57,16 @@ class Item(mDocument):
     @property
     def dir(self): return self.unipath.parent
 
+    def move(self, new_path):
+        import shutil
+        from ixle.python import ope
+        report("{0} \n     ->  {1}".format(
+            self.path, new_path))
+        assert unipath.FSPath(new_path).parent.exists(),'destination dir does not exist yet'
+        assert ope(self.path), "item not found, is drive mounted?"
+        shutil.move(self.path, new_path)
+        self.path = new_path
+        self.save()
 
     # t_seen:      the date this was first seen by ixle
     # t_last_seen: the date this was last saved by ixle
