@@ -2,7 +2,7 @@
 """
 import os
 from report import report
-from ixle.python import now
+from ixle.python import now, ope
 from couchdb.http import ResourceConflict
 
 
@@ -28,7 +28,7 @@ class DestructionMixin(object):
             self.record['errors'] += 1
             self.record['error'] = 'item is none'
         report('deleting file',key)
-        if not os.path.exists(key):
+        if not ope(key):
             self.record['errors'] += 1
             self.record['error']='file does not exist.'
         os.remove(key) # TODO: use unipath

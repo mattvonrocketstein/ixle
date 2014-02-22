@@ -3,7 +3,8 @@
 from report import report
 
 from ixle.python import ope, ops
-from ixle.agents.base import KeyIterator, DestructionMixin
+from ixle.agents.base import KeyIterator
+from .mixins import DestructionMixin
 from ixle.agents.base import ItemIterator
 
 
@@ -61,15 +62,11 @@ class StaleChecker(KeyIterator, DestructionMixin):
 
     def __call__(self):
         super(StaleChecker,self).__call__()
-        if not self.force:
-            report(
-                'finished with dry run.  if you really '
-                'want to kill this stuff, pass --force')
         report('processed {0} records, total'.format(self.record['count_processed']))
         report('wiped {0} stale records'.format(self.record['records_deleted']))
 
     def callback(self,item=None, fname=None, **kargs):
         self.record['count_processed'] += 1
         if not ope(fname):
-            self.report(fname)
             self.delete_record(fname)
+            report(fname)

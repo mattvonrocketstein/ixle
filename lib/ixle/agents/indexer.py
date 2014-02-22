@@ -2,12 +2,11 @@
 """
 
 import os
-
 from report import report
 
 from ixle.python import sep, opj, splitext
 from ixle.schema import Item
-from .base import IxleAgent, wrap_kbi
+from ixle.agents.base import IxleAgent, wrap_kbi
 
 class Indexer(IxleAgent):
     """ only gets new content, and
@@ -38,14 +37,9 @@ class Indexer(IxleAgent):
             self.save(item)
             #report("fresh data: " + item.fname)
         else:
-            #err = 'item already exists and "force" was not specified'
-            #assert self.force, err
-            #report("overwriting data: " + item.fname)
             self.record['overwrote'] += 1
-            #item.delete()
-            #item = Item(**data)
             for x in data.items():
-                setattr(item, *x)#item.update(**data)
+                setattr(item, *x)
         result = self.save(item)
         return result
 

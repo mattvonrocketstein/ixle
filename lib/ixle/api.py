@@ -69,12 +69,14 @@ blacklist_fext = _straight_up('blacklist_fext')
 
 #build_agent_method('blacklist_fext')
 elaborate = build_agent_method('elaborate')
+refresher = build_agent_method('refresh')
 stale = build_agent_method('stale')
 #itagger = build_agent_method('itagger')
 imdb = build_agent_method('imdb')
 md5 = build_agent_method('md5')
 moviefinder = build_agent_method('moviefinder')
 tagger = build_agent_method('tagger')
+typer = build_agent_method('typer')
 #mtagger = build_agent_method('mtagger')
 sizer = build_agent_method('sizer')
 filer = build_agent_method('filer')
@@ -107,7 +109,7 @@ def kill_directory(directory):
         'to kill it, the path needs to exist.  '
         'if you just want these items out of the database, '
         'use the unindexer')
-    assert path.isdir(),'input is not a directory.'
+    assert path.isdir(), 'input is not a directory.'
     count = 0
     for item in query.key_startswith(
         util.database(), d):

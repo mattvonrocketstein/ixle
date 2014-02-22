@@ -18,6 +18,7 @@ from .body import Body
 from .slayer import Slayer
 from .elaborate import Elaborate
 from .blacklist import BlacklistFext, BlacklistFname
+from .refresh import Refresher
 class AgentRegistry(dict):
     def register(self,name,kls):
         assert name not in self
@@ -26,7 +27,9 @@ class AgentRegistry(dict):
 registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
-  Elaborate,
+
+  Elaborate, Refresher,
+
   #heuristic record-rewriters
   MovieFinder, IMDBer,
   # filesystem-modifiers / heuristics record-rewriters

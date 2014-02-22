@@ -1,4 +1,7 @@
 """ ixle.agents.typer
+
+    FIXME: refactor this, it's sketchy how hx
+           rely on the agent and vice versa.
 """
 from mimetypes import guess_type
 
@@ -10,7 +13,7 @@ from ixle.heuristics import (FEXT_MAP, guess_mime, is_video,
 
 
 class Mimer(ItemIterator):
-    nickname = 'mimer'
+    nickname      = 'mimer'
     covers_fields = ['mime_type']
 
     def set_mime(self, item):
@@ -18,7 +21,7 @@ class Mimer(ItemIterator):
         if typ:
             report_if_verbose('set_mime: '+typ)
         else:
-            heuristic =guess_mime(item)
+            heuristic = guess_mime(item)
             answer = heuristic()
             typ = answer.obj
             report_if_verbose('set_consult: ' + str(typ))
@@ -69,13 +72,8 @@ class Typer(ItemIterator):
                 elif 'image' in advice: typ = 'image'
                 else:
                     changed = False
-                    #print '-'*80,'\n'+'unknown file-type:', item.path
-                    #print item.mime_type, '::', item.file_magic
-                    #print '-'*80
                     return
-
             item.file_type = typ
-            #print typ, item.path
             if changed:
                 self.save(item)
         else:
