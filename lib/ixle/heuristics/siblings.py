@@ -3,6 +3,7 @@
 from ixle.util import smart_split
 from .base import ListAnswerMixin, Heuristic
 from goulash.cache import cached
+
 def _guess_related_siblings(item):
     """ """
     matches = []
@@ -15,14 +16,22 @@ def _guess_related_siblings(item):
                 matches.append(bro)
     return matches
 
-class guess_related_siblings(ListAnswerMixin, Heuristic):
+from .base import SuggestiveHeuristic
+
+class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
     """ """
     @property
     def siblings(self): return self._siblings()
 
+    @cached('siblings')
+    def _siblings(self):
+        return _guess_related_siblings(self.item)
+
     @property
-    def _possible_folder_names(self):
-        """ """
+    def _suggest_folder_name(self):
+        """ constructed by combining
+            initial tokens (assumed to be common)
+            from existing file names"""
         tmp = self.siblings
         matches = []
         if tmp:
@@ -34,13 +43,10 @@ class guess_related_siblings(ListAnswerMixin, Heuristic):
                     pass
         return matches
 
-    @cached('siblings')
-    def _siblings(self):
-        return _guess_related_siblings(self.item)
 
     @property
     def suggestion_applicable(self):
-        return bool(self.siblings)
+        return len(self.siblings)>1
 
     @cached('guess_siblings')
     def suggestion(self):
@@ -65,15 +71,15 @@ class guess_related_siblings(ListAnswerMixin, Heuristic):
         js = t.render(root_dir=self.item.dir,
                       sanitized_name=sanitized_name,
                       siblings=self.siblings)
-        for x in self._possible_folder_names:
+        for x in self._suggest_folder_name:
             link = '"javascript:{js_fxn_name}(\'{new_dir}\')"'.format(
                 js_fxn_name=js_fxn_name, new_dir=x)
             out.append('<a href={link}>{name}</a>'.format(link=link,name=x))
         return ['moving each file to a common subdirectory. ',
                 js + 'Choose dir-name: '+'<strong> | </strong>'.join(out)]
 
-    def act(self):
-        matches = self.siblings
+    #def act(self):
+    #    matches = self.siblings
 
     def run(self):
         matches = self.siblings

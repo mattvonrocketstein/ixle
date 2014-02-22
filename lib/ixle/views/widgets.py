@@ -17,6 +17,7 @@ class IsAvailable(Widget):
 
     def main(self):
         abspath = self['_']
+        from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         if abspath and ope(abspath):
             return '<font style="color:green;">exists ✓</font>'
         msg = '(this file is not available.  is the drive mounted?)'

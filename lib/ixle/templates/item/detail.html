@@ -43,7 +43,7 @@
       <td id=disconnection_notification>
         <small>
           <script>
-            $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':'{{item.path}}'})});
+            $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':"{{_|safe}}"})});
         </script></small>
       </td>
     </tr>

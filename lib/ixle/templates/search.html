@@ -10,9 +10,10 @@
   Search!
   {%endif%}
 </strong>
+{%block search_block%}
 <form method=GET action="/search">
   <input name="_" value="enter query here" type="text">
   <input type=submit value="search">
 </form>
-
+{%endblock%}
 {%endblock%}
