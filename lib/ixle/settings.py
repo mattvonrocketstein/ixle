@@ -45,10 +45,11 @@ class Settings(CorkscrewSettings, DSettingsMixin):
     default_file = 'ixle.ini'
     jinja_filters = dict(
         naturaltime=humanize.naturaltime,
-        escapejs=escapejs
+        escapejs=escapejs,
     )
     jinja_globals = dict(
         isinstance=isinstance,
+        str=str,
         bool=bool, sorted=sorted,
         NotApplicable=NotApplicable,
         )

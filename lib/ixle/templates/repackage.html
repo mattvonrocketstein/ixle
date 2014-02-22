@@ -1,0 +1,24 @@
+{%extends "item_list.html"%}
+
+{%block main_menu %}
+{%with post_data=str(request.form.to_dict()).replace(": u'",": '") %}
+<script>var post_data = {{post_data|safe}};</script>
+{%endwith%}
+{%if new_dir%}
+{%include "repackage_got_data.html"%}
+{%else%}
+{%include "repackage_need_data.html"%}
+{%endif%}
+<div id=post_data_display style="margin-left:15px;"></div>
+<br/>
+<br/>
+<script>
+  $(document).ready(
+  function(){
+  json2html(post_data, 'post_data_display');
+  $.each(post_data, function(i,item){
+  $('#repackage_form').append('<input type=text name="'+i+'" value="'+item+'">')
+  });
+  });
+</script>
+{%endblock%}

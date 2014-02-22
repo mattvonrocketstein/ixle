@@ -1,11 +1,18 @@
 """ ixle.heuristics.siblings
 """
-from ixle.util import smart_split
-from .base import ListAnswerMixin, Heuristic
+
 from goulash.cache import cached
 
+from ixle.util import smart_split
+from .base import ListAnswerMixin, Heuristic
+from .base import SuggestiveHeuristic
+
+
 def _guess_related_siblings(item):
-    """ """
+    """ finds file names in the same directory
+        that start off as suspiciously similar to
+        the given <item>
+    """
     matches = []
     siblings = item.siblings_from_db()
     tokens = smart_split(item.fname)
@@ -15,8 +22,6 @@ def _guess_related_siblings(item):
             if comparison[0]==tokens[0]:
                 matches.append(bro)
     return matches
-
-from .base import SuggestiveHeuristic
 
 class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
     """ """
@@ -31,7 +36,8 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
     def _suggest_folder_name(self):
         """ constructed by combining
             initial tokens (assumed to be common)
-            from existing file names"""
+            from existing file names
+        """
         tmp = self.siblings
         matches = []
         if tmp:
@@ -43,10 +49,14 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
                     pass
         return matches
 
-
     @property
     def suggestion_applicable(self):
-        return len(self.siblings)>1
+        if len(self.siblings) > 1:
+            sample = self.siblings[0]
+            for folder in self._suggest_folder_name:
+                if sample.endswith(folder):
+                    return False
+            return True
 
     @cached('guess_siblings')
     def suggestion(self):
@@ -65,6 +75,7 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
           {%endfor%}];
           var data = {'root_dir':'{{root_dir}}', 'new_dir':new_dir, siblings:siblings};
           console.debug(data);
+          post_and_redirect('/repackage',data);
         }
         </script>"""
         t = Template(template)
@@ -77,9 +88,6 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
             out.append('<a href={link}>{name}</a>'.format(link=link,name=x))
         return ['moving each file to a common subdirectory. ',
                 js + 'Choose dir-name: '+'<strong> | </strong>'.join(out)]
-
-    #def act(self):
-    #    matches = self.siblings
 
     def run(self):
         matches = self.siblings

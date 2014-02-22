@@ -18,6 +18,7 @@
       {%include "widgets/fs_disconnect_notification.html"%}
       <small>
         <a href="javascript:post_to_api('indexer', {action:'indexer',_:'{{_}}'})"">index directory</a> |
+        <a href="javascript:post_to_api('refresher', {action:'refresher',_:'{{_}}'})"">refresh directory</a> |
         <a href="javascript:post_to_api('unindex')">unindex directory</a> |
         <a href="/rename?_={{_}}">rename dir recursively</a>
         <!--a href="/api?action=kill_directory&_={{query}}">kill directory</a-->

@@ -16,6 +16,11 @@ class Browser(Search):
     template = 'browser.html'
 
     def get_queryset(self):
+        """ query for db items that start with the
+            path given to the browser (_), but if a
+            search query (q) is provided, filter based
+            on that also
+        """
         path = self['_']
         q = self['q']
         tmp = Item.startswith(path)
@@ -28,6 +33,7 @@ class Browser(Search):
             return self.redirect(self.url+'?_=~')
         else:
             return super(Browser, self).main()
+
     def get_ctx(self):
         ctx = super(Browser, self).get_ctx()
         qstring = self['_']
