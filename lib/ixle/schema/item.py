@@ -17,7 +17,7 @@ class Item(mDocument):
     # fext:  just the extension.  (for "foo.py", this is simply "py")
     path   = StringField(required=True)
     host   = StringField()
-    tags   = DictField() #ListField(StringField())
+    tags   = DictField()
     fext   = StringField()
 
     # output for these fields is retrieved from posix command line utilities.
@@ -26,12 +26,16 @@ class Item(mDocument):
     # this way are probably better than anything in python's stdlib..
 
     md5        = StringField()            # via md5sum(1)
-    file_size       = IntField()               # via du(1)
-    file_magic = ListField(StringField(),
-                           default=[])    # via file(1)
+    file_size  = IntField()               # via du(1)
     mime_type  = StringField()            # via mimetypes module
-    file_type  = StringField()
-    is_movie   = BooleanField()
+    file_type  = StringField()            #
+    is_movie   = BooleanField()           #
+    file_magic = ListField(               # via file(1)
+        StringField(), default=[])
+
+    def __str__(self):
+        return '<Item: "{0}">'.format(self.fname)
+    __repr__ = __str__
 
     @classmethod
     def startswith(self, name):

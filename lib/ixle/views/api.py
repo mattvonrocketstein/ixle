@@ -20,12 +20,12 @@ class APIView(Widget):
         try:
             ackshun = api[action]
         except KeyError:
-            error = 'no api-action found with name "{0}"'.format(action)
+            error = 'no API action found with name "{0}"'.format(action)
             self.flash(error)
             return dict(
                 error=("APIView can't find an "
                        "api-action called {0}").format(action))
-        print 'calling api with: ', ackshun, arg
+        report('calling api with: ', ackshun, arg)
         try:
             status = ackshun(arg)
         except Exception,e:
@@ -60,8 +60,8 @@ class APIC(CometWorker):
         try:
             ackshun = api[action]
         except KeyError:
-            error = 'no api-action found with name "{0}"'.format(action)
-            print "FLASH: error " + (error)
+            error = 'no API-action found with name "{0}"'.format(action)
+            report("ERROR " + (error))
             return dict(
                 error=("APIView can't find an "
                        "api-action called {0}").format(action))

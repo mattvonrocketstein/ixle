@@ -1,12 +1,14 @@
 """ ixle.heuristics.siblings
 """
 
-from goulash.cache import cached
+from goulash.cache import cached as _cached
 
 from ixle.util import smart_split
 from .base import ListAnswerMixin, Heuristic
 from .base import SuggestiveHeuristic
 
+# default cache timeout is too big
+cached = lambda name: _cached(name, 8)
 
 def _guess_related_siblings(item):
     """ finds file names in the same directory
@@ -51,12 +53,29 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
 
     @property
     def suggestion_applicable(self):
-        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+        """ """
+        # guess whether repackaging into
+        # a new folder is worthwhile
         if len(self.siblings) > 1:
+            # guess whether it's already inside
+            # the type of folder we would be suggesting
             sample = self.siblings[0]
-            for folder in self._suggest_folder_name:
+            folders = self._suggest_folder_name
+            for folder in folders:
                 if sample.unipath.parent.endswith(folder):
                     return False
+            # guesses a measurement as to whether the
+            # directory is already well organized
+            import os
+            tmp=[x.fname for x in self.siblings]
+            count=0
+            fnames=os.listdir(sample.unipath.parent)
+            for fname in fnames:
+                if fname in tmp:
+                    count+=1
+            zult = count*1.0/len(fname)
+            if zult > .80:
+                return False
             return True
 
     @cached('guess_siblings')
