@@ -23,6 +23,7 @@ from ixle.python import ope, opj
 from ixle.heuristics.data import CODE_EXTS
 from .nlp import freq_dist, vocabulary
 from .base import H, Heuristic, Answer, ListAnswerMixin
+from .base import SuggestiveHeuristic
 from ixle.util import get_heuristics
 
 def _generic(item, r_list):
@@ -68,67 +69,7 @@ MIME_MAP = dict(part='data',
                 view='data',
                 sqlite='data',
                 srt='text')
-
-class more_clean(Heuristic):
-    def render(self, answer):
-        out = []
-        for x in self._cached_result:
-            if isinstance(x, self.NotApplicable):
-                out.append(str(x))
-                continue
-            out.append('<a href="{0}">{1}</a>'.format(
-                    "/rename?_={0}&suggestion={1}".format(
-                        self.item.path,
-                        opj(self.item.dir,x)),x))
-        return "<br/>".join(out)
-
-    def run(self):
-        suggestions = []
-        tmp = self.item.fname.lower().replace(' ','_')
-        if tmp!=self.item.fname:
-            suggestions.append(tmp)
-        basic = self.basic_clean()
-        suggestions.append(basic)
-        if basic:
-            movie_year = guess_movie_year(self.item)().obj
-            if movie_year:
-                tmp = smart_split(basic)
-                year = str(movie_year)
-                if year in tmp:
-                    tmp = '_'.join(tmp[:tmp.index(year)+1])
-                    tmp+='.'+self.item.fext
-                    suggestions.append(tmp)
-
-        self._cached_result = list(set(suggestions))
-        return self._cached_result
-
-    def basic_clean(self):
-        # split on all kinds of nonalpha-numeric junk
-        bits = smart_split(self.item.just_name.lower())
-
-        # kill common junk that's found in torrent files, etc
-        for x in 'cam dvdrip brrip eng xvid'.split():
-            if x in bits: bits.remove(x)
-        #remove 1080p, x264, etc
-        bits2=[]
-        for x in bits:
-            if not any([
-                re.compile('[a-zA-Z]\d+').match(x),
-                re.compile('\d+[a-zA-Z]').match(x)]):
-                bits2.append(x)
-        bits = bits2
-        result = '.'.join(['_'.join(bits),
-                           self.item.fext or ''])
-        # if original filename does not start with '_', neither
-        # should the result.  (this happens with files like "[1]-foo-bar.mp3")
-        one = re.compile('_+').match(self.item.fname)
-        two = re.compile('_+').match(result)
-        if not one and two:
-            result = result[two.span()[-1]:]
-        #for x in 'xvid'result = result.
-        if result == self.item.fname:
-            return self.NotApplicable("already clean")
-        return result
+from .naming import more_clean
 
 class is_code(Heuristic):
     apply_when = []
@@ -195,8 +136,9 @@ class is_text(Heuristic):
     require = ['file_magic', 'mime_type']
 
     def run(self):
-        return self.item.mime_type.startswith('text') or \
-               _generic(self.item, self.r_text)
+        return self.Answer(
+            self.item.mime_type.startswith('text') or \
+            _generic(self.item, self.r_text))
 
 class is_video(Heuristic):
     r_video = [ re.compile(_) for _ in

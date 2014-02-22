@@ -1,4 +1,13 @@
 {%extends "search.html"%}
+{%block search_block%}
+
+<form method=GET action="/browser">
+  <input name="q" value="{{q or ""}}" type="text">
+  <input name="_" value="{{_}}" type="hidden">
+  <input type=submit value="search">
+  <small><small><i>(search occurs underneath current directory)</i></small></small>
+</form>
+{%endblock%}
 
 {%block query_helo%}
 <table width=100%>
@@ -49,7 +58,6 @@
 {%endblock%}
 
 {%block footer_left%}
-
 <script>
   {%with abspath=query%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
   {%include "javascript/show_detail.js"%}

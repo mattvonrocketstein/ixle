@@ -142,8 +142,9 @@ def call_agent_on_dir(agent_nick, dirname):
     agent_obj = kls(path=dirname, settings=conf())
     result = agent_obj()
     if result is None:
-        raise Exception, ('got None-result from agent, '
-                          'should have been self.record.')
+        report('WARNING: got None-result from agent, '
+               'should have been self.record.')
+        result = {}
     return agent_obj, result
 
 def get_api():
@@ -173,7 +174,8 @@ def get_heuristics():
     """
     from ixle import heuristics
     def is_heuristic(obj):
-        return not getattr(obj,'__name__',None)=='Heuristic' and \
+        FORBID = 'Heuristic SuggestiveHeuristic'.split() # sigh make metaclass
+        return getattr(obj,'__name__', None) not in FORBID and \
                getattr(obj, 'is_heuristic', False)
     return _harvest(heuristics, test=is_heuristic)
 

@@ -72,5 +72,4 @@ class StaleChecker(KeyIterator, DestructionMixin):
         self.record['count_processed'] += 1
         if not ope(fname):
             self.report(fname)
-            if self.force:
-                self.delete_record(fname)
+            self.delete_record(fname)

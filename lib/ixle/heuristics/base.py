@@ -99,3 +99,13 @@ class Heuristic(object):
 def H(fxn):
     fxn.is_heuristic = True
     return fxn
+
+class SuggestiveHeuristic(Heuristic):
+
+    @property
+    def suggestion_applicable(self):
+        raise Exception, ('{0} subclasses SuggestiveHeuristic, so it'
+                          ' should implement the "suggestion_applicable"'
+                          'property').format(self.__class__)
+    def suggestion(self):
+        return 'preamble','html-option1 html-option2'.split()

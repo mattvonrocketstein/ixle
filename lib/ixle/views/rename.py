@@ -18,7 +18,7 @@ class RenameView(ItemListView):
     methods  = 'get post'.upper().split()
 
     def get_ctx(self, *args, **kargs):
-        result=super(RenameView,self).get_ctx(*args, **kargs)
+        result = super(RenameView,self).get_ctx(*args, **kargs)
         result.update(
             is_dir=isdir(self['_']),
             suggestion=self['suggestion'])
@@ -44,8 +44,11 @@ class RenameView(ItemListView):
                 is_dir = isdir(old_name)
                 qs = self.get_queryset()
                 shutil.move(old_name, new_name)
+                print 'fs-move\n  ',old_name,'  ',new_name
                 for item in qs:
-                    item.path = item.path.replace(old_name, new_name)
+                    new_path = item.path.replace(old_name, new_name)
+                    print 'move-db\n  ',item.path,'  ',new_path
+                    item.path = new_path
                     item.save()
                 if is_dir:
                     return self.redirect('/browser?_='+new_name)

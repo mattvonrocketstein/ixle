@@ -16,8 +16,13 @@ class Browser(Search):
     template = 'browser.html'
 
     def get_queryset(self):
-        q = self['_']
-        return Item.startswith(q)
+        path = self['_']
+        q = self['q']
+        tmp = Item.startswith(path)
+        if q:
+            tmp = tmp.filter(__raw__={'path' : {'$regex':q}})
+        return tmp
+
     def main(self):
         if not self['_']:
             return self.redirect(self.url+'?_=~')
