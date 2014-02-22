@@ -22,7 +22,7 @@ from ixle.util import smart_split
 from ixle.python import ope, opj
 from ixle.heuristics.data import CODE_EXTS
 from .nlp import freq_dist, vocabulary
-from .base import H, Heuristic, Answer, ListAnswerMixin
+from .base import H, Heuristic, Answer, NegativeAnswer, ListAnswerMixin
 from .base import SuggestiveHeuristic
 from ixle.util import get_heuristics
 
@@ -32,8 +32,9 @@ def _generic(item, r_list):
         for x in item.file_magic:
             for y in r_list:
                 if y.match(x):
-                    return True
-
+                    return Answer(True)
+        return NegativeAnswer("file_magic doesnt match")
+    return NegativeAnswer("not enough data")
 r_xx_min = re.compile('\d+ min')
 
 # used for determining file_type, layer 1 specificity
@@ -116,11 +117,11 @@ class guess_duration(Heuristic):
     def _from_imdb(self):
         runtime = self.item.tags.get('runtime', None)
         if runtime is not None:
-            runtime = runtime[0]
-            match = r_xx_min.match(runtime)
-            if match:
-                result = int(match.group().split()[0])
-                return datetime.timedelta( minutes=result )
+            result = runtime
+            #match = r_xx_min.match(runtime)
+            #if match:
+            #    result = int(match.group().split()[0])
+            return datetime.timedelta( minutes=result )
 
     def run(self):
         # should work on imdbd-movies and songs
@@ -136,9 +137,9 @@ class is_text(Heuristic):
     require = ['file_magic', 'mime_type']
 
     def run(self):
-        return self.Answer(
-            self.item.mime_type.startswith('text') or \
-            _generic(self.item, self.r_text))
+        if self.item.mime_type.startswith('text'):
+            return self.Affirmative("based on mime_type")
+        return _generic(self.item, self.r_text)
 
 class is_video(Heuristic):
     r_video = [ re.compile(_) for _ in

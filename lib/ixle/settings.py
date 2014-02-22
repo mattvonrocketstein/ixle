@@ -79,7 +79,6 @@ class Settings(CorkscrewSettings, DSettingsMixin):
 
         from flask.ext.mongoengine import MongoEngine
         db = MongoEngine(self.app)
-        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
 
     def shell_namespace(self):
         """ the namespace published to ipython
