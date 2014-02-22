@@ -8,12 +8,10 @@
         text-align: left;
         border-collapse: collapse;
 }
-.rounded-corner thead th.rounded-company
-{
+.rounded-corner thead th.rounded-company{
         background: #b9c9fe url('/static/img/table-images/left.png') left -1px no-repeat;
 }
-.rounded-corner thead th.rounded-q4
-{
+.rounded-corner thead th.rounded-q4{
         background: #b9c9fe url('/static/img/table-images/right.png') right -1px no-repeat;
 }
 .rounded-corner th

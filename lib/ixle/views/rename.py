@@ -94,9 +94,8 @@ class RepackageView(ItemListView):
                     continue
                 else:
                     new_path = item.path.replace(ctx['root_dir'], new_dir)
-                    report("{0} \n     ->  {1}".format(
-                        item.path, new_path))
-                    shutil.move(item.path, new_path)
-                    item.path = new_path
-                    item.save()
+                    item.move(new_path)
+                    #shutil.move(item.path, new_path)
+                    #item.path = new_path
+                    #item.save()
             return self.redirect('/browser?_='+new_dir)
