@@ -36,7 +36,6 @@ class APIView(Widget):
 
         #except Exception, e:
         #    report('encountered error running api command')
-        #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         #    status = str([ action, e ])
         self.flash('ran {0} on \'{1}\''.format(action, arg))
         #status = 'status: {0}'.format(status)
@@ -76,7 +75,7 @@ class APIC(CometWorker):
 
         #except Exception, e:
         #    report('encountered error running api command')
-        #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+
         #    status = str([ action, e ])
         print "FLASH"+('ran {0} on \'{1}\''.format(action, arg))
         #status = 'status: {0}'.format(status)

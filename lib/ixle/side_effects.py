@@ -34,7 +34,6 @@ class MoveRecord(SideEffect):
         new_doc.store(self.db)
         return new_doc
         #print 'about to save him'
-        #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
         #side_effects.append(lambda: setattr(item,'fname', item.unipath.name))
         #side_effects.append(lambda: setattr(item,'_id', dst))
         #self.new_key

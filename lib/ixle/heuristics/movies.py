@@ -23,10 +23,7 @@ def if_movie(fxn):
     new_fxn.__name__ = fxn.__name__
     return new_fxn
 
-
-
-@if_movie
-def guess_movie_name(item):
+def _guess_movie_name(fname):
     def pop_junk(list_of_words):
         out = []
         FORBIDDEN = 'eng cd1 cd2'.split()
@@ -34,12 +31,14 @@ def guess_movie_name(item):
             if x.lower() not in FORBIDDEN:
                 out.append(x)
         return out
-    year = guess_movie_year(item)
+    year = _guess_movie_year(fname)
     if not year:
         # FIXME: not sure what to do yet.
         report('no movie year to split around')
         return
-    bits = smart_split(item.just_name)
+    else:
+        year = str(int(year))
+    bits = smart_split(fname)
     before_year, after_year = (bits[:bits.index(year)],
                                bits[bits.index(year)+1:])
     guess = ' '.join(before_year)
@@ -47,6 +46,9 @@ def guess_movie_name(item):
         guess = ' '.join(pop_junk(after_year))
     return guess
 
+@if_movie
+def guess_movie_name(item):
+    return _guess_movie_name(item.fname)
 class is_tv_show(Heuristic):
     apply_when = ["is_video"]
     require = ['file_size']

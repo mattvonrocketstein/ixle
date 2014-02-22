@@ -10,32 +10,23 @@ from ixle.heuristics import is_movie
 from ixle.agents.base import ItemIterator
 from ixle import heuristics
 
+from rottentomatoes import RT
+rotten="d6jcrfycr3msyw7p27xth52r"
+import copy
 class IMDBApi(object):
-    def __init__(self, title, year=None):
-        query = dict(q=title)
-        if year is not None: query.update(year=year)
-        self.url = 'http://imdbapi.org/?{0}'.format(
-            urllib.urlencode(query))
+    def __init__(self, title, year=0):
+        self.query = dict(title=title, year=int(year))
+        self.rt = RT(rotten)
 
     def __call__(self):
-        try:
-            fhandle = urlopen(self.url)
-        except HTTPError,e :
-            report('caught an error.. call back later? '+str(e))
-            return []
-        contents = fhandle.read()
-        api_result = demjson.decode(contents)
-        if isinstance(api_result, dict) and 'error' in api_result:
-            report("api_result is bad: "+str(api_result))
-            return []
-        #if self.year:
-        #    matches = []
-        #    for possible_match in api_result:
-        #        match_year = int(possible_match['year'])
-        #        if match_year == int(self.year):
-        #            matches.append(possible_match)
-        #else:
-        matches = api_result
+        matches = []
+        year = self.query['year']
+        results = self.rt.search(self.query['title'])
+        self.partial = copy.copy(results)
+        if year:
+            results = [x for x in results if x['year']==self.query['year']]
+        for r in results:
+            matches.append(self.rt.info(r['id']))
         return matches
 
 class MovieFinder(ItemIterator):
@@ -43,7 +34,7 @@ class MovieFinder(ItemIterator):
     covers_fields = ['is_movie']
     def callback(self, item=None, **kargs):
         out = heuristics.is_movie(item)
-        item.is_movie = out() or False
+        item.is_movie = bool(out() or False)
         if item.is_movie:
             report('found movie: ' + item.fname)
         self.save(item)
@@ -57,23 +48,22 @@ class IMDBer(ItemIterator):
         self.moviefinder = self.subagent(MovieFinder)
         #assert not self.path, 'i cant use a path'
 
-    def _query_override(self):
-        raise Exception,'niy'
-    # 2 versions:
-        #  could rely on is_movie=True or just file_type='video'
+    #def _query_override(self):
+    #   2 versions:
+    #     could rely on is_movie=True or just file_type='video'
 
     def callback(self, item=None, **kargs):
-        if item.is_movie is None:
-            self.moviefinder.callback(item=item)
+        self.moviefinder.callback(item=item)
         report(item.fname)
         if not item.is_movie:
             return
         if any([self.force, not item.tags]):
             report(item.fname)
-            name,year = [heuristics.guess_movie_name(item),
-                         heuristics.guess_movie_year(item)]
+            name, year = [ heuristics.movies._guess_movie_name(item.fname),
+                           heuristics.movies._guess_movie_year(item.fname)]
             report('extracted: '+str([name, year]))
             api_obj = IMDBApi(name, year=year)
+            report("Querying RT api..")
             matches = api_obj()
             if not matches:
                 self.report_status(
@@ -81,7 +71,7 @@ class IMDBer(ItemIterator):
             elif len(matches)>1:
                 self.report_status(
                     'multiple matches for this search: ' + str([name,year]))
-                raise Exception, NotImplemented
+                #raise Exception, NotImplemented
             elif len(matches)==1:
                 match = matches[0]
                 item.tags=match

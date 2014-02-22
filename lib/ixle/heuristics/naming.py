@@ -15,7 +15,7 @@ class more_clean(SuggestiveHeuristic):
     def suggestion(self):
         suggestions = self._run()
         opts = ['<a href=#>{0}</a>'.format(x) for x in suggestions]
-        return '<strong>|</strong>'.join(opts)
+        #return '<strong>|</strong>'.join(opts)
         return 'cleaning the filename', self._render('ignored')
 
     def _render(self, answer):

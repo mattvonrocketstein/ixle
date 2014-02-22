@@ -65,6 +65,7 @@ class ReportMixin(object):
         self.record['files_missing']+=1
 
     def report_error(self, *args, **kargs):
+        raise
         self.record['error_count'] += 1
         report(*args, **kargs)
         self.record['last_error'] = [ args, kargs ]

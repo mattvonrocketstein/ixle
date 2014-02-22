@@ -1,6 +1,7 @@
 """ ixle.heuristics.siblings
 """
 
+import os
 from goulash.cache import cached as _cached
 
 from ixle.util import smart_split
@@ -66,7 +67,6 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
                     return False
             # guesses a measurement as to whether the
             # directory is already well organized
-            import os
             tmp=[x.fname for x in self.siblings]
             count=0
             fnames=os.listdir(sample.unipath.parent)
