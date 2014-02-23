@@ -13,18 +13,29 @@
       <strong>
         {{item.fname}}
       </strong>
-      {%include "item/to_clipboard.html"%}
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      <span id=disconnection_notification></span>
       <br/>
     </td>
     <td align=right>
       <table>
         <tr>
           <td>
-            <a href="/view?_{{item.path}}">view</a>
-            <strong> | </strong>
-            <a href="{{this_url}}?_={{item.path}}">thisUrl</a>
-            <strong> | </strong>
-            <a href="/rename?_={{_}}">rename</a>
+            <small>
+              <i>
+                {%include "item/to_clipboard.html"%}
+                <strong> | </strong>
+                <a href="/view?_{{item.path}}">view</a>
+                <strong> | </strong>
+                <a href="{{this_url}}?_={{item.path}}">thisUrl</a>
+                <strong> | </strong>
+                <a href="javascript:post_and_redirect('/rename',{_:'{{_.replace("'","\'")}}'})">
+                  rename</a>
+              </i>
+            </small>
+
           </td>
         </tr>
       </table>
@@ -35,96 +46,45 @@
 
 
 {%block body%}
-<div id=block_body style="margin-left:10px;">
-  <table>
-    <tr>
-      <td><strong>File Information:<a href=#></a></strong>
-      </td>
-      <td id=disconnection_notification>
-        <small>
-          <script>
-            $(document).ready(function(){$('#disconnection_notification').load('/widgets/is_available',{'_':"{{_|safe}}"})});
-        </script></small>
-      </td>
-    </tr>
-  </table>
-  <table style="margin-left:15px;width:100%">
-    <tr>
-      <td><strong><small>size</small></strong></td>
-      <td>
-        <small>
-          {%if item.size==None %}
-          {{macros.id_calc_link('sizer')}}
-          {%else%}
-          {%if item.size_mb > 1%}
-          {{item.size_mb}} MB
-          {%else%}
-          {{item.size}}
-          {%endif%}
-          {%endif%}
-          <small>
-      </td>
-    </tr>
-    <tr>
-      <td><b>file extension</b></td>
-      <td>
-        <a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
-    </tr>
-    <tr>
-      <td><b>mime-type</b></td>
-      <td><small>{{item.mime_type}}</small></td>
-    </tr>
-    <tr>
-      <td><b>file type</b></td>
-      <td>
-        <small>
-          {% if item.file_type==None%}
-          {{macros.id_calc_link('typer')}}
-          {%else%}
-          <a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a>
-          {%endif%}
-        </small>
-      </td>
-
-    </tr>
-    <tr>
-      <td><b>file magic</b></td>
-      <td><small>{{' '.join(item.file_magic)}}</small></td>
-    </tr>
-    <tr>
-      <td><b>t_mod</b></td>
-      <td>{{item.t_mod|naturaltime}}</td>
-    </tr>
-    <tr>
-      <td><b>t_last_mod</b></td>
-      <td>{{item.t_last_mod|naturaltime}}</td>
-    </tr>
-    <tr>
-      <td><b>t_seen</b></td>
-      <td>{{item.t_seen|naturaltime}}</td>
-    </tr>
-    <tr>
-      <td><b>t_last_seen</b></td>
-      <td>{{item.t_last_seen|naturaltime}}</td>
-    </tr>
-    <tr>
-      <td><strong><small>is_movie</small></strong></td>
-      <td>{{item.is_movie}}</td></tr>
-  </table>
+<div id=block_body style="">
+  <script>
+    $(document).ready(function(){
+    $('#disconnection_notification').load('/widgets/is_available',{'_':"{{_|safe}}"})
+    });
+  </script>
+  <div id=item_{{item.id}} style="margin-left:10px;"></div>
+  <script>
+    var item_{{item.id}}={
+    fname:'<a href="javascript:show_detail(\'{{item.path|safe}}\')">{{item.path|safe}}</a>',
+    size:'{%if item.size_mb > 1%}{{item.size_mb}} MB{%else%}{{item.size}}{%endif%}',
+    t_seen:'{{item.t_seen|naturaltime}}',
+    t_mod: '{{item.t_mod|naturaltime}}',
+    t_last_mod: '{{item.t_last_mod|naturaltime}}',
+    last_mod: '{{item.t_last_mod|naturaltime}}',
+    file_extension:'<a href="/fext?_={{item.fext}}">{{item.fext}}</a>',
+    file_magic:'{{' '.join(item.file_magic)}}',
+    file_type:'<a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a>',
+    mime_type:'{{item.mime_type}}',
+    is_movie:'{{item.is_movie}}',
+    };
+    $(document).ready(function(){
+    json2html(item_{{item.id}}, 'item_{{item.id}}')});
+  </script>
 
   {%include "item/suggestions.html"%}
   {%include "item/heuristics.html"%}
   {#%include "item/body.html"%#}
   {%include "item/tags.html"%}
   {#% include "item_detail_genre.html" %#}
+</div>
 {% endblock %}
 
 
-{%block footer_right%}
-<a href="/delete?from=db&_={{item.path}}">
-  delete entry (from database)
-</a> <b>|</b>
-<a href=#>delete file (from disk)</a> (NIY) <b>|</b>
-<a href=#>show file</a> (NIY)<b>|</b>
-<a href="/suggest?_={{item.path}}">suggest name</a> (NIY)
-{%endblock%}
+  {%block footer_right%}
+  <a href="/delete?from=db&_={{item.path}}">
+    delete entry (from database)
+  </a> <b>|</b>
+  <a href=#>delete file (from disk)</a> (NIY) <b>|</b>
+  <a href=#>show file</a> (NIY)<b>|</b>
+  <a href="/suggest?_={{item.path}}">suggest name</a> (NIY)
+  {%endblock%}

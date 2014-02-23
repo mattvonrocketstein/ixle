@@ -1,22 +1,17 @@
   <hr/>
   <strong>Heuristics:</strong>
   <div style="margin-top:5px;margin-left:15px;">
-    <table>
+    <div id=heuristics_{{item.id}}></div>
+    <script>
+      var heuristics_{{item.id}}={
       {% for heuristic, result in sorted(heuristics.items()) if not heuristic.suggestion %}
-      <tr>
-        <td style="vertical-align:top;"><strong><small>
-           <a href="/hx?hx={{heuristic.name}}&_={{_}}">{{heuristic}}</a>
-        </small></strong></td>
-        <td>
-          {%if heuristic.render%}
-          {%autoescape off%}{{heuristic.render(result.obj)}}{%endautoescape%}
-          {%else%}
-          <small>{{result}}</small>
-          {%endif%}
-        </td>
-      </tr>
-      {#%endif%#}
+      '<a href="/hx?hx={{heuristic.name}}&_={{_}}">{{heuristic}}</a>':'{{result}}',
       {%endfor%}
+      };
+      $(document).ready(function(){
+      json2html(heuristics_{{item.id}}, 'heuristics_{{item.id}}')});
+    </script>
+    <table>
       <tr>
         <td><strong>
             <small>Not-Applicable:</small></strong></td>
