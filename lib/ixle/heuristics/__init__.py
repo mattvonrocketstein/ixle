@@ -27,7 +27,7 @@ from .base import SuggestiveHeuristic
 from ixle.util import get_heuristics
 
 def _generic(item, r_list):
-    # NOTE: assumes file_magic already ready already
+    """ NOTE: assumes file_magic already ready already"""
     if item.file_magic:
         for x in item.file_magic:
             for y in r_list:
@@ -146,9 +146,9 @@ class is_video(Heuristic):
                 ['AVI', 'Flash Video', 'video: .*'] ]
     def run(self):
         if self.item.mime_type and self.item.mime_type.startswith('video'):
-            return self.Answer('mime_type match')
+            return self.Affirmative('mime_type match')
         if _generic(self.item, self.r_video):
-            return self.Answer('file_magic hint')
+            return self.Affirmative('file_magic hint')
         if FEXT_MAP.get(self.item.fext,None)=='video':
             return self.Answer('FEXT_MAP rule')
 

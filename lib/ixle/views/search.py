@@ -15,16 +15,16 @@ class ItemListView(View):
         return self['ajax']
 
     def pagination_ctx(self, items):
-        page = int(self['p'] or 1)
+        page = int(self['page'] or 1)
         pitems = Pagination(items, page, per_page)
-        items = pitems.items
+        paginated_items = pitems.items
         num_results = pitems.total
         num_pages = pitems.pages
         return dict(page=page,
                     pagination=pitems,
                     num_results=num_results,
                     num_pages=num_pages,
-                    items=items)
+                    items=paginated_items)
 
     def get_ctx(self, **kargs):
         search_query = self['_']
