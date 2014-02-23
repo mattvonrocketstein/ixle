@@ -39,7 +39,7 @@ class DSettingsMixin(object):
         tmp = self._dynamic['ignore_patterns'].value or ''
         return [ x for x in tmp.split(',') if x ]
 
-
+import json
 class Settings(CorkscrewSettings, DSettingsMixin):
     quiet = False
     default_file = 'ixle.ini'
@@ -48,8 +48,9 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         escapejs=escapejs,
     )
     jinja_globals = dict(
-        isinstance=isinstance,
         str=str,
+        dumps=json.dumps,
+        isinstance=isinstance,
         bool=bool, sorted=sorted,
         NotApplicable=NotApplicable,
         )

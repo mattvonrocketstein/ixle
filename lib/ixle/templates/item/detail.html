@@ -114,39 +114,9 @@
 
   {%include "item/suggestions.html"%}
   {%include "item/heuristics.html"%}
-
-
-  {# begin body #}
-  <hr/>
-  <strong>body:</strong>
-  <div style="margin-top:5px;margin-left:15px;">
-    {{item.body}}
-  </div>
-
+  {#%include "item/body.html"%#}
+  {%include "item/tags.html"%}
   {#% include "item_detail_genre.html" %#}
-
-  <hr/>
-  <strong>Tags:</strong>
-  <small>
-    <a href="{{this_url}}?_={{item.path}}&reset_tags=1">reset</a>
-  </small>
-  <div style="margin-top:5px;margin-left:15px;">
-    <table>
-      {% for k,v in item.tags.items()%}
-      <tr>
-        <td>
-          <strong><small>{{k}}</small></strong>
-        </td>
-        <td>
-          <small><small>{{v}}</small></small>
-        </td>
-      </tr>
-      {%endfor%}</table>
-  </div>
-</div>
-<script>
-  {%with abspath=item.path%}{%include "javascript/dir_view_widget.js"%}{%endwith%}
-</script>
 {% endblock %}
 
 

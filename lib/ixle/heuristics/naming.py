@@ -6,8 +6,10 @@ from ixle.util import smart_split
 from ixle.heuristics.movies import guess_movie_year
 from .base import SuggestiveHeuristic
 
+JUNK_LIST = 'hdtv cam dvdrip brrip eng xvid'.split()
 
 class more_clean(SuggestiveHeuristic):
+
     @property
     def suggestion_applicable(self):
         return any(self.run())
@@ -24,10 +26,14 @@ class more_clean(SuggestiveHeuristic):
             if isinstance(x, self.NotApplicable):
                 out.append(str(x))
                 continue
-            out.append('<a href="{0}">{1}</a>'.format(
-                    "/rename?_={0}&suggestion={1}".format(
-                        self.item.path,
-                        opj(self.item.dir,x)),x))
+            tmp = opj(self.item.dir, x)
+            tmp2 = self.item.path.replace("'","\'")
+            zoo = link = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
+            #out.append('<a href="{0}">{1}</a>'.format(
+            #        "/rename?_={0}&suggestion={1}".format(
+            #            self.item.path,
+            #            opj(self.item.dir,x)),x))
+            out.append('<a href="javascript:{0}">{1}</a>'.format(zoo, x))
         return "<br/>".join(out)
 
     def _run(self):
@@ -48,6 +54,7 @@ class more_clean(SuggestiveHeuristic):
                     suggestions.append(tmp)
         self._cached_result = list(set(suggestions))
         return self._cached_result
+
     def run(self):
         return self._run()
 
@@ -56,7 +63,7 @@ class more_clean(SuggestiveHeuristic):
         bits = smart_split(self.item.just_name.lower())
 
         # kill common junk that's found in torrent files, etc
-        for x in 'cam dvdrip brrip eng xvid'.split():
+        for x in JUNK_LIST:
             if x in bits: bits.remove(x)
         #remove 1080p, x264, etc
         bits2=[]
