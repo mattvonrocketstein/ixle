@@ -1,22 +1,22 @@
 {#% block body %#}
 
-  {%for item in items%}
-      <div id=timestamps_{{item.id}} style="margin-left:10px;"></div>
-      <script>
-        var timestamps_{{item.id}}={
-            fname:'<a href="javascript:show_detail(\'{{item.path|safe}}\')">{{item.path|safe}}</a>',
-            seen:'{{item.t_seen|naturaltime}}',
-            mod: '{{item.t_mod|naturaltime}}',
-            last_mod: '{{item.t_last_mod|naturaltime}}',
-            file_extension:'<a href="/fext?_={{item.fext}}">{{item.fext}}</a>',
-            file_magic:'{{' '.join(item.file_magic)}}',
-            file_type:'<a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a>',
-            mime_type:'{{item.mime_type}}',
-        };
-        $(document).ready(function(){
-        json2html(timestamps_{{item.id}}, 'timestamps_{{item.id}}')});
-      </script>
-  {%endfor%}
+{%for item in items%}
+<div id=item_{{item.id}} style="margin-left:10px;"></div>
+<script>
+  var item_{{item.id}}={
+  fname:'<a href="javascript:show_detail(\'{{item.path|safe}}\')">{{item.path|safe}}</a>',
+  seen:'{{item.t_seen|naturaltime}}',
+  mod: '{{item.t_mod|naturaltime}}',
+  last_mod: '{{item.t_last_mod|naturaltime}}',
+  file_extension:'<a href="/fext?_={{item.fext}}">{{item.fext}}</a>',
+  file_magic:'{{' '.join(item.file_magic)}}',
+  file_type:'<a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a>',
+  mime_type:'{{item.mime_type}}',
+  };
+  $(document).ready(function(){
+  json2html(item_{{item.id}}, 'item_{{item.id}}')});
+</script>
+{%endfor%}
 {%if query or _ %}
 {% import 'ixle_macros.html' as macros %}
 <hr/>
