@@ -1,31 +1,22 @@
 {#% block body %#}
 
-<table class=item_list style="margin-left:10px;width:100%">
-  <tr>
-    <td><b>fname</b></td>
-    <td><strong>timestamps</strong></td>
-    <td><b>fextension</b></td>
-    <td><b>ftype</b></td>
-    <td><b>mime-type</b></td>
-    <td><b>file magic</b></td>
-  </tr>
   {%for item in items%}
-  <tr>
-    <td><small>
-        <a href="javascript:show_detail({{item.path|escapejs}})">{{item.path}}</a>
-    </small></td>
-    <td NOWRAP>
-      <small>{{item.t_seen|naturaltime}}</small>
-      <small>{{item.t_mod|naturaltime}}</small>
-      <small>{{item.t_last_mod|naturaltime}}</small>
-    </td>
-    <td NOWRAP><a href="/fext?_={{item.fext}}">{{item.fext}}</a></td>
-    <td NOWRAP><small><a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a></small></td>
-    <td NOWRAP><small>{{item.mime_type}}</small></td>
-    <td NOWRAP><small><small>{{' '.join(item.file_magic)}}</small></small></td>
-  </tr>
+      <div id=timestamps_{{item.id}} style="margin-left:10px;"></div>
+      <script>
+        var timestamps_{{item.id}}={
+            fname:'<a href="javascript:show_detail(\'{{item.path|safe}}\')">{{item.path|safe}}</a>',
+            seen:'{{item.t_seen|naturaltime}}',
+            mod: '{{item.t_mod|naturaltime}}',
+            last_mod: '{{item.t_last_mod|naturaltime}}',
+            file_extension:'<a href="/fext?_={{item.fext}}">{{item.fext}}</a>',
+            file_magic:'{{' '.join(item.file_magic)}}',
+            file_type:'<a href="/file_type?_={{item.file_type}}">{{item.file_type}}</a>',
+            mime_type:'{{item.mime_type}}',
+        };
+        $(document).ready(function(){
+        json2html(timestamps_{{item.id}}, 'timestamps_{{item.id}}')});
+      </script>
   {%endfor%}
-</table>
 {%if query or _ %}
 {% import 'ixle_macros.html' as macros %}
 <hr/>

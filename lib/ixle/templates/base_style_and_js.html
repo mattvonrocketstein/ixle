@@ -5,7 +5,10 @@
 <script src="/static/js/jquery.min.js"></script> {#1.5.2#}
 <script src="/static/js/jquery-ui.min.js"></script> {#1.8.12#}
 <script src="/static/js/jquery.redirect.min.js"></script>
-<script type="text/javascript" src="/static/js/prettyprint.js"></script>
+{#script type="text/javascript" src="/static/js/prettyprint.js">#}
+<script>
+  {%include "js/prettyprint.js" %}
+</script>
 <script>{%include "javascript/base.js"%}</script>
 <style>{%include "ixle_style.css"%}</style>
 {% for script_src in extra_scripts %}
