@@ -153,6 +153,7 @@ class is_video(Heuristic):
             return self.Answer('FEXT_MAP rule')
 
 from .siblings import guess_related_siblings
+from .siblings import guess_proper_parent_folder
 
 class is_audio(Heuristic):
     def run(self):
@@ -178,7 +179,7 @@ def run_heuristic(hname, item):
     h = get_heuristics()[hname](item)
     return {h:h()}
 
-def run_heuristics(item):
+def run_heuristics(item) :
     results = {}
     for fxn_name, fxn in get_heuristics().items():
         results.update(run_heuristic(fxn_name,item))

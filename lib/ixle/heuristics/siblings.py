@@ -4,12 +4,60 @@
 import os
 from goulash.cache import cached as _cached
 
+from jinja2 import Template
+from ixle.python import opj
 from ixle.util import smart_split
+from ixle.util import sanitize_txt
 from .base import ListAnswerMixin, Heuristic
 from .base import SuggestiveHeuristic
 
 # default cache timeout is too big
 cached = lambda name: _cached(name, 8)
+
+def _guess_parent(item):
+    """ find a folder name in the
+        same directory as this file
+    """
+    import editdistance
+    from collections import defaultdict, OrderedDict
+    matches = []
+    assert item.unipath.exists()
+    scores = defaultdict(lambda : 0)
+    dirs = [ [x, smart_split(x.name.lower())] \
+             for x in item.unipath.parent.listdir() if x.isdir()]
+    dirs = dict(dirs)
+    norm_name = smart_split(item.fname.lower())
+
+    for d in dirs:
+        scores[d]=editdistance.eval(norm_name, dirs[d])
+    scores = [[x,y] for x,y in scores.items() if y!=0]
+    winners = sorted(scores, cmp=lambda x,y: cmp(x[1],y[1]))[:3]
+    winners = OrderedDict([ [ str(x[0]), x[1]] for x in winners])
+    return winners
+
+class guess_proper_parent_folder(#ListAnswerMixin,
+                                 SuggestiveHeuristic):
+    """ """
+    @property
+    def suggestion_applicable(self):
+        return True
+
+    def run(self):
+        return str(_guess_parent(self.item))
+
+    def suggestion(self):
+        out=[]
+        for x in _guess_parent(self.item):
+            link = "post_and_redirect('/rename',{_:'" + \
+                   self.item.path + "', suggestion:'"+ \
+                   opj(x, self.item.fname)+"'})"
+            link = '"javascript:' + link + '"'
+            out.append('<a href={link}>{name}</a>'.format(link=link, name=x))
+
+        #out = _guess_parent(self.item)
+        js = """<script></script>"""
+        return ['moving file to folder',
+                js + 'Choose folder: '+'<strong> | </strong>'.join(out)]
 
 def _guess_related_siblings(item):
     """ finds file names in the same directory
@@ -81,8 +129,6 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
     @cached('guess_siblings')
     def suggestion(self):
         """ """
-        from jinja2 import Template
-        from ixle.util import sanitize_txt
         out = []
         sanitized_name = sanitize_txt(self.item.fname)
         js_fxn_name = "repackage__{0}".format(sanitized_name)

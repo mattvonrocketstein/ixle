@@ -42,24 +42,35 @@
 <br/>
 <h3>Settings (from corkscrew) </h3>
 <hr/>
-<pre>{{settings.__dict__}}</pre>
 <div id=config_from_ini>
-
   <script>
-    {%autoescape off%}
-    var ppTable = prettyPrint({{settings.__dict__|escapejs}});
-    {%endautoescape%}}
-    $(document).ready(function(){$('#config_from_ini').html(''+$(ppTable).html());})
+    var ppTable = {
+    {%for k,v in settings.__dict__.items()%}
+    {{k}}:"{{dumps(str(v))|escapejs}}",
+    {%endfor%}
+    };
+    $(document).ready(
+    function(){
+    //$('#config_from_ini').html(''+$(ppTable).html());
+    json2html(ppTable,'config_from_ini');
+    });
   </script>
 </div>
 <br/>
 <h3>Views (from corkscrew) </h3>
 <hr/>
-  <ul>
-    {%for view in settings._installed_views%}
-    <li>{{view.__name__}}
-      {%endfor%}
-  </ul>
+<div id=corkscrew_views></div>
+<script>
+  var view_json = {
+  {%for view in settings._installed_views%}
+  {{settings._installed_views.index(view)}}: {
+  name:'{{view.__name__}}',
+  file:'{{getfile(view.__class__)}}',
+  template:'{{view.template}}'},
+  {%endfor%}
+  };
+  $(document).ready(function(){json2html(view_json, 'corkscrew_views');});
+  </script>
 
 
 {%endblock%}
