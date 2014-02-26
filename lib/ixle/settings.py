@@ -40,6 +40,7 @@ class DSettingsMixin(object):
         return [ x for x in tmp.split(',') if x ]
 
 import json
+import inspect
 class Settings(CorkscrewSettings, DSettingsMixin):
     quiet = False
     default_file = 'ixle.ini'
@@ -50,6 +51,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
     jinja_globals = dict(
         str=str,
         dumps=json.dumps,
+        getfile=inspect.getfile,
         isinstance=isinstance,
         bool=bool, sorted=sorted,
         NotApplicable=NotApplicable,
