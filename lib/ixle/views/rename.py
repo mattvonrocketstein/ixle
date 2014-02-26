@@ -34,23 +34,22 @@ class RenameView(ItemListView):
 
     def main(self):
         if self['new_name']:
-            old_name=self['old_name']
-            new_name=self['new_name']
-            #shutil.move(old_name, new_name)
+            old_name = self['old_name']
+            new_name = self['new_name']
             if new_name==old_name:
                 report('nothing to do')
             else:
                 is_dir = isdir(old_name)
                 qs = self.get_queryset()
                 shutil.move(old_name, new_name)
-                print 'fs-move\n  ',old_name,'  ',new_name
+                report(str(['fs-move\n  ',old_name,'  ',new_name]))
                 for item in qs:
                     new_path = item.path.replace(old_name, new_name)
-                    print 'move-db\n  ',item.path,'  ',new_path
+                    report(str(['move-db\n  ',item.path,'  ',new_path]))
                     item.path = new_path
                     item.save()
                 if is_dir:
-                    return self.redirect('/browser?_='+new_name)
+                    return self.redirect('/browser?_=' + new_name)
                 else:
                     return self.redirect(item.detail_url())
         return super(RenameView, self).main()

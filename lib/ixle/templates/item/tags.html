@@ -7,12 +7,12 @@
 <div style="margin-top:5px;margin-left:15px;">
   <script>
     var item_tags={{dumps(item.tags)|safe}};
-    $(document).ready(function(){json2html(item_tags,'item_tags')})
+    $(document).ready(function(){json2html(item_tags, 'item_tags_display')})
     function copy_tags(){
-    copy2clipboard('{{dumps(item.tags)|safe}}');
+    {#copy2clipboard('{{dumps(item.tags)|safe}}');#}
     }
   </script>
-  <div style="width:800px;" id=item_tags></div>
+  <div style="width:800px;" id=item_tags_display></div>
 </div>
 </div>
 <script>
