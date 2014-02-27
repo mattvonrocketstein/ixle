@@ -40,8 +40,6 @@ from .naming import more_clean
 r_xx_min = re.compile('\d+ min')
 
 # used for determining file_type, layer 1 specificity
-r_image = [ re.compile(_) for _ in
-            ['JPEG .*', 'GIF .*','PNG .*'] ]
 
 def _generic(item, r_list, extensions={}):
     """ NOTE: assumes file_magic already ready already"""
