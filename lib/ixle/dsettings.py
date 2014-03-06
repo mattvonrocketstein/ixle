@@ -3,16 +3,20 @@
 """
 from report import report
 from ixle.schema import DSetting
+
 FNAME_BLACKLIST = 'fname_blacklist'
+
 NAMES = [
     # any indexed item with this fname will be deleted from fs & db
     FNAME_BLACKLIST,
+    'bookmarks',
     'ignore_patterns',
     'ignore_dirs',
     'random_sample_size'
     ]
 
 DB_NAME = 'ixle_settings'
+
 from ixle.util import get_or_create
 
 def get_or_create_settings_database():
@@ -33,7 +37,6 @@ def dynamic_settings():
         tmp[x.name] = x
     return tmp
 
-import json
 """
 class FnameBlackList(DSetting):
     setting_name = FNAME_BLACKLIST
