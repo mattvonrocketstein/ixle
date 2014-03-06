@@ -149,16 +149,19 @@ from goulash.stdout import ThreadedStdout
 from ixle.views.api import APIC
 from ixle.views.hx import Hx
 from ixle.views.file_viewer import Viewer
+from ixle.views.dsettings import AppendSetting
 
 __views__ = [
     # corkscrew standard views
     ListViews, Favicon, Login, Logout,
     APIC,
+
     #CometDemo,
     Hx, Viewer,
 
     #main ixle views
-    SettingsView, FillView,
+    SettingsView, AppendSetting,
+    FillView,
     AgentView, Spawn, Browser,
     Search, Newest,
     HomePage,

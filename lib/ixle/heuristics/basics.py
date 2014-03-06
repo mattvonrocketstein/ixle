@@ -1,9 +1,21 @@
 """ ixle.heuristics.basics
 """
-from .base import Heuristic
+from .base import Heuristic, NegativeAnswer
 from .data import (
-    CODE_EXTS, MIME_MAP,
-    r_audio, r_crypto, r_video, r_text)
+    CODE_EXTS, MIME_MAP, FEXT_MAP,
+    r_audio, r_crypto, r_image, r_video, r_text)
+
+def _generic(item, r_list, extensions={}):
+    """ NOTE: assumes file_magic already ready already"""
+    if item.fext in extensions:
+        return Heuristic.Affirmative("file-extension hint-hit: "+item.fext)
+    if item.file_magic:
+        for x in item.file_magic:
+            for y in r_list:
+                if y.match(x):
+                    return Answer(True)
+        return NegativeAnswer("file_magic doesnt match")
+    return NegativeAnswer("not enough data")
 
 class is_code(Heuristic):
     apply_when = []
