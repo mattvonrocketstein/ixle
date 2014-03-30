@@ -1,6 +1,8 @@
 {%extends "search.html"%}
 {%block search_block%}
 
+  <a href='javascript:show_modal()'>Demo</a>
+
 <form method=GET action="/browser">
   <input name="q" value="{{q or ""}}" type="text">
   <input name="_" value="{{_}}" type="hidden">
@@ -30,6 +32,18 @@
 
 {% block body %}
 <div id=block_body style="margin-left:10px;width:100%">
+  {%if suggestions%}
+  <strong>Suggestions:</strong> <small><i>(according to heuristics)</i></small>
+  <div style="margin-left:15px;">
+    {%for short_name, apath in suggestions.items()%}
+    <small>
+      <a href="javascript:show_detail({{apath|escapejs}})">{{short_name}}</a>
+    </small>
+    <strong>|</strong>
+    {%endfor%}
+  </div>
+  <hr/>
+  {%endif%}
   {%if files%}
   <strong>Files:</strong> <small><i>(according to filesystem)</i></small>
   <div style="margin-left:15px;">

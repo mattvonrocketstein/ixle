@@ -2,7 +2,7 @@
 """
 from .base import Heuristic, NegativeAnswer
 from .data import (
-    CODE_EXTS, MIME_MAP, FEXT_MAP,
+    CODE_EXTS, MIME_MAP, FEXT_MAP, AUDIO_EXTS,
     r_audio, r_crypto, r_image, r_video, r_text)
 
 def _generic(item, r_list, extensions={}):
