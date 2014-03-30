@@ -2,6 +2,12 @@
   <title>ixle{% block page_title %}{% endblock %}</title>
   {%include "base_style_and_js.html" %}
   <body>
+    <div id="basic-modal-content">
+      {%block modal_content%}
+      <center>modal content is empty by default</center>
+      {%endblock%}
+    </div>
+
     <div class="page container" style="background:white">
       <h1 class="remove-bottom" style="margin-top:10px">&nbsp;Ixle indexes files</h1>
 

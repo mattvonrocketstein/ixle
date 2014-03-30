@@ -4,6 +4,7 @@ configparser
 progressbar==2.3
 pypdf
 pdfminer
+flask-sijax
 pep362
 unipath
 mutagen

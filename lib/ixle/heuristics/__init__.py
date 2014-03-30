@@ -53,6 +53,19 @@ def _generic(item, r_list, extensions={}):
         return NegativeAnswer("file_magic doesnt match")
     return NegativeAnswer("not enough data")
 
+class DirHeuristic(Heuristic):
+
+    apply_when = ['is_dir']
+
+class FlattenDirectory(DirHeuristic):
+    def run(self):
+        if len(self.item.unipath.listdir()) < 3:
+            return self.Affirmative(True)
+
+class is_dir(Heuristic):
+    def run(self):
+        return self.item.unipath.isdir()
+
 class guess_genres(Heuristic):
     is_heuristic = True
     apply_when = ['is_tagged']
@@ -104,12 +117,17 @@ def run_heuristic(hname, item):
     h = get_heuristics()[hname](item)
     return {h:h()}
 
-def run_heuristics(item) :
+def run_dir_heuristics(item):
+    results = {}
+    for fxn_name, H in get_heuristics().items():
+        if H==DirHeuristic or not issubclass(H, DirHeuristic):
+            continue
+        else:
+            results.update(run_heuristic(fxn_name, item))
+    return results
+
+def run_heuristics(item):
     results = {}
     for fxn_name, fxn in get_heuristics().items():
         results.update(run_heuristic(fxn_name,item))
-        #result = fxn(item)
-        #if isinstance(result, Heuristic):
-        #    result1 = result()
-        #results[result] = result1
     return results

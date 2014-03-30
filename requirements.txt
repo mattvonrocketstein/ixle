@@ -5,6 +5,8 @@
 # of lxml altogether though, you could try
 #   apt-get install python-lxml
 
+flask-sijax
+
 # http://textblob.readthedocs.org/en/latest/quickstart.html
 textblob==0.8.3
 
