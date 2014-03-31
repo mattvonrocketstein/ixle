@@ -23,8 +23,8 @@ from ixle.python import ope, opj
 from ixle.heuristics.data import CODE_EXTS, AUDIO_EXTS
 from .nlp import freq_dist, vocabulary
 from .base import H, Heuristic, Answer, NegativeAnswer, ListAnswerMixin
-from .base import SuggestiveHeuristic
-from ixle.util import get_heuristics
+from .base import SuggestiveHeuristic, DirHeuristic, item_exists, is_dir
+from .util import run_heuristic, run_dir_heuristics,get_dir_suggestions, run_heuristics
 
 from .siblings import guess_related_siblings
 from .siblings import guess_proper_parent_folder
@@ -34,12 +34,8 @@ from .basics import (
     is_text, is_audio, is_image)
 
 # used for determining file_type, layer 2 specificity
-from .data import FEXT_MAP, MIME_MAP
+from .data import FEXT_MAP, MIME_MAP, r_xx_min
 from .naming import more_clean
-
-r_xx_min = re.compile('\d+ min')
-
-# used for determining file_type, layer 1 specificity
 
 def _generic(item, r_list, extensions={}):
     """ NOTE: assumes file_magic already ready already"""
@@ -53,28 +49,18 @@ def _generic(item, r_list, extensions={}):
         return NegativeAnswer("file_magic doesnt match")
     return NegativeAnswer("not enough data")
 
-class DirHeuristic(Heuristic):
 
-    apply_when = ['is_dir']
+class DeleteDirectories(DirHeuristic, SuggestiveHeuristic):
+    """
+    """
 
-class DeleteDirectory(DirHeuristic, SuggestiveHeuristic):
     def run(self):
-        if 0 == len(self.item.unipath.listdir()):
-            return self.Affirmative("nothing here!")
-
-    @property
-    def suggestion_applicable(self):
-        from unipath import FSPath
-        if is_dir(self.item)():
-            if self.run(): return True
-            #empty_subdirs = [
-            #    subdir for subdir in self.item.unipath.listdir() if \
-            #    ( FSPath(subdir).isdir() and
-            #      not FSPath(subdir).listdir() )
-            #    ]
-            #if empty_subdirs:
-            #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
-            #    return True
+        results = []
+        for subdir in self.item.unipath.listdir():
+            if subdir.isdir() and not subdir.listdir():
+                results.append(subdir)
+        if results:
+            return self.Affirmative("{0} empty subdirectories".format(len(results)))
 
     def suggestion(self):
 
@@ -84,6 +70,32 @@ class DeleteDirectory(DirHeuristic, SuggestiveHeuristic):
             '</ul>'
             )
 
+class DeleteDirectory(DirHeuristic, SuggestiveHeuristic):
+    def run(self):
+        if 0 == len(self.item.unipath.listdir()):
+            return self.Affirmative("nothing here!")
+
+    def asdads_suggestion_applicable(self):
+        from unipath import FSPath
+        if is_dir(self.item)():
+            if self.run():
+                return True
+
+    def suggestion(self):
+        return None, (
+            '<a href="javascript:{0}">Do it</a>'.format(
+                post_and_redirect(
+                    '/delete',
+                    _=self.item.path,
+                    _from='both',
+                    dir=True,))
+            )
+
+def post_and_redirect(url, **kargs):
+    dct = [ "{0}:'{1}'".format(k,v) for k,v in kargs.items()]
+    dct = ','.join(dct)
+    return "post_and_redirect('"+url+"', {" + dct + "});"
+
 class FlattenDirectory(DirHeuristic, SuggestiveHeuristic):
     threshold = 3
 
@@ -92,8 +104,7 @@ class FlattenDirectory(DirHeuristic, SuggestiveHeuristic):
         if 0 < len(self.item.unipath.listdir()) < thresh:
             return self.Affirmative("less than {0} items".format(thresh))
 
-    @property
-    def suggestion_applicable(self):
+    def adsad_suggestion_applicable(self):
         return is_dir(self.item)() and self.run()
 
     def _render(self, item):
@@ -108,9 +119,6 @@ class FlattenDirectory(DirHeuristic, SuggestiveHeuristic):
             '</ul>'
             )
 
-class is_dir(Heuristic):
-    def run(self):
-        return self.item.unipath.isdir()
 
 class guess_genres(Heuristic):
     is_heuristic = True
@@ -147,9 +155,6 @@ class guess_duration(Heuristic):
         # should work on imdbd-movies and songs
         return self._from_imdb() or self._from_mutagen()
 
-class item_exists(Heuristic):
-    def run(self):
-        return self.item.exists()
 
 class is_tagged(Heuristic):
     def run(self):
@@ -158,30 +163,3 @@ class is_tagged(Heuristic):
             for entry in self.item.file_magic:
                 if 'ID3' in entry:
                     return True
-
-def run_heuristic(hname, item):
-    h = get_heuristics()[hname](item)
-    return {h:h()}
-
-def run_dir_heuristics(item):
-    results = {}
-    for fxn_name, H in get_heuristics().items():
-        if H==DirHeuristic or not issubclass(H, DirHeuristic):
-            continue
-        else:
-            results.update(run_heuristic(fxn_name, item))
-    return results
-
-def get_dir_suggestions(item):
-    stuff = run_dir_heuristics(item)
-    out = {}
-    for hobj, hnswer in stuff.items():
-        if getattr(hobj, 'suggestion', None) and hnswer:
-            out[hobj] = hnswer
-    return out
-
-def run_heuristics(item):
-    results = {}
-    for fxn_name, fxn in get_heuristics().items():
-        results.update(run_heuristic(fxn_name,item))
-    return results

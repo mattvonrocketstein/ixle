@@ -115,7 +115,7 @@ class Item(mDocument):
             subitem = Item.objects.get(path=path)
             fname = subitem.fname
             new_path = opj(parent, fname)
-            report("would have moved: ", path, new_path)
+            report("moving: ", path, new_path)
             subitem._move(new_path)
 
     def _move(self, new_path):

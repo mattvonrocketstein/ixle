@@ -38,7 +38,6 @@ def _guess_parent(item):
 class guess_proper_parent_folder(#ListAnswerMixin,
                                  SuggestiveHeuristic):
     """ """
-    @property
     def suggestion_applicable(self):
         return True
 
@@ -100,7 +99,6 @@ class guess_related_siblings(ListAnswerMixin, SuggestiveHeuristic):
                     pass
         return matches
 
-    @property
     def suggestion_applicable(self):
         """ """
         # guess whether repackaging into

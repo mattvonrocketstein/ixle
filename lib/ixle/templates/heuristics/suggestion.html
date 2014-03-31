@@ -1,18 +1,22 @@
 {%if heuristic.suggestion%}
-{% with suggestion=heuristic.suggestion() %}
+{% with stitle,saction=heuristic.suggestion() %}
+{% if stitle!=None%}
 <table style="border-top:1px solid black">
   <tr>
     <td>
       <strong>
-        Suggest {{suggestion[0]}}
+        Suggest {{stitle}}
       </strong>
     </td>
   <tr>
     <td style="margin-left:15px;">
-      {{suggestion[1]|safe}}
+      {{saction|safe}}
     </td>
   </tr>
 </table>
+{%else%} {#used when the heuristic title is very self explanatory#}
+{{saction|safe}}
+{% endif %}
 {% endwith %}
 {% else %}
 no suggestion

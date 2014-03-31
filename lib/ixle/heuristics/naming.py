@@ -10,7 +10,6 @@ JUNK_LIST = 'publichd 1080p bluray hdtv cam dvdrip brrip eng xvid'.split()
 
 class more_clean(SuggestiveHeuristic):
 
-    @property
     def suggestion_applicable(self):
         return any(self.run())
 
@@ -28,10 +27,6 @@ class more_clean(SuggestiveHeuristic):
             tmp = opj(self.item.dir, x)
             tmp2 = self.item.path.replace("'","\'")
             zoo = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
-            #out.append('<a href="{0}">{1}</a>'.format(
-            #        "/rename?_={0}&suggestion={1}".format(
-            #            self.item.path,
-            #            opj(self.item.dir,x)),x))
             out.append('<a href="javascript:{0}">{1}</a>'.format(zoo, x))
         return "<br/>".join(out)
 
