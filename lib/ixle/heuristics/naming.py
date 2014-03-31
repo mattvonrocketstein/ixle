@@ -6,7 +6,7 @@ from ixle.util import smart_split
 from ixle.heuristics.movies import guess_movie_year
 from .base import SuggestiveHeuristic
 
-JUNK_LIST = 'hdtv cam dvdrip brrip eng xvid'.split()
+JUNK_LIST = 'publichd 1080p bluray hdtv cam dvdrip brrip eng xvid'.split()
 
 class more_clean(SuggestiveHeuristic):
 
@@ -17,7 +17,6 @@ class more_clean(SuggestiveHeuristic):
     def suggestion(self):
         suggestions = self._run()
         opts = ['<a href=#>{0}</a>'.format(x) for x in suggestions]
-        #return '<strong>|</strong>'.join(opts)
         return 'cleaning the filename', self._render('ignored')
 
     def _render(self, answer):
@@ -28,7 +27,7 @@ class more_clean(SuggestiveHeuristic):
                 continue
             tmp = opj(self.item.dir, x)
             tmp2 = self.item.path.replace("'","\'")
-            zoo = link = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
+            zoo = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
             #out.append('<a href="{0}">{1}</a>'.format(
             #        "/rename?_={0}&suggestion={1}".format(
             #            self.item.path,
@@ -49,8 +48,8 @@ class more_clean(SuggestiveHeuristic):
                 tmp = smart_split(basic)
                 year = str(movie_year)
                 if year in tmp:
-                    tmp = '_'.join(tmp[:tmp.index(year)+1])
-                    tmp+='.'+self.item.fext
+                    tmp  = '_'.join(tmp[:tmp.index(year)+1])
+                    tmp += '.'+self.item.fext
                     suggestions.append(tmp)
         self._cached_result = list(set(suggestions))
         return self._cached_result

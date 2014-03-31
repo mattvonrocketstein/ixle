@@ -57,10 +57,56 @@ class DirHeuristic(Heuristic):
 
     apply_when = ['is_dir']
 
-class FlattenDirectory(DirHeuristic):
+class DeleteDirectory(DirHeuristic, SuggestiveHeuristic):
     def run(self):
-        if len(self.item.unipath.listdir()) < 3:
-            return self.Affirmative(True)
+        if 0 == len(self.item.unipath.listdir()):
+            return self.Affirmative("nothing here!")
+
+    @property
+    def suggestion_applicable(self):
+        from unipath import FSPath
+        if is_dir(self.item)():
+            if self.run(): return True
+            #empty_subdirs = [
+            #    subdir for subdir in self.item.unipath.listdir() if \
+            #    ( FSPath(subdir).isdir() and
+            #      not FSPath(subdir).listdir() )
+            #    ]
+            #if empty_subdirs:
+            #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+            #    return True
+
+    def suggestion(self):
+
+        return 'directory should be deleted',(
+            '<ul>' + \
+            '<li><a href="javascript:{0}">Do it</a>'.format('#') + \
+            '</ul>'
+            )
+
+class FlattenDirectory(DirHeuristic, SuggestiveHeuristic):
+    threshold = 3
+
+    def run(self):
+        thresh = self.threshold
+        if 0 < len(self.item.unipath.listdir()) < thresh:
+            return self.Affirmative("less than {0} items".format(thresh))
+
+    @property
+    def suggestion_applicable(self):
+        return is_dir(self.item)() and self.run()
+
+    def _render(self, item):
+        return ("post_and_redirect('/collapse_dir', {_: '" + \
+                item.path + "'})")
+
+    def suggestion(self):
+
+        return 'directory should be flattened',(
+            '<ul>' + \
+            '<li><a href="javascript:{0}">Move contents into parent</a>'.format(self._render(self.item)) + \
+            '</ul>'
+            )
 
 class is_dir(Heuristic):
     def run(self):
@@ -125,6 +171,14 @@ def run_dir_heuristics(item):
         else:
             results.update(run_heuristic(fxn_name, item))
     return results
+
+def get_dir_suggestions(item):
+    stuff = run_dir_heuristics(item)
+    out = {}
+    for hobj, hnswer in stuff.items():
+        if getattr(hobj, 'suggestion', None) and hnswer:
+            out[hobj] = hnswer
+    return out
 
 def run_heuristics(item):
     results = {}

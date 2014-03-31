@@ -28,7 +28,7 @@ from ixle.views.api import APIView
 from ixle.views.remotes import RemotesView
 from ixle.views.newest import Newest
 from ixle.views.fill import FillView
-from ixle.views.rename import RenameView
+from ixle.views.rename import RenameView, CollapseDirView
 from ixle.views.repackage import RepackageView
 
 
@@ -167,7 +167,7 @@ __views__ = [
     HomePage,
 
     # views modifying the fs
-    RenameView, RepackageView,
+    CollapseDirView, RenameView, RepackageView,
 
     FileTypeView, Fext, Detail, Events, MovieView,
     RemotesView,
