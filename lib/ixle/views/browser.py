@@ -8,7 +8,7 @@ from corkscrew.views import BluePrint
 from report import report
 from ixle.schema import Item
 from ixle.python import expanduser
-from ixle.heuristics import run_dir_heuristics
+from ixle.heuristics import get_dir_suggestions
 class Browser(Search):
 
     #blueprint = BluePrint(__name__, __name__)
@@ -48,7 +48,7 @@ class Browser(Search):
         subddirs = filter(lambda x: os.path.isdir(x[1]), contents)
         files = dict([x for x in contents if os.path.isfile(x[1])])
         ctx.update(subddirs=subddirs,
-                   suggestions=run_dir_heuristics(Item(path=qstring)),
+                   heuristics=get_dir_suggestions(Item(path=qstring)),
                    is_dir='yes', files=files,
                    agents = registry.keys())
         return ctx

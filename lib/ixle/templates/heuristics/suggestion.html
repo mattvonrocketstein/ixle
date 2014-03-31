@@ -1,0 +1,19 @@
+{%if heuristic.suggestion%}
+{% with suggestion=heuristic.suggestion() %}
+<table style="border-top:1px solid black">
+  <tr>
+    <td>
+      <strong>
+        Suggest {{suggestion[0]}}
+      </strong>
+    </td>
+  <tr>
+    <td style="margin-left:15px;">
+      {{suggestion[1]|safe}}
+    </td>
+  </tr>
+</table>
+{% endwith %}
+{% else %}
+no suggestion
+{% endif %}

@@ -1,39 +1,20 @@
-  <div style="margin-top:5px;margin-left:15px;">
-    <table>
-      {% for heuristic, result in sorted(heuristics.items()) %}
-      {#%if result or isinstance(result, NotApplicable) %#}
-      <tr>
-        <td valign=top><strong><small>
-           <a href="/hx?hx={{heuristic.name}}&_={{_}}">{{heuristic}}</a>
-        </small></strong></td>
-        <td>
-          {%if heuristic.render%}
-          {%autoescape off%}{{heuristic.render(result.obj)}}{%endautoescape%}
-          {%else%}
-          <small>{{result}}</small>
-          {%endif%}
-          {%if heuristic.suggestion%}
-          {% with suggestion=heuristic.suggestion() %}
-          <table style="border-top:1px solid black">
-            <tr>
-              <td>
-                <strong>
-                  Suggest {{suggestion[0]}}
-                </strong>
-              </td>
-            <tr>
-              <td style="margin-left:15px;">
-                {{suggestion[1]|safe}}
-              </td>
-            </tr>
-          </table>
-          {% endwith %}
-          {% else %}
-          no suggestion
-          {% endif %}
-        </td>
-      </tr>
-      {#%endif%#}
-      {%endfor%}
-    </table>
-  </div>
+<div style="margin-top:5px;margin-left:15px;">
+  <table>
+    {% for heuristic, result in sorted(heuristics.items()) %}
+    <tr>
+      <td valign=top><strong><small>
+            <a href="/hx?hx={{heuristic.name}}&_={{_}}">{{heuristic}}</a>
+      </small></strong></td>
+      <td>
+        {%if heuristic.render%}
+        {%autoescape off%}{{heuristic.render(result.obj)}}{%endautoescape%}
+        {%else%}
+        <small>{{result}}</small>
+        {%endif%}
+        {%include "heuristics/suggestion.html"%}
+      </td>
+    </tr>
+    {#%endif%#}
+    {%endfor%}
+  </table>
+</div>

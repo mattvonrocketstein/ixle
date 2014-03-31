@@ -1,0 +1,18 @@
+{%extends "item_list.html"%}
+
+{%block main_menu %}
+<h3>Collapsing: <strong>{{_}}</strong></h3>
+<hr/>
+<form method=POST action="{{this_url}}" >
+  <table style="width:100%">
+    <tr>
+      <td style="width:5%">
+        <input type=submit value="collapse it">
+        <input type=hidden name="do_it" value="{{_}}">
+        <input type=hidden name="_" value="{{_}}">
+      </td>
+    </tr>
+  </table>
+</form>
+&nbsp;&nbsp;&nbsp;
+{%endblock%}

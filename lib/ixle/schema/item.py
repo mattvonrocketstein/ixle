@@ -7,8 +7,7 @@ from mongoengine import (StringField, BooleanField,
                          ListField, DateTimeField,
                          DictField, IntField)
 
-from ixle.python import now, splitext
-
+from ixle.python import now, splitext, opj
 
 class Item(mDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
@@ -108,3 +107,19 @@ class Item(mDocument):
     @property
     def dirname(self):
         return self.unipath.dirname
+
+    def collapse(self):
+        assert self.unipath.isdir()
+        parent = self.unipath.parent
+        for path in self.unipath.listdir():
+            subitem = Item.objects.get(path=path)
+            fname = subitem.fname
+            new_path = opj(parent, fname)
+            report("would have moved: ", path, new_path)
+            subitem._move(new_path)
+
+    def _move(self, new_path):
+        import shutil
+        shutil.move(self.path, new_path)
+        self.path = new_path
+        self.save()
