@@ -1,0 +1,30 @@
+{%extends "item_list.html"%}
+
+{%block main_menu %}
+<h3>Deleting: <strong>{{_}}</strong></h3>
+<hr/>
+<div id=json_info></div>
+<script>
+  var json_info={{info|safe}};
+  $(document).ready(function(){
+  json2html(json_info, 'json_info', '<h3>important! read first</h3>');
+  $('#json_info td').css('color', 'red')
+  $('#json_info td').css('font-weight', 'bold')
+  $($('#json_info th')[0]).css('background-color', 'red')
+  });
+</script>
+<hr/>
+<form method=POST action="{{this_url}}" >
+  <table style="width:100%">
+    <tr>
+      <td style="width:5%">
+        <input type=submit value="delete">
+        <input type=hidden name="_" value="{{_}}">
+        <input type=hidden name="_from" value="{{_from}}">
+        <input type=hidden name="confirmed" value="1">
+      </td>
+    </tr>
+  </table>
+</form>
+&nbsp;&nbsp;&nbsp;
+{%endblock%}

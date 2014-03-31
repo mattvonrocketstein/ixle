@@ -7,6 +7,9 @@ CODE_EXTS = 'py js cpp'.split()
 AUDIO_EXTS = 'aa'.split()
 
 import re
+
+r_xx_min = re.compile('\d+ min')
+
 r_text  = [ re.compile(_) for _ in
             ['.* text'] ]
 

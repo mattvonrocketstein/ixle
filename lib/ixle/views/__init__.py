@@ -3,7 +3,7 @@
 from flask import flash, redirect
 
 from report import report
-
+from ixle.views.search import ItemListView
 from corkscrew.views import Favicon, BluePrint
 from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
@@ -11,6 +11,8 @@ from corkscrew.views import ListViews, SettingsView
 from corkscrew.comet import SijaxDemo as CometDemo
 
 from ixle.schema import Item, Event
+from ixle.python import ope, isdir
+from ixle.util import FSPath
 
 from .base import View
 from .search import Search
@@ -30,34 +32,7 @@ from ixle.views.newest import Newest
 from ixle.views.fill import FillView
 from ixle.views.rename import RenameView, CollapseDirView
 from ixle.views.repackage import RepackageView
-
-
-class _DB(View):
-    methods = 'GET POST'.split()
-    url = '/_db'
-    template = '_db.html'
-
-    def wrapper(self,db):
-        return type('asdads',
-                    (object,),
-                    dict(
-                        name=db,
-                        edit_url=self.settings.server.edit_url(db)))
-
-    def main(self):
-        db = None
-        if self['_'] or self['size']:
-            db = self.settings.server[ self['_'] or self['size'] ]
-        if self['size']:
-            size = len(db)
-            return str(size)
-        if self['compact']:
-            db.compact()
-            return 'compacted'
-        return self.render(
-            db=self.wrapper(db),
-            db_name=self['_'],
-            dbs = [])# self.wrapper(x) for x in self.settings.server])
+from .meta import _DB
 
 class Suggest(View):
     url = '/suggest'
@@ -68,25 +43,65 @@ class Suggest(View):
         suggestions = []
         return self.render(suggestions=suggestions)
 
-class Delete(View):
+class Delete(ItemListView):
     blueprint = BluePrint('asdasdas','asdasdasd')
     url = '/delete'
+    template = 'delete.html'
+    methods = 'get post'.split()
+
+    def get_ctx(self, *args, **kargs):
+        original = super(Delete, self).get_ctx(*args, **kargs)
+        result = original.copy()
+        result.update(
+            is_dir = isdir(self['_']),)
+        is_dir = isdir(self['_'])
+        num_fs_files = 1 if not is_dir else len(FSPath(self['_']).listdir())
+        num_db_files = 1 if not is_dir else len(Item.startswith(self['_']))
+        result.update(
+            confirmed=self['confirmed'],
+            _=self['_'],
+            num_db_files=num_db_files,
+            num_fs_files=num_fs_files,
+            is_dir = 1 if is_dir else 0,
+            )
+        _from = self['_from']
+        opts = 'fs db both'
+        opts = opts.split()
+        assert _from in opts, 'must specify either fs, db, or both'
+        result.update({'_from':_from,})
+        result.update(info = dict( [[x,str(y)] for x,y in result.items() if x not in original]))
+        return result
+
+    def get_queryset(self):
+        q = self['_']
+        assert ope(q)
+        if isdir(q):
+            result = Item.startswith(q)
+        else:
+            result = Item.objects.filter(path=q)
+        return result
+
+    def delete_dir(self, path):
+        ctx = self.get_ctx()
+        _from = ctx['_from']
+        assert ctx['num_fs_files']==0, 'can only remove empty dirs currently'
+        if _from in 'both db'.split():
+            for item in ctx['items']:
+                report("removing from db: ",item)
+                item.delete()
+        if _from in 'both fs'.split():
+            import os
+            report('removing (empty) dir',self['_'])
+            os.rmdir(self['_'])
 
     def main(self):
-        key = self['_']
-        _from = self['from']
-        assert key and _from, 'need both key and where to delete from'
-        if _from=='db':
-            try:
-                del self.db[key]
-            except Exception,e:
-                flash("Error: "+str(e))
-            else:
-                flash('successfully deleted key from database.')
-        else:
-            flash("did nothing; i dont know what you mean.")
-        return redirect('/detail?_' + key)
-
+        ctx = self.get_ctx()
+        if ctx['confirmed']:
+            assert ctx['num_fs_files'] < 2,'multideletes disallowed currently'
+            if ctx['is_dir']:
+                self.delete_dir(self['_'])
+                return self.redirect('/browser?_=' + FSPath(self['_']).parent)
+        return super(Delete, self).main()
 
 def generate_attribute_filter_view(ATTR_NAME, label='stuff'):
     """ """
