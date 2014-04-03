@@ -11,8 +11,7 @@ from couchdb.client import ViewResults
 from unipath import FSPath
 
 from report import report
-from ixle.python import ope
-from ixle.schema import Item
+from ixle.python import isdir
 from ixle._atexit import handle_exit
 
 def sanitize_txt(x):
@@ -52,6 +51,7 @@ def field_name_to_agent(field_name):
 def agent_cover():
     """ returns { ItemFieldName: AgentWhichCoversIt}
     """
+    from ixle.schema import Item
     fields = Item._fields.copy()
     for ignored in 'host id'.split(): fields.pop(ignored)
     out = [ [ fname,
@@ -197,3 +197,9 @@ def no_alphabet(x):
     """ argh FIXME """
     no_delim = ''.join(smart_split(x))
     return len(no_delim) == re.compile('\d*').match(no_delim).end()
+
+def post_and_redirect(url, **kargs):
+    "builds javascript"
+    dct = [ "{0}:'{1}'".format(k,v) for k,v in kargs.items()]
+    dct = ','.join(dct)
+    return "post_and_redirect('"+url+"', {" + dct + "});"

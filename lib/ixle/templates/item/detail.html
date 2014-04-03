@@ -27,12 +27,15 @@
               <i>
                 {%include "item/to_clipboard.html"%}
                 <strong> | </strong>
-                <a href="/view?_{{item.path}}">view</a>
+                <a href="/view?_={{item.path}}">view</a>
                 <strong> | </strong>
                 <a href="{{this_url}}?_={{item.path}}">thisUrl</a>
                 <strong> | </strong>
                 <a href="javascript:post_and_redirect('/rename',{_:'{{_.replace("'","\'")}}'})">
                   rename</a>
+                <strong> | </strong>
+                <a href="javascript:post_and_redirect('/delete',{_from:'both',_:'{{_.replace("'","\'")}}'})">
+                  delete from db AND fs</a>
               </i>
             </small>
 

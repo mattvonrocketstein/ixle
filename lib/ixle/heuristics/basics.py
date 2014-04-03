@@ -1,8 +1,8 @@
 """ ixle.heuristics.basics
 """
-from .base import Heuristic, NegativeAnswer
+from .base import Heuristic, NegativeAnswer, Answer
 from .data import (
-    CODE_EXTS, MIME_MAP, FEXT_MAP, AUDIO_EXTS,
+    BOOK_EXTS, CODE_EXTS, MIME_MAP, FEXT_MAP, AUDIO_EXTS,
     r_audio, r_crypto, r_image, r_video, r_text)
 
 def _generic(item, r_list, extensions={}):
@@ -24,6 +24,15 @@ class is_code(Heuristic):
         if self.item.fext not in CODE_EXTS:
             return self.NegativeAnswer(
                 "\"{0}\" not in CODE_EXTS".format(self.item.fext))
+        return True
+
+class is_book(Heuristic):
+    apply_when = []
+    requires = ["file_type"]
+    def run(self):
+        if self.item.fext not in BOOK_EXTS:
+            return self.NegativeAnswer(
+                "\"{0}\" not in BOOK_EXTS".format(self.item.fext))
         return True
 
 class guess_mime(Heuristic):

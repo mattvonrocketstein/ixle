@@ -131,6 +131,10 @@ class DirHeuristic(SuggestiveHeuristic):
 
     apply_when = ['is_dir']
 
+    @property
+    def files(self):
+        return self.item.unipath.listdir()
+
     def __call__(self, *args, **kargs):
         if not self.item.unipath.isdir():
             return self.NotApplicable("Not a directory")

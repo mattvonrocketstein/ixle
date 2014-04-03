@@ -11,7 +11,8 @@ from .base import Heuristic
 
 MOVIE_CUT_OFF_SIZE_IN_MB = 400
 TV_CUT_OFF_SIZE_IN_MB = 500
-R_SEASON_1_EPISODE_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
+#R_SEASON_1_EPISODE_1 = re.compile('.*[sS]\d\d*[eE]\d\d*.*')
+R_SEASON_1_EPISODE_1 = re.compile('[sS]\d\d*[eE]\d\d*')
 
 def if_movie(fxn):
     def new_fxn(item):
@@ -49,13 +50,14 @@ def _guess_movie_name(fname):
 @if_movie
 def guess_movie_name(item):
     return _guess_movie_name(item.fname)
+
 class is_tv_show(Heuristic):
     apply_when = ["is_video"]
     require = ['file_size']
 
     def run(self):
-        if R_SEASON_1_EPISODE_1.match(self.item.fname):
-            return self.Affirmative("matches season-X-episode-Y regex")
+        if R_SEASON_1_EPISODE_1.search(self.item.fname):
+            return self.Affirmative("found season-X-episode-Y regex")
         if TV_CUT_OFF_SIZE_IN_MB < self.item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
             return self.Affirmative("size is about right")
         return self.NegativeAnswer("no data")

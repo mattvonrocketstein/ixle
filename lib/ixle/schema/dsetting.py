@@ -2,7 +2,7 @@
 """
 from mongoengine import Document as mDocument
 
-import json
+import demjson
 from report import report
 from mongoengine import StringField
 
@@ -18,14 +18,14 @@ class DSetting(mDocument):
         return get_or_create_settings_database()
 
     def encode(self, v):
-        self.value = json.dumps(v)
+        self.value = demjson.encode(v)
         self.save()
         report("saved {0} for setting @ {1}".format(v, self))
 
     def decode(self):
-        if not self.value or self.value=="null":
+        if not self.value or self.value=="null" or self.value=="None":
             return None
-        return self.value and json.loads(self.value)
+        return self.value and demjson.decode(self.value)
 
     @classmethod
     def get_or_create(kls, name=None):
@@ -36,6 +36,6 @@ class DSetting(mDocument):
         except ResourceNotFound:
             himself = kls(
                 _id = name,
-                value=getattr(kls, 'default_value', None))
+                value = getattr(kls, 'default_value', None))
             himself.save()
             return himself

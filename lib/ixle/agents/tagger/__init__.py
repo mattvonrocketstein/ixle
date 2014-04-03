@@ -17,6 +17,9 @@ class AbstractTagger(ItemIterator):
             self.report_error(err)
             return dict(error=FileDoesntExist(err))
 
+    def callback(self, *args, **kargs):
+        raise Exception, 'Subclassers should override!'
+
 class GenericTagger(AbstractTagger):
     nickname='tagger'
     covers_fields = ['tags']
@@ -28,23 +31,39 @@ class GenericTagger(AbstractTagger):
         self.record['tagged_with_{0}'.format(kls.__name__)] += 1
 
     def callback(self, item=None, **kargs):
-        sooper = super(GenericTagger, self).callback(item=item, **kargs)
-        if sooper:
-            return sooper
+        #sooper = super(GenericTagger, self).callback(item=item, **kargs)
+        if False:
+            pass
         else:
             self._item = item
             if self.heuristics['is_image'](item)():
                 self._using(ImageTagger)
             elif self.heuristics['is_audio'](item)():
                 self._using(MusicTagger)
+            elif self.heuristics['is_book'](item)():
+                self._using(BookTagger)
             else:
                 self.record['cannot_tag'] += 1
 
+class BookTagger(AbstractTagger):
+    nickname = 'book_tagger'
+    covers_fields = [] # only generictagger should do this..
+
+    def callback(self, item=None, **kargs):
+        path = item.unipath
+        assert path.exists(),'does not exist!'
+        assert path.endswith('epub'), 'not implemented for non-epub'
+        from ixle.util.epub import get_tags_epub, parse_tags_epub
+        tags = get_tags_epub(path)
+        tags = parse_tags_epub(tags)
+        item.tags = tags
+        self.save(item)
 
 class ImageTagger(AbstractTagger):
     nickname = 'itagger'
     covers_fields = [] # only generictagger should do this..
-    def tagger_callback(self,item=None,**kargs):
+
+    def callback(self, item=None, **kargs):
         m = hachm(item.path)
         if m:
             m=dict(m)
@@ -61,7 +80,7 @@ class MusicTagger(AbstractTagger):
         if not self.path:
             return Item.objects.filter(fext__in=['mp3'])
 
-    def tagger_callback(self, item=None, **kargs):
+    def callback(self, item=None, **kargs):
         if any([self.force, not item.tags]):
             report(item.fname)
             from mutagen.flac import FLACNoHeaderError

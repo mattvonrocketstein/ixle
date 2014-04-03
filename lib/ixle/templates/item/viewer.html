@@ -1,0 +1,10 @@
+{% import 'ixle_macros.html' as macros %}
+{%extends "item/detail.html"%}
+
+{%block body%}
+<div id=preview>
+  <h3>preview</h3>
+  this-url-- {{this_url}}
+</div>
+{{super()}}
+{% endblock %}

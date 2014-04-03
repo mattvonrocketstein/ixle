@@ -41,9 +41,9 @@ class DestructionMixin(object):
 
     def delete_record(self, key):
         from ixle.schema import Item
-        item = Item.objects.get(path=key)
-        return self.delete_item(item)
-
+        items = Item.objects.filter(path=key)
+        for item in items:
+            return self.delete_item(item)
 
 class SaveMixin(object):
     # TODO: abstract

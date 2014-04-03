@@ -4,6 +4,7 @@
 document = 'document'
 
 CODE_EXTS = 'py js cpp'.split()
+BOOK_EXTS = 'epub'.split()
 AUDIO_EXTS = 'aa'.split()
 
 import re

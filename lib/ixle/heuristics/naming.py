@@ -2,11 +2,11 @@
 """
 import re
 from ixle.python import opj
-from ixle.util import smart_split
+from ixle.util import smart_split, post_and_redirect
 from ixle.heuristics.movies import guess_movie_year
 from .base import SuggestiveHeuristic
 
-JUNK_LIST = 'publichd 1080p bluray hdtv cam dvdrip brrip eng xvid'.split()
+JUNK_LIST = 'notv publichd 1080p bluray hdtv cam dvdrip brrip eng xvid'.split()
 
 class more_clean(SuggestiveHeuristic):
 
@@ -26,13 +26,15 @@ class more_clean(SuggestiveHeuristic):
                 continue
             tmp = opj(self.item.dir, x)
             tmp2 = self.item.path.replace("'","\'")
-            zoo = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
+            #zoo = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
+            zoo = post_and_redirect('/rename', _=tmp2, suggestion=tmp)
             out.append('<a href="javascript:{0}">{1}</a>'.format(zoo, x))
         return "<br/>".join(out)
 
     def _run(self):
+        """ FIXME: doesnt work well S02E03"""
         suggestions = []
-        tmp = self.item.fname.lower().replace(' ','_')
+        tmp = self.item.fname.lower().replace(' ', '_')
         if tmp!=self.item.fname:
             suggestions.append(tmp)
         basic = self.basic_clean()
@@ -46,6 +48,22 @@ class more_clean(SuggestiveHeuristic):
                     tmp  = '_'.join(tmp[:tmp.index(year)+1])
                     tmp += '.'+self.item.fext
                     suggestions.append(tmp)
+        from .movies import R_SEASON_1_EPISODE_1
+        found = R_SEASON_1_EPISODE_1.search(self.item.fname)
+        if found is not None:
+            split = R_SEASON_1_EPISODE_1.split(self.item.fname)
+            split = [x for x in split if x]
+            if split:
+                tmp = "{0}{1}{2}".format(
+                    split[0],
+                    found.string[found.start():found.end()],
+                    self.item.unipath.ext)
+                tmp = [tmp, tmp.lower()]
+                for suggestion in tmp:
+                    if all([suggestion not in suggestions,
+                            suggestion!=self.item.fname]):
+                        suggestions.append(suggestion)
+
         self._cached_result = list(set(suggestions))
         return self._cached_result
 

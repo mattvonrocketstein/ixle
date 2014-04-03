@@ -35,7 +35,12 @@ class Indexer(IxleAgent):
         except Item.DoesNotExist:
             item = Item(**data)
             self.save(item)
-            #report("fresh data: " + item.fname)
+        except Item.MultipleObjectsReturned:
+            #damn.  this should not happen.
+            items = list(Item.objects.filter(path=data['path']))
+            item = items.pop()
+            for x in items:
+                x.delete()
         else:
             self.record['overwrote'] += 1
             for x in data.items():

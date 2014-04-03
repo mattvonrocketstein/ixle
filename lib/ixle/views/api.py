@@ -1,9 +1,11 @@
 """ ixle.views.api
 """
 import time, json
+import sys, traceback
 from .widgets import Widget
-from ixle.util import get_api
+from ixle.util import get_api, isdir
 from report import report
+from corkscrew.comet import CometWorker
 
 class APIView(Widget):
 
@@ -43,11 +45,23 @@ class APIView(Widget):
         print 'api returning json:', status
         return status
 
-from corkscrew.comet import CometWorker
 
 class APIC(CometWorker):
 
     url = '/apic'
+
+    def extra_html(self):
+        """
+        {%if is_dir%}
+        <a href="/browser?_={{_}}">back to browsing</a>
+        {%else%}
+        <a href="/detail?_={{_}}">back to detail</a>
+        {%endif%}
+        """
+        return self.render(
+            self.extra_html.__doc__,
+            is_dir=isdir(self['_']),
+            _=self['_'],)
 
     def worker(self, **kargs):
         arg   = kargs['_']
@@ -68,7 +82,6 @@ class APIC(CometWorker):
         try:
             status = ackshun(arg)
         except Exception,e:
-            import sys, traceback
             err_data = traceback.format_exc()
             print err_data
             return dict(error=err_data)

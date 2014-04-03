@@ -10,7 +10,7 @@ from .typer import Typer, Mimer
 from .events import Events
 from .md5 import Md5er
 from .indexer import Indexer
-from .tagger import MusicTagger, ImageTagger, GenericTagger
+from .tagger import MusicTagger, ImageTagger, GenericTagger, BookTagger
 from .body import Body
 from ._imdb import IMDBer, MovieFinder
 from .body import Body
@@ -28,24 +28,30 @@ registry = AgentRegistry()
 
 [ registry.register(x.nickname, x) for x in
 
+  # things that do stuff
   Elaborate, Refresher,
 
   #heuristic record-rewriters
   MovieFinder, IMDBer,
-  # filesystem-modifiers / heuristics record-rewriters
-  #Renamer,
+
   # experimental
   Body, Events,
+
   # clean-up (major side-effects)
   StaleChecker, Janitor, Slayer,
+
   # core record-rewriters
   Sizer, Md5er, Filer, Mimer,
   Stamper, Typer,
+
   # the index stands alone
   Indexer,
+
   # adaptive-taggers
-  ImageTagger, MusicTagger,
+  BookTagger, ImageTagger, MusicTagger,
   GenericTagger,
-  BlacklistFname,
-  BlacklistFext,
+
+  # blacklisters
+  BlacklistFname, BlacklistFext,
+
   ]
