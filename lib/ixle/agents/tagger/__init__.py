@@ -56,6 +56,8 @@ class BookTagger(AbstractTagger):
         from ixle.util.epub import get_tags_epub, parse_tags_epub
         tags = get_tags_epub(path)
         tags = parse_tags_epub(tags)
+        if 'isbn' in tags:
+            tags.update(url="http://www.goodreads.com/search?query="+tags['isbn'])
         item.tags = tags
         self.save(item)
 

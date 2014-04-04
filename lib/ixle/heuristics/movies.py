@@ -55,8 +55,17 @@ class is_tv_show(Heuristic):
     apply_when = ["is_video"]
     require = ['file_size']
 
+    def season_search(self):
+        tmp = R_SEASON_1_EPISODE_1.search(self.item.fname)
+        return tmp.group() if tmp else None
+
+    def season_split(self):
+        tmp = R_SEASON_1_EPISODE_1.split(self.item.fname)
+        if tmp:
+            return '_'.join(smart_split(tmp[0]))
+
     def run(self):
-        if R_SEASON_1_EPISODE_1.search(self.item.fname):
+        if self.season_search():
             return self.Affirmative("found season-X-episode-Y regex")
         if TV_CUT_OFF_SIZE_IN_MB < self.item.size_mb < MOVIE_CUT_OFF_SIZE_IN_MB:
             return self.Affirmative("size is about right")

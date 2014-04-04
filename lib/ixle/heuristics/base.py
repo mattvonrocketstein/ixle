@@ -16,6 +16,8 @@ class DumbWrapper(object):
 
     def __getattr__(self, x):
         return getattr(self.obj, x)
+    def __iter__(self):
+        return iter(self.obj)
 
 class Answer(DumbWrapper):
     def __str__(self):
@@ -84,10 +86,7 @@ class Heuristic(object):
     def applicability(self):
         out = {}
         for x in self.apply_when:
-            h = util.get_heuristics()[x]
-            result = h(self.item)
-            if isinstance(result, Heuristic):
-                result = result()
+            result = self.item.apply_heuristic(x)
             if not bool(result):
                 result = NotApplicable("{0} is False".format(x))
             out[x] = result

@@ -8,7 +8,7 @@ from jinja2 import Template
 from ixle.python import opj
 from ixle.util import smart_split
 from ixle.util import sanitize_txt
-from .base import ListAnswerMixin, Heuristic
+from .base import ListAnswerMixin
 from .base import SuggestiveHeuristic
 
 # default cache timeout is too big
@@ -34,6 +34,25 @@ def _guess_parent(item):
     winners = sorted(scores, cmp=lambda x,y: cmp(x[1],y[1]))[:3]
     winners = OrderedDict([ [ str(x[0]), x[1]] for x in winners])
     return winners
+
+class guess_new_parent_folder(SuggestiveHeuristic):
+
+    def suggestion_applicable(self):
+        return any([self.item.apply_heuristic('is_tv_show'),])
+
+    def suggestion(self):
+        out=""
+        results = []
+        if self.item.apply_heuristic('is_tv_show'):
+            tmp = self.item.get_heuristic('is_tv_show').season_split()
+            results.append(tmp)
+        for tmp in results:
+            out+="<a href=#>{0}</a>".format(tmp)
+
+        return 'repackaging into new dir',out
+
+    def run(self):
+        return self.Affirmative()
 
 class guess_proper_parent_folder(#ListAnswerMixin,
                                  SuggestiveHeuristic):

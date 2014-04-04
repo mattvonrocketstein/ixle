@@ -7,7 +7,7 @@ from mongoengine import (StringField, BooleanField,
                          ListField, DateTimeField,
                          DictField, IntField)
 
-from ixle.python import now, splitext, opj
+from ixle.python import opj
 
 class Item(mDocument):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
@@ -123,3 +123,16 @@ class Item(mDocument):
         shutil.move(self.path, new_path)
         self.path = new_path
         self.save()
+
+    def get_heuristic(self, x):
+        from ixle import util
+        h = util.get_heuristic(x)
+        result = h(self)
+        return result
+
+    def apply_heuristic(self, x):
+        from ixle.heuristics.base import Heuristic
+        result = self.get_heuristic(x)
+        if isinstance(result, Heuristic):
+            result = result()
+        return result

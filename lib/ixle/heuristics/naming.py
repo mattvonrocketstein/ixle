@@ -5,33 +5,64 @@ from ixle.python import opj
 from ixle.util import smart_split, post_and_redirect
 from ixle.heuristics.movies import guess_movie_year
 from .base import SuggestiveHeuristic
+from goulash.cache import cached
 
-JUNK_LIST = 'notv publichd 1080p bluray hdtv cam dvdrip brrip eng xvid'.split()
+JUNK_LIST = 'notv publichd 1080p bluray hdtv lol cam dvdrip brrip eng xvid'.split()
 
-class more_clean(SuggestiveHeuristic):
 
-    def suggestion_applicable(self):
-        return any(self.run())
-
-    def suggestion(self):
-        suggestions = self._run()
-        opts = ['<a href=#>{0}</a>'.format(x) for x in suggestions]
-        return 'cleaning the filename', self._render('ignored')
-
-    def _render(self, answer):
+class rendermixin(object):
+    def _render(self):
         out = []
-        for x in self._cached_result:
+        for x in self.run():
             if isinstance(x, self.NotApplicable):
                 out.append(str(x))
                 continue
             tmp = opj(self.item.dir, x)
             tmp2 = self.item.path.replace("'","\'")
-            #zoo = "post_and_redirect('/rename', {_: '"+tmp2+"', suggestion:'"+tmp+"' })"
             zoo = post_and_redirect('/rename', _=tmp2, suggestion=tmp)
             out.append('<a href="javascript:{0}">{1}</a>'.format(zoo, x))
         return "<br/>".join(out)
 
-    def _run(self):
+class more_correct(SuggestiveHeuristic, rendermixin):
+    apply_when = ['is_book']
+
+    def suggestion(self):
+        suggestions = self.run()
+        opts = ['<a href=#>{0}</a>'.format(x) for x in suggestions]
+        return 'correcting the filename', self._render()
+
+    #@cached('more_correct',1)
+    def run(self):
+        if not self.item.apply_heuristic('is_tagged'):
+            return [self.NegativeAnswer("a book, but not tagged")]
+        title = _basic_clean(self.item.tags.get('title','').strip())
+        author = self.item.tags.get('author', '').strip()
+        author = author.split()[0]
+        author = _basic_clean(author)
+        out = []
+        if title and author:
+            out.append("{0}__{1}{2}".format(title, author, self.item.fext))
+            out.append("{0}__{1}{2}".format(author, title, self.item.fext))
+        if title:
+            out.append("{0}{1}".format(title, self.item.fext))
+        return self.Answer(sorted(out+[x.lower() for x in out]))
+
+    def suggestion_applicable(self):
+        ans = self.run()
+        return any(ans)
+
+class more_clean(SuggestiveHeuristic, rendermixin):
+
+    def suggestion_applicable(self):
+        return any(self.run())
+
+    def suggestion(self):
+        suggestions = self.run()
+        opts = ['<a href=#>{0}</a>'.format(x) for x in suggestions]
+        return 'cleaning the filename', self._render()
+
+    @cached('more_clean', 1)
+    def run(self):
         """ FIXME: doesnt work well S02E03"""
         suggestions = []
         tmp = self.item.fname.lower().replace(' ', '_')
@@ -63,16 +94,15 @@ class more_clean(SuggestiveHeuristic):
                     if all([suggestion not in suggestions,
                             suggestion!=self.item.fname]):
                         suggestions.append(suggestion)
-
-        self._cached_result = list(set(suggestions))
-        return self._cached_result
-
-    def run(self):
-        return self._run()
+        return list(set(suggestions))
 
     def basic_clean(self):
+        fname,fext = self.item.just_name.lower(),self.item.fext
+        return _basic_clean(fname, fext)
+
+def _basic_clean(fname, fext=''):
         # split on all kinds of nonalpha-numeric junk
-        bits = smart_split(self.item.just_name.lower())
+        bits = smart_split(fname)
 
         # kill common junk that's found in torrent files, etc
         for x in JUNK_LIST:
@@ -86,14 +116,14 @@ class more_clean(SuggestiveHeuristic):
                 bits2.append(x)
         bits = bits2
         result = '.'.join(['_'.join(bits),
-                           self.item.fext or ''])
+                           fext or ''])
         # if original filename does not start with '_', neither
         # should the result.  (this happens with files like "[1]-foo-bar.mp3")
-        one = re.compile('_+').match(self.item.fname)
+        one = re.compile('_+').match(fname)
         two = re.compile('_+').match(result)
         if not one and two:
             result = result[two.span()[-1]:]
         #for x in 'xvid'result = result.
-        if result == self.item.fname:
+        if result == fname:
             return self.NotApplicable("already clean")
         return result

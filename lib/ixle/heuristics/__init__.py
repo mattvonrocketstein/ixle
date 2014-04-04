@@ -29,6 +29,7 @@ from ixle.util import post_and_redirect
 
 from .siblings import guess_related_siblings
 from .siblings import guess_proper_parent_folder
+from .siblings import guess_new_parent_folder
 
 from .basics import (
     is_book, is_code, guess_mime, is_crypto, is_video,
@@ -36,7 +37,7 @@ from .basics import (
 
 # used for determining file_type, layer 2 specificity
 from .data import FEXT_MAP, MIME_MAP, r_xx_min
-from .naming import more_clean
+from .naming import more_clean, more_correct
 
 def _generic(item, r_list, extensions={}):
     """ NOTE: assumes file_magic already ready already"""

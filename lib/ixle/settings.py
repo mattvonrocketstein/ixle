@@ -30,7 +30,7 @@ class DSettingsMixin(object):
 
     @property
     def random_sample_size(self):
-        tmp = self._dynamic['random_sample_size'].value or 10
+        tmp = self._dynamic['random_sample_size'].decode() or 10
         return int(tmp)
 
     @property

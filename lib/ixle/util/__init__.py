@@ -11,7 +11,7 @@ from couchdb.client import ViewResults
 from unipath import FSPath
 
 from report import report
-from ixle.python import isdir
+from ixle.python import isdir, ope
 from ixle._atexit import handle_exit
 
 def sanitize_txt(x):
@@ -166,7 +166,7 @@ def get_agent_by_name(name):
     from ixle.agents import registry
     return registry[name]
 
-def get_heuristics():
+def get_heuristics(named=None):
     """ mines heuristic functions out of ixle.heuristics.
         that means: any simple function that takes one
         argument where that argument is named "item".
@@ -178,7 +178,11 @@ def get_heuristics():
         FORBID = 'Heuristic SuggestiveHeuristic'.split() # sigh make metaclass
         return getattr(obj,'__name__', None) not in FORBID and \
                getattr(obj, 'is_heuristic', False)
-    return _harvest(heuristics, test=is_heuristic)
+    out=_harvest(heuristics, test=is_heuristic)
+    if named is not None:
+        out=out[named]
+    return out
+get_heuristic = get_heuristics
 
 def modification_date(filename):
     """ """
@@ -191,7 +195,7 @@ def modification_date(filename):
 R_SPLIT_DELIM = re.compile('[\W_]+')
 def smart_split(x):
     """ splits on most delims """
-    return R_SPLIT_DELIM.split(x)
+    return [x for x in R_SPLIT_DELIM.split(x) if x]
 
 def no_alphabet(x):
     """ argh FIXME """

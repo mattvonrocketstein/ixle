@@ -6,7 +6,6 @@ from report import report
 from ixle.schema import Item
 from ixle.agents import registry
 from ixle.views.base import View
-from ixle.util import get_heuristics
 from ixle.heuristics import run_heuristics
 
 class ItemDetail(View):
