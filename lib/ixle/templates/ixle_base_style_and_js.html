@@ -1,0 +1,7 @@
+{#lib/ixle/templates/ixle_base_style_and_js.html#}
+{%extends "corkscrew_base_style_and_js.html"%}
+{%block base_style_and_js %}
+{{super()}}
+<style>{%include "ixle_style.css"%}</style>
+<script>{%include "javascript/ixle_base.js"%}</script>
+{%endblock%}
