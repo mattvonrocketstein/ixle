@@ -12,6 +12,7 @@ from .md5 import Md5er
 from .indexer import Indexer
 from .tagger import MusicTagger, ImageTagger, GenericTagger, BookTagger
 from .body import Body
+from .unindex import Unindex
 from ._imdb import IMDBer, MovieFinder
 from .body import Body
 #from .renamer import Renamer
@@ -45,7 +46,7 @@ registry = AgentRegistry()
   Stamper, Typer,
 
   # the index stands alone
-  Indexer,
+  Indexer, Unindex,
 
   # adaptive-taggers
   BookTagger, ImageTagger, MusicTagger,

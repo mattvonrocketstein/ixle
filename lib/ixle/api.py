@@ -74,6 +74,7 @@ stale = build_agent_method('stale')
 #itagger = build_agent_method('itagger')
 imdb = build_agent_method('imdb')
 md5 = build_agent_method('md5')
+unindex = build_agent_method('unindex')
 moviefinder = build_agent_method('moviefinder')
 tagger = build_agent_method('tagger')
 typer = build_agent_method('typer')
@@ -85,7 +86,7 @@ mimer = build_agent_method('mimer')
 slayer = build_agent_method('slayer')
 janitor = build_agent_method('janitor')
 
-def unindex(path):
+def sdfasdasdunindex(path):
     from ixle.agents.unindex import Unindex
     agent = Unindex(path=path, settings=conf(), force=True)
     result = agent()

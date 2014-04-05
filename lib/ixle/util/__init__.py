@@ -150,7 +150,7 @@ def call_agent_on_dir(agent_nick, dirname):
 
 def get_api():
     def is_api(x):
-        return hasattr(x,'api_method')
+        return hasattr(x, 'api_method')
     from ixle import api
     tmp = dict([[x, getattr(api,x)] for x in dir(api) \
                 if not x.startswith('_') and \
