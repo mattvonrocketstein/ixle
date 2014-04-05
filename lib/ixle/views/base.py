@@ -1,7 +1,6 @@
 """ ixle.views.base
 """
 
-from corkscrew.views import BluePrint
 from corkscrew import View as CorkscrewView
 from ixle.agents.base import SaveMixin
 from ixle.schema import Item

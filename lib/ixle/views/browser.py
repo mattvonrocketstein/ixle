@@ -4,14 +4,13 @@ import os
 from ixle.python import ope, opj
 from ixle.agents import registry
 from ixle.views.search import Search
-from corkscrew.views import BluePrint
 from report import report
 from ixle.schema import Item
 from ixle.python import expanduser
 from ixle.heuristics import get_dir_suggestions
+
 class Browser(Search):
 
-    #blueprint = BluePrint(__name__, __name__)
     url = '/browser'
     template = 'browser.html'
 

@@ -6,7 +6,7 @@
 from ixle.python import sep, ope
 from report import report
 
-from .base import View, BluePrint
+from .base import View
 
 class Widget(View):
     methods = 'GET POST'.split()
@@ -32,9 +32,7 @@ class DirViewWidget(Widget):
           /dir_view_widget?_=/media/sf_XMem/_MOVIES/Next.avi
     """
     url = '/dir_view_widget'
-    blueprint = BluePrint(__name__, __name__)
     template = 'dir_view_widget.html'
-
 
     def main(self):
         abspath = self['_']

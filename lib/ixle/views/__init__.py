@@ -5,10 +5,10 @@ from flask import flash, redirect
 from report import report
 from ixle.views.search import ItemListView
 
-from corkscrew.views import Favicon, BluePrint
+from corkscrew.views import Favicon
 from corkscrew.auth import Login, Logout
 from corkscrew.util import use_local_template
-from corkscrew.views import ListViews, SettingsView
+from corkscrew.views.meta import ListViews, SettingsView
 from corkscrew.comet import SijaxDemo as CometDemo
 
 from ixle.schema import Item, Event
