@@ -11,27 +11,21 @@ flask-sijax
 textblob==0.8.3
 
 # https://pypi.python.org/pypi/simserver
-simserver==0.1.4
+#simserver==0.1.4
 numpy==1.8.0
 
 ansi2html
-configparser
 
 mongoengine
 mutagen==1.21
 nltk==2.0.4
 processing
-progressbar==2.3
+progressbar
 pypdf==1.13
-pdfminer
+#pdfminer
 pep362==0.6.2
 pymongo
 unipath==1.0
-
-# unfortunately this may break pip w/
-# non-2.6 python versions.  if you're using 2.7,
-# might need to comment this line out
-importlib==1.0.2
 
 # required by reporting
 pygments==1.6
@@ -66,7 +60,7 @@ git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew
 git+git://github.com/mattvonrocketstein/goulash.git#egg=goulash
 
 flask-mongoengine
-flask==0.9
-Flask-AutoIndex
+flask
 Flask-Silk
 Flask-AutoIndex
+flask-debugtoolbar

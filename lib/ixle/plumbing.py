@@ -1,7 +1,7 @@
 """ ixle.plumbing
 """
 
-from hammock.plumbing import before_request as hbr
+from corkscrew.plumbing import before_request as hbr
 
 def before_request():
     hbr()

@@ -9,7 +9,6 @@ import os, sys
 from glob import glob
 
 import demjson
-import couchdb
 import requests
 
 from ixle.python import ope, opj

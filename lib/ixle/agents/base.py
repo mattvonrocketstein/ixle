@@ -4,7 +4,6 @@ import os
 import fnmatch
 import random
 from collections import defaultdict
-from couchdb.http import ResourceConflict
 
 from report import report
 

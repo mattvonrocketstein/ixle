@@ -3,7 +3,6 @@
 import os
 from report import report
 from ixle.python import now, ope
-from couchdb.http import ResourceConflict
 
 
 class DestructionMixin(object):

@@ -7,7 +7,6 @@ import inspect
 from itertools import imap
 
 import pep362
-from couchdb.client import ViewResults
 from unipath import FSPath
 
 from report import report

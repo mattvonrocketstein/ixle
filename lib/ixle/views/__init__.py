@@ -4,10 +4,11 @@ from flask import flash, redirect
 
 from report import report
 from ixle.views.search import ItemListView
-from corkscrew.views import Favicon, BluePrint
-from corkscrew.auth import Login, Logout
+from corkscrew import BluePrint
+from corkscrew.views import Favicon
+from corkscrew.views.auth import Login, Logout
 from corkscrew.util import use_local_template
-from corkscrew.views import ListViews, SettingsView
+from corkscrew.views import SettingsView
 from corkscrew.comet import SijaxDemo as CometDemo
 
 from ixle.schema import Item, Event
@@ -163,16 +164,17 @@ from Queue import Queue, Empty
 from goulash.stdout import ThreadedStdout
 from ixle.views.api import APIC
 from ixle.views.hx import Hx
-from ixle.views.file_viewer import Viewer
+#from ixle.views.file_viewer import Viewer
 from ixle.views.dsettings import AppendSetting
 
 __views__ = [
     # corkscrew standard views
-    ListViews, Favicon, Login, Logout,
+    #ListViews,
+    Favicon, Login, Logout,
     APIC,
 
     #CometDemo,
-    Hx, Viewer,
+    Hx, #Viewer,
 
     #main ixle views
     SettingsView, AppendSetting,
