@@ -30,6 +30,6 @@ setup(
     keywords     = ['ixle','media'],
     entry_points = {
         'console_scripts': \
-        ['pkg_script = ixle.bin.module:fxn', ] },
+        ['ixle = ixle.bin._ixle:entry', ] },
     install_requires=[],
     )
