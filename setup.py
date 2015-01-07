@@ -1,51 +1,35 @@
 #!/usr/bin/env python
-""" setup.py for ixle """
-import os
-from os.path import expanduser
+""" setup.py for ixle
+"""
+import os, sys
+from setuptools import setup
 
-try:
-    from setuptools import setup, find_packages
-    have_setuptools = True
-except ImportError:
-    from distutils.core import setup
-    def find_packages():
-        return ['ixle',]
-    have_setuptools = False
+# make sure that finding packages works, even
+# when setup.py is invoked from outside this dir
+this_dir = os.path.dirname(os.path.abspath(__file__))
+if not os.getcwd()==this_dir:
+    os.chdir(this_dir)
 
-try:
-    from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-    from distutils.command.build_py import build_py
+# make sure we can import the version number so that it doesn't have
+# to be changed in two places. ixle/__init__.py is also free
+# to import various requirements that haven't been installed yet
+sys.path.append(os.path.join(this_dir, 'ixle'))
+from version import __version__
+sys.path.pop()
 
-if have_setuptools:
-    add_keywords = dict( entry_points = \
-                         { 'console_scripts': \
-                           ['ixle = ixle.bin._ixle:entry', ]
-                         }, )
-else:
-    add_keywords = dict( scripts = ['ixle'], )
-
+base_url = 'https://github.com/mattvonrocketstein/ixle/'
 setup(
-    name         ='ixle',
-    version      = '.1',
-    description  = 'couchdb',
-    author       = 'mattvonrocketstein, in the gmails',
-    url          = 'one of these days',
-    license      = 'BSD License',
-    package_dir  = {'': 'lib'},
-    packages     = find_packages('lib'),
-    long_description = __doc__,
-    keywords = 'couch couchdb',
-    platforms = 'any',
-    zip_safe = False,
-    include_package_data = True,
-    classifiers = [
-        'License :: OSI Approved :: BSD License',
-        'Intended Audience :: Developers',
-        'Development Status :: 000 - Experimental',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Operating System :: OS Independent', ],
-    cmdclass = {'build_py': build_py},
-    **add_keywords
-)
+    name         = 'ixle',
+    version      = __version__,
+    description  = 'ixle indexes files',
+    author       = 'mattvonrocketstein',
+    author_email = '$author@gmail',
+    url          = base_url,
+    download_url = base_url+'/tarball/master',
+    packages     = ['ixle'],
+    keywords     = ['ixle','media'],
+    entry_points = {
+        'console_scripts': \
+        ['pkg_script = ixle.bin.module:fxn', ] },
+    install_requires=[],
+    )
