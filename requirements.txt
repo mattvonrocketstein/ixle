@@ -51,16 +51,17 @@ hachoir-metadata
 hachoir-core
 hachoir-parser
 
-
-
 # reporting, corkscrew, hammock
 git+git://github.com/mattvonrocketstein/reporting.git#egg=reporting
 git+git://github.com/mattvonrocketstein/hammock.git#egg=hammock
 git+git://github.com/mattvonrocketstein/corkscrew.git#egg=corkscrew
-git+git://github.com/mattvonrocketstein/goulash.git#egg=goulash
+
+editdistance
+goulash==.51
 
 flask-mongoengine
 flask
 Flask-Silk
 Flask-AutoIndex
 flask-debugtoolbar
+

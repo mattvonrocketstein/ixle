@@ -2,14 +2,14 @@
 """
 import unipath
 from report import report
-from mongoengine import Document as mDocument
+from mongoengine import Document
 from mongoengine import (StringField, BooleanField,
                          ListField, DateTimeField,
                          DictField, IntField)
 
 from ixle.python import now, splitext, opj
 
-class Item(mDocument):
+class Item(Document):
     """ Ixle Item: couchdb document abstraction for item on the filesystem """
     # _id:   absolute path to file (also the primary key)
     # fname: just the filename.  includes extensions

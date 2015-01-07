@@ -166,10 +166,13 @@ from ixle.views.api import APIC
 from ixle.views.hx import Hx
 #from ixle.views.file_viewer import Viewer
 from ixle.views.dsettings import AppendSetting
-
+from corkscrew.admin import AdminView as AV
+class AdminView(AV):
+    requires_auth=False
 __views__ = [
     # corkscrew standard views
     #ListViews,
+    AdminView,
     Favicon, Login, Logout,
     APIC,
 

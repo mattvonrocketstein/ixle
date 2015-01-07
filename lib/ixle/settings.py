@@ -87,15 +87,15 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         """ the namespace published to ipython
             when using 'ixle --shell'
         """
+        dct = super(Settings, self).shell_namespace()
         import re
-        from couchdb.mapping import Document
         from ixle.schema import Item, DSetting, Remote
         from ixle import util
         from ixle import heuristics
         from ixle import agents
         from ixle import api
         from ixle import metadata
-        return dict(re=re,
+        dct.update(re=re,
                     api=api,
                     agents=agents,
                     metadata=metadata.metadata,
@@ -104,6 +104,7 @@ class Settings(CorkscrewSettings, DSettingsMixin):
                     heuristics=heuristics,
                     item=Item, Item=Item,
                     database=self.database)
+        return dct
 
     @property
     def _engine(self):
