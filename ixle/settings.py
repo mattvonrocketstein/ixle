@@ -57,6 +57,11 @@ class Settings(CorkscrewSettings, DSettingsMixin):
         NotApplicable=NotApplicable,
         )
 
+    def show_version(self):
+        super(Settings,self).show_version()
+        from ixle import __version__
+        print 'ixle=={0}'.format(__version__)
+
     def __repr__(self):
         return '<ixle.settings.Settings>'
 
